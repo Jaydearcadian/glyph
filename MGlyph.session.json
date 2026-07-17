@@ -76,7 +76,9 @@
     },
     "contract_address": "0xbD3Eef309bDF82479E089bF718b6E8C02DFd818C",
     "contract_explorer": "https://testnet.monadscan.com/address/0xbD3Eef309bDF82479E089bF718b6E8C02DFd818C",
-    "deploy_tx": "0x83d083d05f96b163d1364cb4e15f7971fa4d705071937a986e0ec448035a2584"
+    "deploy_tx": "0x83d083d05f96b163d1364cb4e15f7971fa4d705071937a986e0ec448035a2584",
+    "project_url": "https://discharge-wool-ship-crossing.trycloudflare.com",
+    "hosting": "Cloudflare quick tunnel (ephemeral) -> static dist/ on :8099"
   },
   "build_plan": {
     "priority_feature": "Value-Only Glyph Link: create -> fund vault -> share link (passcode in URL hash) -> claimant claims with front-run-proof signature. Fully demonstrable E2E.",
@@ -90,7 +92,7 @@
     "description": true,
     "problem": true,
     "solution": true,
-    "project_url": false,
+    "project_url": true,
     "github_repo": false,
     "category": true,
     "contract_address": true,
@@ -120,6 +122,10 @@
     {
       "t": "2026-07-17T10:50:00Z",
       "done": "E2E on-chain proof: createValueVessel + claimVessel (front-run-proof sig) executed live on testnet; claimant received 0.01 MON; frontend builds with live address"
+    },
+    {
+      "t": "2026-07-17T10:58:00Z",
+      "done": "Hosted demo LIVE via Cloudflare ephemeral tunnel: https://discharge-wool-ship-crossing.trycloudflare.com (HTTP 200, title + JS verified)"
     }
   ],
   "resume": "Read /root/monadglyph/MGlyph.session.json to restore context and continue."
