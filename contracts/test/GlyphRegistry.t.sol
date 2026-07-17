@@ -4,6 +4,7 @@ pragma solidity ^0.8.24;
 import { Test } from "forge-std/Test.sol";
 import { IGlyphRegistry } from "../src/IGlyphRegistry.sol";
 import { GlyphRegistry } from "../src/GlyphRegistry.sol";
+import { GlyphSessionProxy } from "../src/GlyphSessionProxy.sol";
 
 contract GlyphRegistryTest is Test {
     GlyphRegistry registry;
@@ -107,5 +108,62 @@ contract GlyphRegistryTest is Test {
         vm.prank(claimant);
         vm.expectRevert(IGlyphRegistry.SessionExists.selector);
         registry.registerSession(sid, targets, 1 ether, 0, address(0), block.timestamp + 3600);
+    }
+}
+
+/// @notice Exercises the EIP-7702 session proxy execution policy end-to-end.
+contract GlyphSessionProxyTest is Test {
+    GlyphRegistry registry;
+    GlyphSessionProxy proxy;
+
+    address owner = address(0xBEEF);
+    address target = address(0x9999);
+
+    function setUp() public {
+        registry = new GlyphRegistry();
+        proxy = new GlyphSessionProxy(registry);
+    }
+
+    function test_ExecuteWhitelistedTarget() public {
+        bytes32 sid = keccak256("sess-x");
+        address[] memory targets = new address[](1);
+        targets[0] = target;
+        vm.prank(owner);
+        registry.registerSession(sid, targets, 1 ether, 0, address(0), block.timestamp + 3600);
+
+        // A whitelisted call passes the policy gate.
+        bytes memory data = abi.encodeWithSignature("transfer(address,uint256)", owner, 1);
+        vm.prank(owner);
+        proxy.execute(sid, target, data); // should not revert
+        assertTrue(true);
+    }
+
+    function test_RevertExecuteNonWhitelistedTarget() public {
+        bytes32 sid = keccak256("sess-y");
+        address[] memory targets = new address[](1);
+        targets[0] = target;
+        vm.prank(owner);
+        registry.registerSession(sid, targets, 1 ether, 0, address(0), block.timestamp + 3600);
+
+        address rogue = address(0xDEAD);
+        bytes memory data = abi.encodeWithSignature("transfer(address,uint256)", owner, 1);
+        vm.prank(owner);
+        vm.expectRevert(IGlyphRegistry.Unauthorized.selector);
+        proxy.execute(sid, rogue, data);
+    }
+
+    function test_RevertExecuteAfterRevoke() public {
+        bytes32 sid = keccak256("sess-z");
+        address[] memory targets = new address[](1);
+        targets[0] = target;
+        vm.prank(owner);
+        registry.registerSession(sid, targets, 1 ether, 0, address(0), block.timestamp + 3600);
+        vm.prank(owner);
+        registry.revokeSession(sid);
+
+        bytes memory data = abi.encodeWithSignature("transfer(address,uint256)", owner, 1);
+        vm.prank(owner);
+        vm.expectRevert(IGlyphRegistry.Unauthorized.selector);
+        proxy.execute(sid, target, data);
     }
 }
