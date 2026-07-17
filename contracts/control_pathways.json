@@ -1,0 +1,34 @@
+{
+  "control_framework": "GlyphFaultMitigation",
+  "version": "1.0.0",
+  "corrections": {
+    "ten_mon_floor": "Manifest claimed consensus-layer unconditional revert. VERIFIED FALSE on Monad testnet (accounts <10 MON execute). Kept as POLICY guardrail only, labeled POLICY_RESERVE_VIOLATION, not consensus.",
+    "undelegation_type": "Type-4 (0x04) tx with contractAddress=0x00... is CORRECT. Adopted.",
+    "create_opcodes": "No hard Monad ban; adopted as best-practice guard (proxy uses call() only)."
+  },
+  "execution_guards": {
+    "monad_engine_invariants": {
+      "enforce_10_mon_reserve_floor": "POLICY_ONLY (advisory, not chain-enforced)",
+      "block_create_opcodes_in_proxy": "BEST_PRACTICE (call-only proxy)",
+      "revert_action": "LOCAL_SIMULATION_ABORT"
+    },
+    "privilege_de_escalation": {
+      "enforce_strict_target_allowlist": true,
+      "enforce_drawdown_limits_per_epoch": true
+    }
+  },
+  "panic_recovery_circuits": {
+    "trigger_undelegation_path": {
+      "target_allocation_address": "0x0000000000000000000000000000000000000000",
+      "transaction_type": "0x04",
+      "required_gas_payer": "SPONSOR_PAYMASTER_POOL"
+    }
+  },
+  "exception_bubbling_policy": {
+    "sub_call_failures": {
+      "strategy": "TRY_CATCH_WRAPPER",
+      "allowed_modes": ["SINGLE_REVERT_ROLLBACK", "BATCH_TRY_CONTINUE"],
+      "fallback_event_signature": "LogVesselExecutionFailure(bytes32 indexed vesselId, bytes reason)"
+    }
+  }
+}
