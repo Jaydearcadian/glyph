@@ -19,8 +19,6 @@ export function useVesselClaim() {
     if (passcode) setPasscode(passcode);
   }, []);
 
-  const publicClient = createPublicClient({ chain: monadTestnet, transport: custom(window.ethereum!) });
-
   async function connect() {
     if (!window.ethereum) return setStatus("No injected wallet found.");
     const [addr] = await window.ethereum.request({ method: "eth_requestAccounts" });
@@ -30,9 +28,11 @@ export function useVesselClaim() {
   async function claim() {
     if (!account) return setStatus("Connect a wallet first.");
     if (!vesselId || !passcode) return setStatus("Missing vessel id or passcode from link.");
+    if (!window.ethereum) return setStatus("No injected wallet found.");
     try {
       const sig = await signClaim(passcode, account, vesselId);
-      const walletClient = createWalletClient({ chain: monadTestnet, transport: custom(window.ethereum!) });
+      const walletClient = createWalletClient({ chain: monadTestnet, transport: custom(window.ethereum) });
+      const publicClient = createPublicClient({ chain: monadTestnet, transport: custom(window.ethereum) });
       setStatus("Submitting claim (front-run-proof signature)…");
       const hash = await walletClient.writeContract({
         account,

@@ -21,8 +21,6 @@ export function VesselForge() {
   const [shareLink, setShareLink] = useState<string>("");
   const [vesselId, setVesselId] = useState<Hex | null>(null);
 
-  const publicClient = createPublicClient({ chain: monadTestnet, transport: custom(window.ethereum!) });
-
   async function connect() {
     if (!window.ethereum) {
       setStatus("No injected wallet (MetaMask/Rabby). Install one or use a wallet connector.");
@@ -36,11 +34,13 @@ export function VesselForge() {
   async function forge() {
     if (!account) return setStatus("Connect a wallet first.");
     if (!passcode) return setStatus("Set a passcode for the claim link.");
+    if (!window.ethereum) return setStatus("No injected wallet found.");
     try {
       const gatekeeper = passcodeToGatekeeper(passcode);
       const vid = deriveVesselId(`${account}-${Date.now()}-${Math.random()}`);
       const valueWei = BigInt(Math.floor(parseFloat(amount) * 1e18));
-      const walletClient = createWalletClient({ chain: monadTestnet, transport: custom(window.ethereum!) });
+      const walletClient = createWalletClient({ chain: monadTestnet, transport: custom(window.ethereum) });
+      const publicClient = createPublicClient({ chain: monadTestnet, transport: custom(window.ethereum) });
 
       setStatus("Confirm the escrow transaction in your wallet…");
       const hash = await walletClient.writeContract({
