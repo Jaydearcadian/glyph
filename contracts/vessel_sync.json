@@ -1,12 +1,21 @@
 {
   "protocolState": {
-    "latestRegistryAddress": "0xbD3Eef309bDF82479E089bF718b6E8C02DFd818C (FROZEN; corrected version not yet deployed)",
-    "proxyImplementationAddress": "PENDING_REBUILD (ERC-7201 corrected, not yet deployed)",
+    "latestRegistryAddress": "0xb3671C718d286f1cFF5A895F447503Fac5Bef308",
+    "proxyImplementationAddress": "0x83A572FD4E334ed34Aca42B85743Ff122AB3006d",
     "storageNamespaceSlot": "0x07d2f48c801d2b2cb4b6045c6ab259930c8bedfd901510428297972876083700",
     "storageNamespace": "glyph.storage.session.v1",
-    "compilationStatus": "BUILT + 8/8 TESTS PASS (not deployed)",
+    "compilationStatus": "DEPLOYED + verified on-chain (registry 2737B, proxy 1879B); 8/8 forge tests pass",
     "evmVersion": "prague",
-    "solc": "0.8.24 (manifest's 0.8.29 unavailable)"
+    "solc": "0.8.24 (manifest's 0.8.29 unavailable)",
+    "deployTxs": {
+      "registry": "0x4413071cae95f4cfec8a1fd2c25ebf4940807e3306344f0daea3d0d7942ce9a1",
+      "proxy": "0xf4f819f6c343540d52ad81edf0d923baee01c9390c0f8da6f58574f6c3c78d70"
+    },
+    "previousDeployment": "0xbD3Eef309bDF82479E089bF718b6E8C02DFd818C (frozen, pre-correction)",
+    "explorer": {
+      "registry": "https://testnet.monadscan.com/address/0xb3671C718d286f1cFF5A895F447503Fac5Bef308",
+      "proxy": "https://testnet.monadscan.com/address/0x83A572FD4E334ed34Aca42B85743Ff122AB3006d"
+    }
   },
   "cryptographicAssertions": {
     "signatureEnvelopeFormat": "EIP-191 Ethereum Signed Message",
