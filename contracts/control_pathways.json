@@ -1,15 +1,15 @@
 {
   "control_framework": "GlyphFaultMitigation",
   "version": "1.0.0",
-  "corrections": {
-    "ten_mon_floor": "Manifest claimed consensus-layer unconditional revert. VERIFIED FALSE on Monad testnet (accounts <10 MON execute). Kept as POLICY guardrail only, labeled POLICY_RESERVE_VIOLATION, not consensus.",
-    "undelegation_type": "Type-4 (0x04) tx with contractAddress=0x00... is CORRECT. Adopted.",
-    "create_opcodes": "No hard Monad ban; adopted as best-practice guard (proxy uses call() only)."
+  "corrections_applied": {
+    "ten_mon_floor": "REMOVED. Manifest claimed a Monad consensus 10-MON revert; VERIFIED FALSE on live testnet. Replaced with advisory solvency preflight (gas-headroom only, no fake fixed number).",
+    "undelegation_type": "Type-4 (0x04) tx, contractAddress=0x00... — CORRECT, kept.",
+    "create_opcodes": "Best-practice guard (call-only proxy), not a hard Monad ban."
   },
   "execution_guards": {
-    "monad_engine_invariants": {
-      "enforce_10_mon_reserve_floor": "POLICY_ONLY (advisory, not chain-enforced)",
-      "block_create_opcodes_in_proxy": "BEST_PRACTICE (call-only proxy)",
+    "solvency_preflight": {
+      "enforce": "ADVISORY_CLIENT_SIDE",
+      "rule": "balance >= outflow AND balance - outflow >= 0.1 MON gas headroom",
       "revert_action": "LOCAL_SIMULATION_ABORT"
     },
     "privilege_de_escalation": {

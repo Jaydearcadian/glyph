@@ -1,10 +1,10 @@
 {
   "protocolState": {
-    "latestRegistryAddress": "0xbD3Eef309bDF82479E089bF718b6E8C02DFd818C",
+    "latestRegistryAddress": "0xbD3Eef309bDF82479E089bF718b6E8C02DFd818C (FROZEN; corrected version not yet deployed)",
     "proxyImplementationAddress": "PENDING_REBUILD (ERC-7201 corrected, not yet deployed)",
     "storageNamespaceSlot": "0x07d2f48c801d2b2cb4b6045c6ab259930c8bedfd901510428297972876083700",
     "storageNamespace": "glyph.storage.session.v1",
-    "compilationStatus": "DESIGN_ONLY (not compiled/deployed \u2014 user said do not execute)",
+    "compilationStatus": "BUILT + 8/8 TESTS PASS (not deployed)",
     "evmVersion": "prague",
     "solc": "0.8.24 (manifest's 0.8.29 unavailable)"
   },

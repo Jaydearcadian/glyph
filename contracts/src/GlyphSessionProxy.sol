@@ -12,7 +12,9 @@
 // NOTE: written as architecture/design artifact. NOT compiled-deployed yet (no forge create).
 pragma solidity ^0.8.24;
 
-contract GlyphSessionProxy {
+import { GlyphRuntimeControl } from "./GlyphRuntimeControl.sol";
+
+contract GlyphSessionProxy is GlyphRuntimeControl {
     // ERC-7201 Storage Namespace — CORRECT derivation for "glyph.storage.session.v1":
     //   slot = keccak256( uint256(keccak256("glyph.storage.session.v1")) - 1 ) & ~uint256(0xff)
     // Computed (verified via Python hashlib): 0x07d2f48c801d2b2cb4b6045c6ab259930c8bedfd901510428297972876083700
@@ -78,12 +80,20 @@ contract GlyphSessionProxy {
     }
 
     /// @notice Delegated execution entry — only valid when this code is the EOA's 7702 delegate.
+    /// Sub-call failures are isolated (TRY_CATCH_WRAPPER): emit LogVesselExecutionFailure and
+    /// revert with the target's reason, consuming minimal gas instead of corrupting the run.
     function execute(bytes32 sessionId, address target, uint256 value, bytes calldata data)
         external
         payable
+        callOnlyProxy
         checkSessionGuardrails(sessionId, target, value)
     {
-        (bool ok, ) = target.call{value: value}(data);
-        require(ok, "GLYPH: EXEC_REVERTED");
+        (bool ok, bytes memory ret) = target.call{value: value}(data);
+        if (!ok) {
+            emit LogVesselExecutionFailure(sessionId, ret);
+            assembly {
+                revert(add(ret, 0x20), mload(ret))
+            }
+        }
     }
 }

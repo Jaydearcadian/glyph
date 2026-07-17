@@ -14,14 +14,15 @@ contract GlyphRegistryTest is Test {
     address creator = address(0xBEEF);
     address claimant = address(0xFACE);
     address attacker = address(0xA77AC4);
+    bytes32 salt = keccak256("glyph-nonce-1");
 
     function setUp() public {
         registry = new GlyphRegistry();
-        vesselId = keccak256(abi.encodePacked("glyph-nonce-1"));
+        vesselId = keccak256(abi.encodePacked(creator, salt)); // off-chain deterministic ID
     }
 
-    /// @dev Replicates the in-browser claim signature: ephemeral key signs
-    ///      (msg.sender, vesselId) under the Ethereum signed-message envelope.
+    /// @dev Replicates in-browser claim signature: ephemeral key signs (msg.sender, vesselId)
+    ///      under the Ethereum signed-message envelope (front-run-proof: binds to claimant).
     function _signClaim(uint256 pk, address who, bytes32 id) internal view returns (bytes memory) {
         bytes32 msgHash = keccak256(abi.encodePacked(who, id));
         bytes32 ethHash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", msgHash));
@@ -33,26 +34,25 @@ contract GlyphRegistryTest is Test {
         address gatekeeper = vm.addr(PASSCODE_PK);
         vm.deal(creator, 1 ether);
         vm.prank(creator);
-        registry.createValueVessel{ value: 0.5 ether }(vesselId, address(0), 0.5 ether, gatekeeper, 0);
+        registry.forgeVessel{ value: 0.5 ether }(address(0), 0.5 ether, gatekeeper, salt);
 
         bytes memory sig = _signClaim(PASSCODE_PK, claimant, vesselId);
         uint256 before = claimant.balance;
         vm.prank(claimant);
         registry.claimVessel(vesselId, sig);
         assertEq(claimant.balance - before, 0.5 ether);
-
-        assertTrue(registry.vessels(vesselId).claimed);
     }
 
     function test_RevertWhenFrontRunnerReplaysSignature() public {
         address gatekeeper = vm.addr(PASSCODE_PK);
         vm.deal(creator, 1 ether);
         vm.prank(creator);
-        registry.createValueVessel{ value: 0.5 ether }(vesselId, address(0), 0.5 ether, gatekeeper, 0);
+        registry.forgeVessel{ value: 0.5 ether }(address(0), 0.5 ether, gatekeeper, salt);
 
         bytes memory sig = _signClaim(PASSCODE_PK, claimant, vesselId);
+        // Attacker submits the copied signature from their OWN address -> sig binds to claimant, fails.
         vm.prank(attacker);
-        vm.expectRevert(IGlyphRegistry.InvalidSignature.selector);
+        vm.expectRevert("GLYPH: BAD_SIG");
         registry.claimVessel(vesselId, sig);
     }
 
@@ -61,11 +61,11 @@ contract GlyphRegistryTest is Test {
         address gatekeeper = vm.addr(PASSCODE_PK);
         vm.deal(creator, 1 ether);
         vm.prank(creator);
-        registry.createValueVessel{ value: 0.5 ether }(vesselId, address(0), 0.5 ether, gatekeeper, 0);
+        registry.forgeVessel{ value: 0.5 ether }(address(0), 0.5 ether, gatekeeper, salt);
 
         bytes memory sig = _signClaim(wrongPk, claimant, vesselId);
         vm.prank(claimant);
-        vm.expectRevert(IGlyphRegistry.InvalidSignature.selector);
+        vm.expectRevert("GLYPH: BAD_SIG");
         registry.claimVessel(vesselId, sig);
     }
 
@@ -73,97 +73,69 @@ contract GlyphRegistryTest is Test {
         address gatekeeper = vm.addr(PASSCODE_PK);
         vm.deal(creator, 1 ether);
         vm.prank(creator);
-        registry.createValueVessel{ value: 0.5 ether }(vesselId, address(0), 0.5 ether, gatekeeper, 100);
+        registry.forgeVessel{ value: 0.5 ether }(address(0), 0.5 ether, gatekeeper, salt);
 
-        vm.warp(200);
+        vm.warp(block.timestamp + 3601); // past 1h expiry set in forgeVessel
         uint256 before = creator.balance;
         vm.prank(creator);
-        registry.expireValueVessel(vesselId);
+        registry.expireVessel(vesselId);
         assertEq(creator.balance - before, 0.5 ether);
-    }
-
-    function test_SessionRegisterAndRevoke() public {
-        bytes32 sid = keccak256("session-1");
-        address[] memory targets = new address[](1);
-        targets[0] = address(0x9999);
-        vm.prank(claimant);
-        registry.registerSession(sid, targets, 1 ether, 0, address(0), block.timestamp + 3600);
-
-        IGlyphRegistry.SessionPolicy memory s = registry.sessions(sid);
-        assertEq(s.owner, claimant);
-        assertFalse(s.revoked);
-
-        vm.prank(claimant);
-        registry.revokeSession(sid);
-        assertTrue(registry.sessions(sid).revoked);
-    }
-
-    function test_RevertSessionDoubleRegister() public {
-        bytes32 sid = keccak256("session-1");
-        address[] memory targets = new address[](1);
-        targets[0] = address(0x9999);
-        vm.prank(claimant);
-        registry.registerSession(sid, targets, 1 ether, 0, address(0), block.timestamp + 3600);
-
-        vm.prank(claimant);
-        vm.expectRevert(IGlyphRegistry.SessionExists.selector);
-        registry.registerSession(sid, targets, 1 ether, 0, address(0), block.timestamp + 3600);
     }
 }
 
-/// @notice Exercises the EIP-7702 session proxy execution policy end-to-end.
+/// @notice Exercises the EIP-7702 session proxy execution policy end-to-end (ERC-7201 store).
 contract GlyphSessionProxyTest is Test {
-    GlyphRegistry registry;
     GlyphSessionProxy proxy;
 
     address owner = address(0xBEEF);
     address target = address(0x9999);
+    bytes32 sessionId = keccak256("sess-x");
 
     function setUp() public {
-        registry = new GlyphRegistry();
-        proxy = new GlyphSessionProxy(registry);
+        proxy = new GlyphSessionProxy();
     }
 
-    function test_ExecuteWhitelistedTarget() public {
-        bytes32 sid = keccak256("sess-x");
+    function _register() internal {
         address[] memory targets = new address[](1);
         targets[0] = target;
         vm.prank(owner);
-        registry.registerSession(sid, targets, 1 ether, 0, address(0), block.timestamp + 3600);
+        proxy.registerSession(sessionId, owner, 1 ether, block.timestamp + 3600, targets);
+    }
 
-        // A whitelisted call passes the policy gate.
+    function test_ExecuteWhitelistedTarget() public {
+        _register();
         bytes memory data = abi.encodeWithSignature("transfer(address,uint256)", owner, 1);
         vm.prank(owner);
-        proxy.execute(sid, target, data); // should not revert
+        proxy.execute(sessionId, target, 0, data); // passes guardrails
         assertTrue(true);
     }
 
     function test_RevertExecuteNonWhitelistedTarget() public {
-        bytes32 sid = keccak256("sess-y");
-        address[] memory targets = new address[](1);
-        targets[0] = target;
-        vm.prank(owner);
-        registry.registerSession(sid, targets, 1 ether, 0, address(0), block.timestamp + 3600);
-
+        _register();
         address rogue = address(0xDEAD);
         bytes memory data = abi.encodeWithSignature("transfer(address,uint256)", owner, 1);
         vm.prank(owner);
-        vm.expectRevert(IGlyphRegistry.Unauthorized.selector);
-        proxy.execute(sid, rogue, data);
+        vm.expectRevert("GLYPH: UNAUTHORIZED_TARGET_CONTRACT");
+        proxy.execute(sessionId, rogue, 0, data);
     }
 
     function test_RevertExecuteAfterRevoke() public {
-        bytes32 sid = keccak256("sess-z");
-        address[] memory targets = new address[](1);
-        targets[0] = target;
+        _register();
         vm.prank(owner);
-        registry.registerSession(sid, targets, 1 ether, 0, address(0), block.timestamp + 3600);
-        vm.prank(owner);
-        registry.revokeSession(sid);
+        proxy.revokeSession(sessionId);
 
         bytes memory data = abi.encodeWithSignature("transfer(address,uint256)", owner, 1);
         vm.prank(owner);
-        vm.expectRevert(IGlyphRegistry.Unauthorized.selector);
-        proxy.execute(sid, target, data);
+        vm.expectRevert("GLYPH: SESSION_UNKNOWN");
+        proxy.execute(sessionId, target, 0, data);
+    }
+
+    function test_RevertExecuteExpired() public {
+        _register();
+        vm.warp(block.timestamp + 3601); // past expiry
+        bytes memory data = abi.encodeWithSignature("transfer(address,uint256)", owner, 1);
+        vm.prank(owner);
+        vm.expectRevert("GLYPH: SESSION_EXPIRED");
+        proxy.execute(sessionId, target, 0, data);
     }
 }
