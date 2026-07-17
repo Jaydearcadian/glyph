@@ -90,7 +90,8 @@
     "Tooling: git 2.43, node v22.22, npm 10.9.7 confirmed"
   ],
   "checkpoints": [
-    {"t": "2026-07-17T09:49:00Z", "done": "Backend: Foundry project + GlyphRegistry + GlyphSessionProxy + IGlyphRegistry; forge build green (prague); 6 tests pass (front-run defense + session policy)"}
+    {"t": "2026-07-17T09:49:00Z", "done": "Backend: Foundry project + GlyphRegistry + GlyphSessionProxy + IGlyphRegistry; forge build green (prague); 6 tests pass (front-run defense + session policy)"},
+    {"t": "2026-07-17T10:23:00Z", "done": "Frontend: Vite+React+TS app; VesselForge (escrow+share) + VesselClaim (front-run-proof claim); builds clean (761 modules); dev server serves 200"}
   ],
   "resume": "Read /root/monadglyph/MGlyph.session.json to restore context and continue."
 }
