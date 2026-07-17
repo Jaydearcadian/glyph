@@ -51,17 +51,32 @@
     ],
     "frontend": {
       "stack": "React + Tailwind + Viem + Framer Motion; Three.js (FloatingCore visualizer)",
-      "components": ["VesselForge.tsx", "FloatingCore.tsx", "BiopunkLine.tsx"],
-      "hooks": ["useEIP7702.ts", "useVesselClaim.ts"],
-      "utils": ["crypto.ts (ECDSA signing & hash commitment)"]
+      "components": [
+        "VesselForge.tsx",
+        "FloatingCore.tsx",
+        "BiopunkLine.tsx"
+      ],
+      "hooks": [
+        "useEIP7702.ts",
+        "useVesselClaim.ts"
+      ],
+      "utils": [
+        "crypto.ts (ECDSA signing & hash commitment)"
+      ]
     },
     "spec_notes": {
       "evm_target": "prague (EIP-7702 tx serialization)",
       "min_reserve_mon": 10.0,
-      "banned_opcodes_in_session": ["CREATE", "CREATE2"],
+      "banned_opcodes_in_session": [
+        "CREATE",
+        "CREATE2"
+      ],
       "frontrun_defense": "client-side ephemeral keypair from passcode; signature binds to msg.sender so copied mempool tx fails recovery",
       "parallel_rules": "vessels in mapping(bytes32=>Vessel); vesselId = keccak off-chain to avoid storage conflicts on Monad OCC"
-    }
+    },
+    "contract_address": "0xbD3Eef309bDF82479E089bF718b6E8C02DFd818C",
+    "contract_explorer": "https://testnet.monadscan.com/address/0xbD3Eef309bDF82479E089bF718b6E8C02DFd818C",
+    "deploy_tx": "0x83d083d05f96b163d1364cb4e15f7971fa4d705071937a986e0ec448035a2584"
   },
   "build_plan": {
     "priority_feature": "Value-Only Glyph Link: create -> fund vault -> share link (passcode in URL hash) -> claimant claims with front-run-proof signature. Fully demonstrable E2E.",
@@ -78,7 +93,7 @@
     "project_url": false,
     "github_repo": false,
     "category": true,
-    "contract_address": false,
+    "contract_address": true,
     "demo_video": false,
     "post_url": false
   },
@@ -90,8 +105,18 @@
     "Tooling: git 2.43, node v22.22, npm 10.9.7 confirmed"
   ],
   "checkpoints": [
-    {"t": "2026-07-17T09:49:00Z", "done": "Backend: Foundry project + GlyphRegistry + GlyphSessionProxy + IGlyphRegistry; forge build green (prague); 6 tests pass (front-run defense + session policy)"},
-    {"t": "2026-07-17T10:23:00Z", "done": "Frontend: Vite+React+TS app; VesselForge (escrow+share) + VesselClaim (front-run-proof claim); builds clean (761 modules); dev server serves 200"}
+    {
+      "t": "2026-07-17T09:49:00Z",
+      "done": "Backend: Foundry project + GlyphRegistry + GlyphSessionProxy + IGlyphRegistry; forge build green (prague); 6 tests pass (front-run defense + session policy)"
+    },
+    {
+      "t": "2026-07-17T10:23:00Z",
+      "done": "Frontend: Vite+React+TS app; VesselForge (escrow+share) + VesselClaim (front-run-proof claim); builds clean (761 modules); dev server serves 200"
+    },
+    {
+      "t": "2026-07-17T10:35:00Z",
+      "done": "Deployed GlyphRegistry to Monad testnet 0xbD3Eef309bDF82479E089bF718b6E8C02DFd818C (9376 bytes code, verified on-chain)"
+    }
   ],
   "resume": "Read /root/monadglyph/MGlyph.session.json to restore context and continue."
 }
