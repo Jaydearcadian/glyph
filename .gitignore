@@ -27,3 +27,7 @@ keystore-*
 # Local only
 .claude/
 *.local.md
+
+# Foundry cache
+contracts/cache/
+contracts/out/
