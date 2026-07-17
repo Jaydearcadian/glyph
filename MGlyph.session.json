@@ -116,6 +116,10 @@
     {
       "t": "2026-07-17T10:35:00Z",
       "done": "Deployed GlyphRegistry to Monad testnet 0xbD3Eef309bDF82479E089bF718b6E8C02DFd818C (9376 bytes code, verified on-chain)"
+    },
+    {
+      "t": "2026-07-17T10:50:00Z",
+      "done": "E2E on-chain proof: createValueVessel + claimVessel (front-run-proof sig) executed live on testnet; claimant received 0.01 MON; frontend builds with live address"
     }
   ],
   "resume": "Read /root/monadglyph/MGlyph.session.json to restore context and continue."
