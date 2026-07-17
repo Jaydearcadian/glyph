@@ -89,6 +89,8 @@
     "All committed code must be after 2026-07-13T13:00:00Z (first commit 2026-07-17, OK)",
     "Tooling: git 2.43, node v22.22, npm 10.9.7 confirmed"
   ],
-  "checkpoints": [],
+  "checkpoints": [
+    {"t": "2026-07-17T09:49:00Z", "done": "Backend: Foundry project + GlyphRegistry + GlyphSessionProxy + IGlyphRegistry; forge build green (prague); 6 tests pass (front-run defense + session policy)"}
+  ],
   "resume": "Read /root/monadglyph/MGlyph.session.json to restore context and continue."
 }
