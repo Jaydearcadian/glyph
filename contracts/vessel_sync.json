@@ -1,0 +1,28 @@
+{
+  "protocolState": {
+    "latestRegistryAddress": "0xbD3Eef309bDF82479E089bF718b6E8C02DFd818C",
+    "proxyImplementationAddress": "PENDING_REBUILD (ERC-7201 corrected, not yet deployed)",
+    "storageNamespaceSlot": "0x07d2f48c801d2b2cb4b6045c6ab259930c8bedfd901510428297972876083700",
+    "storageNamespace": "glyph.storage.session.v1",
+    "compilationStatus": "DESIGN_ONLY (not compiled/deployed — user said do not execute)",
+    "evmVersion": "prague",
+    "solc": "0.8.24 (manifest's 0.8.29 unavailable)"
+  },
+  "cryptographicAssertions": {
+    "signatureEnvelopeFormat": "EIP-191 Ethereum Signed Message",
+    "frontRunShieldValidated": "PENDING_RETEST",
+    "testCoverage": "9/9 existing (to be re-run against corrected proxy)",
+    "idDerivation": "keccak256(abi.encodePacked(msg.sender, salt))"
+  },
+  "frontendPayloadSpecs": {
+    "hashFragmentSchema": "#id={vesselId}&key={ephemeralPrivateKey}",
+    "supportedNetwork": "Monad Testnet (10143)",
+    "taste": "brutalist (cyan=value, purple=7702 session, green=hybrid)"
+  },
+  "corrections": {
+    "manifest_slot_rejected": "0xac6b9d62bf3f1911be24e580e22797dfefbd64921503932cfadbfbd1043f6700",
+    "correct_slot_used": "0x07d2f48c801d2b2cb4b6045c6ab259930c8bedfd901510428297972876083700",
+    "manifest_pragma_rejected": "^0.8.29",
+    "correct_pragma": "^0.8.24"
+  }
+}

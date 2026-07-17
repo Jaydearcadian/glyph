@@ -1,0 +1,45 @@
+{
+  "protocol": "GlyphCore",
+  "version": "1.0.0",
+  "environment": "Monad Testnet (ChainID: 10143)",
+  "corrections": {
+    "pragma": "manifest specified ^0.8.29 (does not exist); pinned ^0.8.24",
+    "erc7201_slot": "manifest's 0xac6b9d62...f6700 is NOT the ERC-7201 slot for 'glyph.storage.session.v1'; correct computed slot 0x07d2f48c801d2b2cb4b6045c6ab259930c8bedfd901510428297972876083700 is used"
+  },
+  "capabilities": [
+    {
+      "skill_id": "glyph_forge_vessel",
+      "description": "Deploys a distinct cryptographic execution envelope (Vessel) containing optional value and/or EIP-7702 session boundaries.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "salt": {
+            "type": "string",
+            "pattern": "^0x[a-fA-F0-9]{64}$",
+            "description": "Unique 32-byte seed for off-chain OCC parallel isolation math."
+          },
+          "vesselType": {
+            "type": "integer",
+            "enum": [0, 1, 2],
+            "description": "0 = ValueOnly Link, 1 = AuthorityOnly Session, 2 = Hybrid Link"
+          },
+          "tokenAddress": {
+            "type": "string",
+            "pattern": "^0x[a-fA-F0-9]{40}$",
+            "description": "Target asset contract address. Set to 0x0000000000000000000000000000000000000000 for native MON."
+          },
+          "weiAmount": {
+            "type": "string",
+            "description": "Total liquidity value to lock inside the escrow state mapping, denominated strictly in wei units."
+          },
+          "gatekeeperKeyHash": {
+            "type": "string",
+            "pattern": "^0x[a-fA-F0-9]{40}$",
+            "description": "The public ECDSA address derived client-side from the passcode hash to enforce front-run validation."
+          }
+        },
+        "required": ["salt", "vesselType", "tokenAddress", "weiAmount", "gatekeeperKeyHash"]
+      }
+    }
+  ]
+}
