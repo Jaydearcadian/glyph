@@ -9,48 +9,6 @@
   "status": "active",
   "owner": "Jason (@jaydearcadian)",
   "regenerated_from": "Brain MCP knowledge graph (retain -> relate -> recall -> this file)",
-  "product": {
-    "name": "Glyph",
-    "tagline": "Frictionless, push-based asset & authority delegation built natively for Monad",
-    "system_class": "Decentralized Asset Vault & Ephemeral Authority Delegation Engine",
-    "problem": "Web3 UX forces a paradox: Web2-like UX compromises self-custody. Burner wallets fragment capital/identity; giving AI agents raw private keys risks total loss; public claim links are MEV-front-runnable.",
-    "solution": "Glyph Vessel = single signed entry point carrying Value Payload (escrowed tokens, front-run-proof claim) and/or Authority Payload (EIP-7702 scoped session key with drawdown cap, target whitelist, time-bound expiry). Configs: Value-Only, Authority-Only, Hybrid.",
-    "category": "Monad Testnet",
-    "contracts": {
-      "GlyphRegistry": {
-        "address": "0xbD3Eef309bDF82479E089bF718b6E8C02DFd818C",
-        "network": "Monad Testnet (chainId 10143)",
-        "code_bytes": 9376,
-        "verified": true,
-        "deploy_tx": "0x83d083d05f96b163d1364cb4e15f7971fa4d705071937a986e0ec448035a2584",
-        "explorer": "https://testnet.monadscan.com/address/0xbD3Eef309bDF82479E089bF718b6E8C02DFd818C",
-        "functions": [
-          "createValueVessel",
-          "claimVessel",
-          "expireValueVessel",
-          "registerSession",
-          "revokeSession"
-        ]
-      },
-      "GlyphSessionProxy": {
-        "status": "implemented (EIP-7702 delegation target; not separately deployed)"
-      }
-    },
-    "frontend": {
-      "stack": "Vite + React + TS + Tailwind + Framer Motion + viem",
-      "build": "green (761 modules)",
-      "tests": "forge test 6/6 pass",
-      "hosting": "Cloudflare quick tunnel (ephemeral) -> static dist/ on :8099",
-      "public_url": "https://discharge-wool-ship-crossing.trycloudflare.com",
-      "renders_clean": true
-    },
-    "key_feature": {
-      "name": "Front-run-proof claim",
-      "mechanism": "Ephemeral keypair from passcode; gatekeeper stored on-chain; claimant signs (msg.sender, vesselId). Binds to msg.sender -> copied mempool tx fails ecrecover.",
-      "e2e_tx": "0x95c723468e8fdc5b676f2ea84c50551f7d3074583bb473f1f8cba15575b17ac1",
-      "verified_onchain": true
-    }
-  },
   "hackathon": {
     "name": "Spark (BuildAnything)",
     "deadline": "2026-07-19T23:59:00Z",
@@ -77,7 +35,7 @@
     "description": true,
     "problem": true,
     "solution": true,
-    "project_url": true,
+    "project_url": false,
     "github_repo": false,
     "category": true,
     "contract_address": true,
@@ -103,5 +61,26 @@
       "done": "Brain redo: retained 8 Glyph nodes + 8 relations; recalled c0529eb8 subgraph; regenerated session state from Brain"
     }
   ],
-  "resume": "Read /root/monadglyph/MGlyph.session.json (Brain-grounded). Resume by recalling Brain node c0529eb8."
+  "resume": "Read /root/monadglyph/MGlyph.session.json (Brain-grounded). Resume by recalling Brain node c0529eb8.",
+  "product_kept": {
+    "name": "Glyph",
+    "tagline": "Frictionless, push-based asset & authority delegation built natively for Monad",
+    "contracts": {
+      "GlyphRegistry": "0xbD3Eef309bDF82479E089bF718b6E8C02DFd818C (Monad testnet, live, verified)",
+      "GlyphSessionProxy": "EIP-7702 delegation target (verified via 9/9 forge tests)"
+    },
+    "tests": "9/9 forge pass",
+    "feature_status": "Value + Authority Vessel implemented & on-chain verified"
+  },
+  "frontend": {
+    "status": "SHATTERED",
+    "action": "removed 2026-07-17 per user directive; no rebuild until a new unique prompt/loop/engineering system is provided",
+    "cache_purged": true,
+    "live_demo": "torn down (cloudflared tunnel + static server killed)"
+  },
+  "rebuild_directive": {
+    "mode": "unique prompt + loop + engineering system (user-driven)",
+    "constraint": "do NOT default to prior Vessel/Three.js/Framer frontend; taste & concept must match user's new direction",
+    "kept": "contract ABI + on-chain deployment + tests only"
+  }
 }
