@@ -1,91 +1,76 @@
 {
   "session": "MGlyph",
   "project_dir": "/root/monadglyph",
-  "created": "2026-07-17T06:22:31Z",
-  "updated": "2026-07-17T09:40:00Z",
+  "brain_grounded": true,
+  "brain_project_node": "c0529eb8",
+  "created": "2026-07-17T18:54:08Z",
+  "updated": "2026-07-17T19:05:00Z",
   "resumable": true,
   "status": "active",
   "owner": "Jason (@jaydearcadian)",
+  "regenerated_from": "Brain MCP knowledge graph (retain -> relate -> recall -> this file)",
+  "product": {
+    "name": "Glyph",
+    "tagline": "Frictionless, push-based asset & authority delegation built natively for Monad",
+    "system_class": "Decentralized Asset Vault & Ephemeral Authority Delegation Engine",
+    "problem": "Web3 UX forces a paradox: Web2-like UX compromises self-custody. Burner wallets fragment capital/identity; giving AI agents raw private keys risks total loss; public claim links are MEV-front-runnable.",
+    "solution": "Glyph Vessel = single signed entry point carrying Value Payload (escrowed tokens, front-run-proof claim) and/or Authority Payload (EIP-7702 scoped session key with drawdown cap, target whitelist, time-bound expiry). Configs: Value-Only, Authority-Only, Hybrid.",
+    "category": "Monad Testnet",
+    "contracts": {
+      "GlyphRegistry": {
+        "address": "0xbD3Eef309bDF82479E089bF718b6E8C02DFd818C",
+        "network": "Monad Testnet (chainId 10143)",
+        "code_bytes": 9376,
+        "verified": true,
+        "deploy_tx": "0x83d083d05f96b163d1364cb4e15f7971fa4d705071937a986e0ec448035a2584",
+        "explorer": "https://testnet.monadscan.com/address/0xbD3Eef309bDF82479E089bF718b6E8C02DFd818C",
+        "functions": [
+          "createValueVessel",
+          "claimVessel",
+          "expireValueVessel",
+          "registerSession",
+          "revokeSession"
+        ]
+      },
+      "GlyphSessionProxy": {
+        "status": "implemented (EIP-7702 delegation target; not separately deployed)"
+      }
+    },
+    "frontend": {
+      "stack": "Vite + React + TS + Tailwind + Framer Motion + viem",
+      "build": "green (761 modules)",
+      "tests": "forge test 6/6 pass",
+      "hosting": "Cloudflare quick tunnel (ephemeral) -> static dist/ on :8099",
+      "public_url": "https://discharge-wool-ship-crossing.trycloudflare.com",
+      "renders_clean": true
+    },
+    "key_feature": {
+      "name": "Front-run-proof claim",
+      "mechanism": "Ephemeral keypair from passcode; gatekeeper stored on-chain; claimant signs (msg.sender, vesselId). Binds to msg.sender -> copied mempool tx fails ecrecover.",
+      "e2e_tx": "0x95c723468e8fdc5b676f2ea84c50551f7d3074583bb473f1f8cba15575b17ac1",
+      "verified_onchain": true
+    }
+  },
   "hackathon": {
-    "name": "Spark",
-    "platform": "BuildAnything",
-    "url": "https://buildanything.so/hackathons/spark",
-    "theme": "Build Anything onchain that solves a personal problem",
-    "pool": "$2000 ($500 x3 winners + $500 most viral)",
-    "start": "2026-07-13T13:00:00Z",
+    "name": "Spark (BuildAnything)",
     "deadline": "2026-07-19T23:59:00Z",
-    "time_remaining_at_start": "~2d 16h",
-    "format": "solo",
-    "registered": 565,
-    "submissions_so_far": 36,
+    "pool": "$2000 ($500 x3 + $500 most viral)",
     "constraints": [
-      "Project MUST be new: no code committed before 2026-07-13T13:00:00Z (auto-disqualify)",
-      "Solo hackathon (team of 1)",
-      "Must have an onchain component on Monad MAINNET or TESTNET",
-      "Public GitHub repo required",
-      "Hosted/deployed web demo required",
-      "Contract address required (Monad mainnet or testnet)",
-      "Demo video < 3 min, publicly visible",
-      "Post URL required for 'Most viral' prize"
+      "new code only after 2026-07-13T13:00:00Z",
+      "solo",
+      "onchain on Monad",
+      "public GitHub",
+      "hosted demo",
+      "contract address",
+      "demo video <3min",
+      "post URL (viral prize)"
     ],
     "anti_slop": [
-      "No AI slop: unique identity, fits viewport, not obviously generated",
-      "No 'tutorial special' (todo/weather/beginner React)",
-      "No 'mystery box': README + demo video + setup instructions",
-      "No vaporware: real working feature, not hardcoded toasts"
+      "no AI slop",
+      "no tutorial-special",
+      "no mystery box",
+      "no vaporware"
     ]
-  },
-  "product": {
-    "defined": true,
-    "name": "Glyph",
-    "tagline": "Frictionless, push-based asset and authority delegation built natively for Monad",
-    "system_class": "Decentralized Asset Vault & Ephemeral Authority Delegation Engine",
-    "problem": "Web3 UX forces a paradox: Web2-like UX compromises self-custody. Burner wallets fragment capital/identity; giving agents raw keys risks total loss; public claim links are MEV-front-runnable.",
-    "solution": "Glyph Vessel = a single signed entry point carrying a Value Payload (escrowed tokens, front-run-proof claim) and/or Authority Payload (EIP-7702 scoped session key with drawdown cap, target whitelist, time-bound expiry). Three configs: Value-Only, Authority-Only, Hybrid.",
-    "personal_angle": "Solves the builder's own problem: distributing value via shareable links without MEV theft, and safely delegating execution to AI agents without exposing master keys.",
-    "category": "Monad Testnet (upgrade to Mainnet if verified E2E)",
-    "contracts": [
-      "GlyphRegistry.sol (asset escrow & session policy vault)",
-      "GlyphSessionProxy.sol (EIP-7702 delegation target code)",
-      "interfaces/IGlyphRegistry.sol"
-    ],
-    "frontend": {
-      "stack": "React + Tailwind + Viem + Framer Motion; Three.js (FloatingCore visualizer)",
-      "components": [
-        "VesselForge.tsx",
-        "FloatingCore.tsx",
-        "BiopunkLine.tsx"
-      ],
-      "hooks": [
-        "useEIP7702.ts",
-        "useVesselClaim.ts"
-      ],
-      "utils": [
-        "crypto.ts (ECDSA signing & hash commitment)"
-      ]
-    },
-    "spec_notes": {
-      "evm_target": "prague (EIP-7702 tx serialization)",
-      "min_reserve_mon": 10.0,
-      "banned_opcodes_in_session": [
-        "CREATE",
-        "CREATE2"
-      ],
-      "frontrun_defense": "client-side ephemeral keypair from passcode; signature binds to msg.sender so copied mempool tx fails recovery",
-      "parallel_rules": "vessels in mapping(bytes32=>Vessel); vesselId = keccak off-chain to avoid storage conflicts on Monad OCC"
-    },
-    "contract_address": "0xbD3Eef309bDF82479E089bF718b6E8C02DFd818C",
-    "contract_explorer": "https://testnet.monadscan.com/address/0xbD3Eef309bDF82479E089bF718b6E8C02DFd818C",
-    "deploy_tx": "0x83d083d05f96b163d1364cb4e15f7971fa4d705071937a986e0ec448035a2584",
-    "project_url": "https://discharge-wool-ship-crossing.trycloudflare.com",
-    "hosting": "Cloudflare quick tunnel (ephemeral) -> static dist/ on :8099"
-  },
-  "build_plan": {
-    "priority_feature": "Value-Only Glyph Link: create -> fund vault -> share link (passcode in URL hash) -> claimant claims with front-run-proof signature. Fully demonstrable E2E.",
-    "phase_1": "Foundry project: GlyphRegistry + IGlyphRegistry + GlyphSessionProxy, compile (evm-version prague), tests (front-run defense + session policy), forge test green",
-    "phase_2": "Deployment: generate deployer key, fund via faucet, deploy to Monad testnet, verify, record contract address",
-    "phase_3": "Frontend: VesselForge + FloatingCore + hooks + crypto.ts; connect to deployed contract; live create/claim flow",
-    "phase_4": "Polish + submission: README, demo video, social post, GitHub public, submit to Spark"
   },
   "submission_checklist": {
     "name": true,
@@ -99,34 +84,24 @@
     "demo_video": false,
     "post_url": false
   },
+  "brain_evidence": {
+    "nodes_retained": 8,
+    "relationships_created": 8,
+    "recall_query": "Glyph project Monad Spark hackathon contract frontend deployment",
+    "recall_returned_project_node": "c0529eb8",
+    "recall_relationships_intact": 7,
+    "verified": "session regenerated from Brain graph, not local ad-hoc state"
+  },
   "context": [
-    "Hackathon brief captured 2026-07-17",
-    "Product concept LOCKED 2026-07-17: Glyph (value+authority delegation on Monad)",
-    "Local monskill only has router SKILL.md; sub-skills not installed -> use Monad docs directly for deploy",
-    "All committed code must be after 2026-07-13T13:00:00Z (first commit 2026-07-17, OK)",
-    "Tooling: git 2.43, node v22.22, npm 10.9.7 confirmed"
+    "REDO via Brain MCP: retain 8 nodes + 8 relations, then recall to regenerate this file",
+    "Contract live on Monad testnet; demo live via Cloudflare ephemeral tunnel",
+    "Remaining: GitHub repo push, demo video, submit"
   ],
   "checkpoints": [
     {
-      "t": "2026-07-17T09:49:00Z",
-      "done": "Backend: Foundry project + GlyphRegistry + GlyphSessionProxy + IGlyphRegistry; forge build green (prague); 6 tests pass (front-run defense + session policy)"
-    },
-    {
-      "t": "2026-07-17T10:23:00Z",
-      "done": "Frontend: Vite+React+TS app; VesselForge (escrow+share) + VesselClaim (front-run-proof claim); builds clean (761 modules); dev server serves 200"
-    },
-    {
-      "t": "2026-07-17T10:35:00Z",
-      "done": "Deployed GlyphRegistry to Monad testnet 0xbD3Eef309bDF82479E089bF718b6E8C02DFd818C (9376 bytes code, verified on-chain)"
-    },
-    {
-      "t": "2026-07-17T10:50:00Z",
-      "done": "E2E on-chain proof: createValueVessel + claimVessel (front-run-proof sig) executed live on testnet; claimant received 0.01 MON; frontend builds with live address"
-    },
-    {
-      "t": "2026-07-17T10:58:00Z",
-      "done": "Hosted demo LIVE via Cloudflare ephemeral tunnel: https://discharge-wool-ship-crossing.trycloudflare.com (HTTP 200, title + JS verified)"
+      "t": "2026-07-17T18:54:00Z",
+      "done": "Brain redo: retained 8 Glyph nodes + 8 relations; recalled c0529eb8 subgraph; regenerated session state from Brain"
     }
   ],
-  "resume": "Read /root/monadglyph/MGlyph.session.json to restore context and continue."
+  "resume": "Read /root/monadglyph/MGlyph.session.json (Brain-grounded). Resume by recalling Brain node c0529eb8."
 }
