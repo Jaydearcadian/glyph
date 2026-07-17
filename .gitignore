@@ -1,0 +1,29 @@
+# Editor / OS noise
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-error.log
+.pnpm-debug.log
+
+# Build output
+dist/
+build/
+.next/
+out/
+*.tsbuildinfo
+
+# Env / secrets — NEVER commit real keys
+.env
+.env.*
+*.pem
+wallet.json
+keystore-*
+
+# Local only
+.claude/
+*.local.md

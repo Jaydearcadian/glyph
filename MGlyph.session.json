@@ -1,0 +1,76 @@
+{
+  "session": "MGlyph",
+  "project_dir": "/root/monadglyph",
+  "created": "2026-07-17T06:22:31Z",
+  "updated": "2026-07-17T06:24:00Z",
+  "resumable": true,
+  "status": "active",
+  "owner": "Jason (@jaydearcadian)",
+  "hackathon": {
+    "name": "Spark",
+    "platform": "BuildAnything",
+    "url": "https://buildanything.so/hackathons/spark",
+    "theme": "Build Anything onchain that solves a personal problem",
+    "pool": "$2000 ($500 x3 winners + $500 most viral)",
+    "start": "2026-07-13T13:00:00Z",
+    "deadline": "2026-07-19T23:59:00Z",
+    "time_remaining_at_start": "~2d 16h",
+    "format": "solo",
+    "registered": 565,
+    "submissions_so_far": 36,
+    "constraints": [
+      "Project MUST be new: no code committed before 2026-07-13T13:00:00Z (auto-disqualify)",
+      "Solo hackathon (team of 1)",
+      "Must have an onchain component on Monad MAINNET or TESTNET",
+      "Public GitHub repo required",
+      "Hosted/deployed web demo required",
+      "Contract address required (Monad mainnet or testnet)",
+      "Demo video < 3 min, publicly visible",
+      "Post URL required for 'Most viral' prize"
+    ],
+    "anti_slop": [
+      "No AI slop: UI must fit viewport, unique identity, not obviously generated",
+      "No 'tutorial special' (todo app / weather dashboard / beginner React ideas)",
+      "No 'mystery box': needs README, demo video, setup instructions",
+      "No vaporware: real working feature, not hardcoded success toasts"
+    ],
+    "judging_agent_checks": [
+      "Started after hackathon start time",
+      "Live working app, not static placeholder data",
+      "No suspicious commits"
+    ],
+    "deployment_hint": "Monskills skill available for frontend + Monad smart-contract deploy via coding agent",
+    "docs": {
+      "deploy": "https://docs.monad.xyz/guides/deploy-smart-contract/index",
+      "verify": "https://docs.monad.xyz/guides/verify-smart-contract/index",
+      "faucet": "Monad testnet faucet for testnet MON"
+    }
+  },
+  "product": {
+    "defined": false,
+    "name_guess": "monadglyph = monad + glyph",
+    "problem": "",
+    "solution": "",
+    "category": "Monad Testnet (default; upgrade to Mainnet if verified E2E)",
+    "notes": "AWAITING product definition from Jason"
+  },
+  "submission_checklist": {
+    "name": false,
+    "description": false,
+    "problem": false,
+    "solution": false,
+    "project_url": false,
+    "github_repo": false,
+    "category": false,
+    "contract_address": false,
+    "demo_video": false,
+    "post_url": false
+  },
+  "context": [
+    "Hackathon brief captured 2026-07-17",
+    "Monskill skill loaded for Monad deploy path",
+    "All committed code must be after 2026-07-13T13:00:00Z"
+  ],
+  "checkpoints": [],
+  "resume": "Read /root/monadglyph/MGlyph.session.json to restore context and continue."
+}
