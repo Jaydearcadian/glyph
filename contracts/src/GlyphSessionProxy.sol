@@ -12,15 +12,14 @@
 // NOTE: written as architecture/design artifact. NOT compiled-deployed yet (no forge create).
 pragma solidity ^0.8.24;
 
-import { GlyphRuntimeControl } from "./GlyphRuntimeControl.sol";
+import {GlyphRuntimeControl} from "./GlyphRuntimeControl.sol";
 
 contract GlyphSessionProxy is GlyphRuntimeControl {
     // ERC-7201 Storage Namespace — CORRECT derivation for "glyph.storage.session.v1":
     //   slot = keccak256( uint256(keccak256("glyph.storage.session.v1")) - 1 ) & ~uint256(0xff)
     // Computed (verified via Python hashlib): 0x07d2f48c801d2b2cb4b6045c6ab259930c8bedfd901510428297972876083700
     // (Manifest's hard-coded 0xac6b9d62... is INCORRECT and must NOT be used.)
-    bytes32 private constant STORAGE_LOCATION =
-        0x07d2f48c801d2b2cb4b6045c6ab259930c8bedfd901510428297972876083700;
+    bytes32 private constant STORAGE_LOCATION = 0x07d2f48c801d2b2cb4b6045c6ab259930c8bedfd901510428297972876083700;
 
     struct SessionData {
         address ephemeralKey;
@@ -38,7 +37,9 @@ contract GlyphSessionProxy is GlyphRuntimeControl {
         }
     }
 
-    event SessionRegistered(bytes32 indexed sessionId, address indexed ephemeralKey, uint256 maxDrawdownCap, uint256 expiration);
+    event SessionRegistered(
+        bytes32 indexed sessionId, address indexed ephemeralKey, uint256 maxDrawdownCap, uint256 expiration
+    );
     event SessionRevoked(bytes32 indexed sessionId);
 
     /// @notice Registers a scoped session in the ERC-7201 namespaced store (called by delegated EOA).

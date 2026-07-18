@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
+
 /// @title IGlyphRegistry — Glyph Value Vessel interface (corrected, matches implementation)
 interface IGlyphRegistry {
     /// @notice A Glyph Vessel: a single signed entry point carrying a value payload.

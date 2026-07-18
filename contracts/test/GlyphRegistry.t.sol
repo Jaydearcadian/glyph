@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import { Test } from "forge-std/Test.sol";
-import { IGlyphRegistry } from "../src/IGlyphRegistry.sol";
-import { GlyphRegistry } from "../src/GlyphRegistry.sol";
-import { GlyphSessionProxy } from "../src/GlyphSessionProxy.sol";
+import {Test} from "forge-std/Test.sol";
+import {IGlyphRegistry} from "../src/IGlyphRegistry.sol";
+import {GlyphRegistry} from "../src/GlyphRegistry.sol";
+import {GlyphSessionProxy} from "../src/GlyphSessionProxy.sol";
 
 contract GlyphRegistryTest is Test {
     GlyphRegistry registry;
@@ -34,7 +34,7 @@ contract GlyphRegistryTest is Test {
         address gatekeeper = vm.addr(PASSCODE_PK);
         vm.deal(creator, 1 ether);
         vm.prank(creator);
-        registry.forgeVessel{ value: 0.5 ether }(address(0), 0.5 ether, gatekeeper, salt);
+        registry.forgeVessel{value: 0.5 ether}(address(0), 0.5 ether, gatekeeper, salt);
 
         bytes memory sig = _signClaim(PASSCODE_PK, claimant, vesselId);
         uint256 before = claimant.balance;
@@ -47,7 +47,7 @@ contract GlyphRegistryTest is Test {
         address gatekeeper = vm.addr(PASSCODE_PK);
         vm.deal(creator, 1 ether);
         vm.prank(creator);
-        registry.forgeVessel{ value: 0.5 ether }(address(0), 0.5 ether, gatekeeper, salt);
+        registry.forgeVessel{value: 0.5 ether}(address(0), 0.5 ether, gatekeeper, salt);
 
         bytes memory sig = _signClaim(PASSCODE_PK, claimant, vesselId);
         // Attacker submits the copied signature from their OWN address -> sig binds to claimant, fails.
@@ -61,7 +61,7 @@ contract GlyphRegistryTest is Test {
         address gatekeeper = vm.addr(PASSCODE_PK);
         vm.deal(creator, 1 ether);
         vm.prank(creator);
-        registry.forgeVessel{ value: 0.5 ether }(address(0), 0.5 ether, gatekeeper, salt);
+        registry.forgeVessel{value: 0.5 ether}(address(0), 0.5 ether, gatekeeper, salt);
 
         bytes memory sig = _signClaim(wrongPk, claimant, vesselId);
         vm.prank(claimant);
@@ -73,7 +73,7 @@ contract GlyphRegistryTest is Test {
         address gatekeeper = vm.addr(PASSCODE_PK);
         vm.deal(creator, 1 ether);
         vm.prank(creator);
-        registry.forgeVessel{ value: 0.5 ether }(address(0), 0.5 ether, gatekeeper, salt);
+        registry.forgeVessel{value: 0.5 ether}(address(0), 0.5 ether, gatekeeper, salt);
 
         vm.warp(block.timestamp + 3601); // past 1h expiry set in forgeVessel
         uint256 before = creator.balance;

@@ -9,7 +9,7 @@
 //   - Authority sessions stored via GlyphSessionProxy ERC-7201 namespace (see proxy)
 pragma solidity ^0.8.24;
 
-import { IGlyphRegistry } from "./IGlyphRegistry.sol";
+import {IGlyphRegistry} from "./IGlyphRegistry.sol";
 
 contract GlyphRegistry is IGlyphRegistry {
     // OCC-safe: isolated KV lanes, no global counters/arrays.
@@ -29,7 +29,8 @@ contract GlyphRegistry is IGlyphRegistry {
         require(msg.value == amount, "GLYPH: VALUE_MISMATCH");
         vesselId = _deriveId(msg.sender, salt);
         require(vessels[vesselId].creator == address(0), "GLYPH: VESSEL_EXISTS");
-        vessels[vesselId] = IGlyphRegistry.Vessel(msg.sender, token, amount, gatekeeper, false, uint64(block.timestamp + 1 hours));
+        vessels[vesselId] =
+            IGlyphRegistry.Vessel(msg.sender, token, amount, gatekeeper, false, uint64(block.timestamp + 1 hours));
         emit VesselForged(vesselId, msg.sender, token, amount);
     }
 
@@ -40,9 +41,11 @@ contract GlyphRegistry is IGlyphRegistry {
         // Front-run shield: ecrecover of (msg.sender, vesselId) under Ethereum Signed Message
         // must equal v.gatekeeper. Binds sig to msg.sender -> replay from other address fails.
         bytes32 digest = _toEthSignedMessageHash(keccak256(abi.encodePacked(msg.sender, vesselId)));
-        require(ecrecover(digest, uint8(sig[64]), bytes32(sig[0:32]), bytes32(sig[32:64])) == v.gatekeeper, "GLYPH: BAD_SIG");
+        require(
+            ecrecover(digest, uint8(sig[64]), bytes32(sig[0:32]), bytes32(sig[32:64])) == v.gatekeeper, "GLYPH: BAD_SIG"
+        );
         v.claimed = true;
-        (bool ok, ) = msg.sender.call{value: v.amount}("");
+        (bool ok,) = msg.sender.call{value: v.amount}("");
         require(ok, "GLYPH: TRANSFER_FAILED");
         emit VesselClaimed(vesselId, msg.sender, v.amount);
     }
@@ -55,7 +58,7 @@ contract GlyphRegistry is IGlyphRegistry {
         address to = v.creator;
         uint256 amt = v.amount;
         delete vessels[vesselId];
-        (bool ok, ) = to.call{value: amt}("");
+        (bool ok,) = to.call{value: amt}("");
         require(ok, "GLYPH: TRANSFER_FAILED");
         emit VesselExpired(vesselId, to);
     }
