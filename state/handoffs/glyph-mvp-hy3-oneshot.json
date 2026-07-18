@@ -1,89 +1,69 @@
 {
   "commands": [
     {
-      "command": "sha256sum frozen contract/manifest",
+      "command": "second-review handoff invalidation commit",
       "exitCode": 0,
-      "result": "74a88f... and f10006... matched"
+      "result": "status truthfully set FAILED before repair in commit e8a3c88 lineage; prior DEPLOY_READY invalidated"
     },
     {
-      "command": "npm view/curl official LayerZero packages and sha256sum sources",
+      "command": "forge config --json",
       "exitCode": 0,
-      "result": "@layerzerolabs/lz-evm-protocol-v2@3.0.168, @layerzerolabs/oapp-evm@0.4.1, @layerzerolabs/lz-evm-messagelib-v2@3.0.168 pinned; source hashes recorded"
-    },
-    {
-      "command": "cast sig official selectors",
-      "exitCode": 0,
-      "result": "quote((uint32,bytes32,bytes,bytes,bool),address)=0xddc28c58; send((uint32,bytes32,bytes,bytes,bool),address)=0x2637a450; prior nonofficial selectors rejected"
-    },
-    {
-      "command": "forge test --match-path test/LayerZeroV2GlyphMessengerAdapter.t.sol -vvv (review RED)",
-      "exitCode": 1,
-      "result": "7 focused tests initially failed 3/7 after RED additions, proving review blockers before repair completion"
+      "result": "saved /tmp/glyph_second_review/forge_config.json"
     },
     {
       "command": "forge fmt --check",
       "exitCode": 0,
-      "result": "GREEN after forge fmt"
+      "result": "GREEN"
     },
     {
       "command": "forge build --force",
       "exitCode": 0,
-      "result": "Solc 0.8.24 Cancun optimizer 200 build GREEN"
+      "result": "GREEN; Solc 0.8.24"
     },
     {
-      "command": "forge test --match-path test/LayerZeroV2GlyphMessengerAdapter.t.sol -vv",
+      "command": "forge test --match-path test/LayerZeroV2GlyphMessengerAdapter.t.sol -vvv",
       "exitCode": 0,
-      "result": "7 passed, 0 failed, 0 skipped"
+      "result": "8 passed, 0 failed, 0 skipped"
     },
     {
-      "command": "forge test --match-path test/LayerZeroV2GlyphAdapterInvariant.t.sol -vv",
-      "exitCode": 0,
-      "result": "3 passed; fuzz runs 256; invariant runs 256 calls 128000 reverts 0"
-    },
-    {
-      "command": "forge test --match-path test/GlyphMvpValueFlows.t.sol -vv",
+      "command": "forge test --match-path test/GlyphMvpValueFlows.t.sol -vvv",
       "exitCode": 0,
       "result": "6 passed, 0 failed, 0 skipped"
     },
     {
-      "command": "forge test --match-path test/GlyphMvpFuzzInvariant.t.sol -vv",
+      "command": "forge test --match-path test/LayerZeroV2GlyphAdapterInvariant.t.sol -vvv",
       "exitCode": 0,
-      "result": "2 passed; invariant runs 256 calls 128000 reverts 0"
+      "result": "3 passed, 0 failed, 0 skipped; invariant 256 runs / 128000 calls / 0 reverts"
     },
     {
-      "command": "forge test -vv",
+      "command": "forge test -vvv",
       "exitCode": 0,
-      "result": "Ran 10 test suites: 68 passed, 0 failed, 0 skipped"
+      "result": "10 suites; 69 passed, 0 failed, 0 skipped"
     },
     {
-      "command": "receipt JSON verify loop + deterministic SVG regeneration/cmp",
+      "command": "receipt verify + deterministic SVG regeneration byte compare",
       "exitCode": 0,
-      "result": "all receipt JSON fixtures verified; regenerated SVG cards byte-matched"
+      "result": "all receipt JSON verified and SVG cards byte-identical"
     },
     {
-      "command": "jsonschema validate state/handoffs/glyph-mvp-hy3-oneshot.json against state/handoff.mvp.schema.json",
+      "command": "jsonschema Draft202012 validation",
       "exitCode": 0,
-      "result": "full JSON Schema validation GREEN"
+      "result": "handoff schema GREEN"
     },
     {
-      "command": "dangerous-pattern and secret scan",
+      "command": "secret/dangerous scan",
       "exitCode": 0,
-      "result": "no unallowed hits in contracts/src, contracts/test, contracts/script, state/adapter"
+      "result": "no credential-pattern hits"
+    },
+    {
+      "command": "sha256sum frozen files",
+      "exitCode": 0,
+      "result": "frozen authority hashes preserved"
     },
     {
       "command": "git diff --check",
       "exitCode": 0,
-      "result": "no whitespace errors"
-    },
-    {
-      "command": "git status --short after final handoff commit",
-      "exitCode": 0,
-      "result": "clean; verified after evidence commit in final readback"
-    },
-    {
-      "command": "second independent review invalidation handoff update",
-      "exitCode": 0,
-      "result": "status set to FAILED before repair; prior deploy-ready evidence preserved as historical only"
+      "result": "GREEN"
     }
   ],
   "dependencyFingerprint": {
@@ -170,43 +150,66 @@
     "path": "docs/architecture/GLYPH_MVP_EXECUTION_CONTRACT.md",
     "sha256": "74a88f873bc10451629aef536d5c757604607345d7418264faee119357fbe3a1"
   },
-  "filesChanged": [],
+  "filesChanged": [
+    "contracts/src/DestinationGlyphVault.sol",
+    "contracts/src/GlyphLayerZeroApplication.sol",
+    "contracts/src/LayerZeroV2GlyphMessengerAdapter.sol",
+    "contracts/src/MockGlyphMessengerAdapter.sol",
+    "contracts/src/SourceDeltaRouter.sol",
+    "contracts/src/interfaces/IGlyphMessengerAdapter.sol",
+    "contracts/test/GlyphMvpValueFlows.t.sol",
+    "contracts/test/LayerZeroV2GlyphMessengerAdapter.t.sol"
+  ],
   "fuzzInvariant": {
     "adapterFuzzRuns": 512,
     "adapterInvariantCalls": 128000,
     "adapterInvariantReverts": 0,
     "adapterInvariantRuns": 256,
-    "covered": "adapter unauthorized send/consume, options encoding, no trapped native, no outsider staging; MVP fee conservation",
-    "mvpFuzzRuns": 256,
     "mvpInvariantCalls": 128000,
     "mvpInvariantReverts": 0,
     "mvpInvariantRuns": 256
   },
   "git": {
-    "dirtyBeforeHandoff": false,
-    "evidenceCommitBeforeCleanSemanticPatch": "de96955da97f8aa0120379edd010ec38bb78ee60",
     "finalWorkspaceExpectedCleanAfterCommittedHandoff": true,
-    "head": "31e81eade108a78795f868e6985f7a8c318ddbcc",
+    "head": "d3cdf5adde3d9d43ade7d2f6f49a2651454027f8",
     "priorCommitsPreserved": [
       "44f9787",
       "4cb5f8f",
-      "e8a3c88"
+      "e8a3c88",
+      "d3cdf5a"
     ],
-    "repairCommit": "31e81eade108a78795f868e6985f7a8c318ddbcc",
-    "statusPorcelainAtFinalEvidenceGate": "self-referential handoff excluded from fingerprint; final git status verified clean after committing handoff in terminal output",
+    "repairCommit": "d3cdf5adde3d9d43ade7d2f6f49a2651454027f8",
     "statusPorcelainBeforeHandoff": []
   },
   "laneEvidence": {
-    "configTemplate": "state/adapter/layerzero-v2-base-sepolia-monad-testnet.adapter.template.json",
     "destination": {
       "chainId": 10143,
       "eid": 40204,
       "endpointV2": "0x6C7Ab2202C98C4227C5c46f1417D81144DA716Ff"
     },
-    "notes": "LayerZero transports authenticated messages only; destination liquidity remains in Glyph vault/provider accounting. Proof label AUTHENTICATED_ADAPTER only.",
+    "officialSourceManifestSha256": "58bca73a895927b4e230921c13a0ab0467d0d4e76023c8809d845c30f577e610",
     "officialSources": "state/adapter/layerzero-v2-official-sources.json",
     "provider": "LayerZero V2",
-    "publicTransactionProof": false,
+    "selectorChecks": [
+      {
+        "localVerifiedBy": "LayerZeroV2GlyphMessengerAdapter.endpointQuoteSelector()",
+        "selector": "0xddc28c58",
+        "signature": "quote((uint32,bytes32,bytes,bytes,bool),address)"
+      },
+      {
+        "localVerifiedBy": "LayerZeroV2GlyphMessengerAdapter.endpointSendSelector()",
+        "selector": "0x2637a450",
+        "signature": "send((uint32,bytes32,bytes,bytes,bool),address)"
+      },
+      {
+        "rejectedNonOfficialPriorSignature": "quote(uint32,address,bytes,uint256)",
+        "selector": "0x9b4c6f3a"
+      },
+      {
+        "rejectedNonOfficialPriorSignature": "send(uint32,address,bytes,address,uint256)",
+        "selector": "0x6006aea7"
+      }
+    ],
     "source": {
       "chainId": 84532,
       "eid": 40245,
@@ -215,7 +218,7 @@
     "status": "DEPLOY_READY_LOCAL_ONLY_NO_PUBLIC_TX"
   },
   "modelTransition": {
-    "note": "Continued as sole sequential GPT-5.5 executor. No delegate_task, subagent, MoA, other model, other Hermes process, Hermes config, MCP, gateway, infra, deploy, signing, broadcast, funding, secrets, service exposure, push, amend, or history rewrite used."
+    "note": "Continued without delegation, subagents, other model/Hermes processes, Hermes/MCP/system/infra changes, deployment, signing, broadcast, funding, keys/secrets, service exposure, push, amend, or rewrite."
   },
   "receiptFixtures": [
     {
@@ -260,176 +263,60 @@
     }
   ],
   "redGreenEvidence": {
-    "green": "After repair: focused adapter suite 7/7, adapter fuzz/invariant 3/3, value flows 6/6, MVP invariant 2/2, full suite 68/68 all passed.",
-    "red": "Review-blocker tests were added before completion and initially failed: focused adapter suite had 3 failing tests covering auth/selectors/policy/refund expectations after source changes."
-  },
-  "reviewInvalidation": {
-    "invalidationCommit": "e8a3c88",
-    "previousDeployReadyCommit": "4cb5f8f",
-    "previousHistoricalEvidencePreserved": true,
-    "repairCommit": "31e81eade108a78795f868e6985f7a8c318ddbcc"
-  },
-  "reviewInvalidation2": {
-    "findings": [
-      "A",
-      "B",
-      "C",
-      "D",
-      "E",
-      "F",
-      "G",
-      "H",
-      "I",
-      "J",
-      "K",
-      "L"
-    ],
-    "invalidatedAtUtc": "2026-07-18T12:05:48Z",
-    "invalidatedHead": "fa5a4585426d7f6d8290b682ecfab36baf82244f",
-    "note": "Truthful invalidation committed before repair. Frozen authority files are not edited.",
-    "status": "FAILED_SECOND_REVIEW"
+    "greenEvidence": "Focused adapter/value-flow/invariant and full suite all GREEN.",
+    "redEvidence": "Focused economic tests initially failed before repairs (native refund, push ack ordering, mutable/unknown ack facts); repaired to GREEN.",
+    "secondReviewFindingsClosed": [
+      "A push reserved ack separated from delivery ack and source finalize waits for delivery",
+      "B source app/router validate operation existence/status/terms/payload/route/duplicates",
+      "C DestinationGlyphVault reserve/deliver gated to authorized app; provideLiquidity remains public; Push claim permissionless with bound auth",
+      "D finalize no longer accepts caller-supplied beneficiaries and pays immutable Terms provider/protocol/referrer/gasSponsor",
+      "E vault accounting is provider+asset available/reserved with provider isolation and conservation tests",
+      "F Push claim gatekeeper + claimant signatures over domain/op/claimant/vault/chain/amount/nullifier/deadline; raw fragment secret not used",
+      "G typed versioned route/ack/source receipt payload structs implemented",
+      "H finalize/refund and source receipt send flows implemented with destination reconciliation records",
+      "I adapter/app config freeze before traffic; post-freeze mutation reverts; policy covers lane/apps/options/external security commitment",
+      "J deceptive send(Envelope) compatibility method removed from interface/production/mock",
+      "K branch-specific tests cover ordering, auth, provider isolation, replay, refund/finalize exclusion, lifecycle and invariants",
+      "L app sponsor deposits/withdrawal/events and excess ACK fee refund paths added; reverting refund tested"
+    ]
   },
   "risks": [
-    {
-      "description": "No public Base Sepolia/Monad Testnet OApp message was sent; DEPLOY_READY is local-only and not deployed/live/configured onchain.",
-      "mitigation": "After explicit approval, deploy adapters/apps, configure reciprocal peers/DVNs/executor/enforced options, and prove public send\u2192destination execution\u2192return acknowledgement.",
-      "severity": "medium"
-    },
-    {
-      "description": "DVN/executor/receive library configuration must be selected and bound into messengerPolicyHash at deployment.",
-      "mitigation": "Use state/adapter template and selected official metadata before any broadcast.",
-      "severity": "medium"
-    },
-    {
-      "description": "DestinationGlyphVault still exposes legacy local public reserve/deliver methods for existing local tests; production app boundary uses authenticated adapter context, but vault hardening can be a follow-up phase if legacy public methods are retired.",
-      "mitigation": "Keep deployment wiring through GlyphLayerZeroApplication; consider vault role gates in a separate backward-compatibility migration.",
-      "severity": "low"
-    }
+    "Local-only deploy-ready; no public Base Sepolia \u2194 Monad Testnet transaction sent.",
+    "DVN/executor/library commitments are represented by external policy commitment and must be set from real lane config before deployment.",
+    "Legacy non-LayerZero components remain out of scope except where full regression covered them."
   ],
   "runtime": {
-    "currentModel": "gpt-5.5",
-    "currentProvider": "openai-codex",
-    "delegationUsed": false,
-    "sessionId": "20260718_130017_fdc28e",
-    "source": "Hermes Agent CLI direct sequential executor"
+    "branch": "feat/glyph-mvp-local-core",
+    "dateUtc": "2026-07-18T12:34:56.765183Z",
+    "executor": "sole sequential GPT-5.5",
+    "publicTransaction": false,
+    "workdir": "/root/monadglyph-hy3-oneshot"
   },
   "schemaVersion": "glyph.mvp.handoff.v1",
   "sideEffects": {
     "broadcast": false,
     "deployed": false,
-    "externalWrites": [],
+    "externalWrites": false,
     "funded": false,
-    "hermesConfigChanged": false,
-    "infrastructureChanged": false,
+    "historyRewritten": false,
     "privateKeysAccessed": false,
     "pushed": false,
-    "servicesExposed": false,
     "signed": false
   },
-  "sourceFingerprints": [
-    {
-      "path": "contracts/src/LayerZeroV2GlyphMessengerAdapter.sol",
-      "sha256": "13ec83ec39a9187a9b003bdf77dc88fda72e449b1c143a24895d3b0e88bb58b7"
-    },
-    {
-      "path": "contracts/src/GlyphLayerZeroApplication.sol",
-      "sha256": "57efbe645198cf3624a33da5264d36135511364b62297a015a6679a1d0fedc22"
-    },
-    {
-      "path": "contracts/src/interfaces/ILayerZeroV2Endpoint.sol",
-      "sha256": "861f332befdceaab34d9464400d9d251f15386fce52d442aba3e1235f3b079c7"
-    },
-    {
-      "path": "contracts/src/interfaces/IGlyphMessengerAdapter.sol",
-      "sha256": "42cdb7ce262180c7a2511920c68942375b12a149be9d68c7d5279c7130a08df4"
-    },
-    {
-      "path": "contracts/src/mocks/LocalLayerZeroEndpointV2Mock.sol",
-      "sha256": "a3acdab1a8e679f7e6cab35ceacea42663b3243ae51a51d424ee679d3e49bbc1"
-    },
-    {
-      "path": "contracts/src/SourceDeltaRouter.sol",
-      "sha256": "adf5e338408ec2224dcc5013224aecebc9a02f764ba9a6b8811264a135bc974d"
-    },
-    {
-      "path": "contracts/test/LayerZeroV2GlyphMessengerAdapter.t.sol",
-      "sha256": "2cd7640b408d679277e1c9f776cc4dc3323265850bf12e33b804672a74ba9c0e"
-    },
-    {
-      "path": "contracts/test/LayerZeroV2GlyphAdapterInvariant.t.sol",
-      "sha256": "258ca31cd33daf1543968a483a84f5ba46dc506e65dfc0e6c4a5b9238f97907c"
-    },
-    {
-      "path": "contracts/script/LayerZeroV2GlyphAdapterDryRun.s.sol",
-      "sha256": "ec71419ba2607844c07bc302643f9f951987a8139eecfed8fb82db6921b1c07b"
-    },
-    {
-      "path": "state/adapter/layerzero-v2-official-sources.json",
-      "sha256": "58bca73a895927b4e230921c13a0ab0467d0d4e76023c8809d845c30f577e610"
-    },
-    {
-      "path": "state/adapter/layerzero-v2-base-sepolia-monad-testnet.adapter.template.json",
-      "sha256": "85bbeb50275adbfe62eaf572b62175a39ef5219dd38feafb4907c5104f14f752"
-    }
-  ],
-  "status": "FAILED",
-  "statusReason": "FAILED_SECOND_INTEGRATION_ECONOMIC_REVIEW: DEPLOY_READY invalidated by findings A-L covering Push reserved-vs-delivered source lifecycle, immutable operation-fact validation, public destination-vault drainability, caller-directed source finalization payouts, aggregate instead of provider-specific liquidity accounting, unenforced Push claimantRule, ad-hoc payload schema, missing source terminal receipt flows, mutable adapter config/policy divergence, deceptive send(Envelope), inadequate exact/invariant tests, and unaccounted native-value handling. Repair must proceed RED->GREEN in later commits before any DEPLOY_READY restoration.",
+  "status": "DEPLOY_READY",
+  "statusReason": "Second independent integration/economic review A-L repaired and locally gated. DEPLOY_READY is LOCAL-ONLY: no public transaction, deployment, signing, broadcast, funding, key access, service exposure, push, amend, or history rewrite occurred.",
   "taskId": "glyph-mvp-hy3-oneshot",
   "testsBySuite": {
-    "GlyphAttestationRegistryAdversarialTest": {
-      "failed": 0,
-      "passed": 8,
-      "skipped": 0
-    },
-    "GlyphAttestationRegistryTest": {
-      "failed": 0,
-      "passed": 12,
-      "skipped": 0
-    },
-    "GlyphMvpFuzzInvariantTest": {
-      "failed": 0,
-      "passed": 2,
-      "skipped": 0
-    },
-    "GlyphMvpValueFlowsTest": {
-      "failed": 0,
-      "passed": 6,
-      "skipped": 0
-    },
-    "GlyphReceiptLedgerAdversarialTest": {
-      "failed": 0,
-      "passed": 7,
-      "skipped": 0
-    },
-    "GlyphReceiptLedgerTest": {
-      "failed": 0,
-      "passed": 15,
-      "skipped": 0
-    },
-    "GlyphRegistryTest": {
-      "failed": 0,
-      "passed": 4,
-      "skipped": 0
-    },
-    "GlyphSessionProxyTest_legacy_only": {
-      "failed": 0,
-      "passed": 4,
-      "skipped": 0
-    },
-    "LayerZeroV2GlyphAdapterInvariantTest": {
-      "failed": 0,
-      "passed": 3,
-      "skipped": 0
-    },
-    "LayerZeroV2GlyphMessengerAdapterTest": {
-      "failed": 0,
-      "passed": 7,
-      "skipped": 0
-    }
+    "GlyphMvpFuzzInvariant": "2 passed; 0 failed; 0 skipped",
+    "GlyphMvpValueFlows": "6 passed; 0 failed; 0 skipped",
+    "LayerZeroV2GlyphAdapterInvariant": "3 passed; 0 failed; 0 skipped",
+    "LayerZeroV2GlyphMessengerAdapter": "8 passed; 0 failed; 0 skipped",
+    "full": "10 suites; 69 passed; 0 failed; 0 skipped"
   },
   "treeFingerprint": {
-    "algorithm": "sha256 over sorted path + NUL + fileSha256, excluding .git, contracts/out, contracts/cache, node_modules, and self-referential state/handoffs/glyph-mvp-hy3-oneshot.json",
+    "algorithm": "sha256(path + file sha256), excluding .git/out/cache/node_modules and self-referential handoff JSON",
     "fileCount": 165,
-    "sha256": "233f9efdbae70f4e78b8a53a7b906c93c2390c4bd745f34378aad4c59d1e501f"
+    "selfReferentialHandoffExcluded": true,
+    "sha256": "312e030e373f56de7b5be6bdd8d59ccf340c96983f03af9b772bd6cdc32989f4"
   }
 }
