@@ -1,0 +1,373 @@
+{
+  "schemaVersion": "glyph.crosschainLaneResearch.v1",
+  "retrievalTimeUtc": "2026-07-18T10:43:37Z",
+  "researchOnly": true,
+  "workspace": "/root/monadglyph-hy3-oneshot",
+  "branch": "feat/glyph-mvp-local-core",
+  "lane": {
+    "source": {
+      "name": "Base Sepolia",
+      "chainId": 84532
+    },
+    "destination": {
+      "name": "Monad Testnet",
+      "chainId": 10143
+    },
+    "direction": "Base Sepolia -> Monad Testnet"
+  },
+  "frozenHashesBeforeWork": {
+    "docs/architecture/GLYPH_MVP_EXECUTION_CONTRACT.md": "74a88f873bc10451629aef536d5c757604607345d7418264faee119357fbe3a1",
+    "docs/architecture/CROSSCHAIN_DELTA.md": "07e33cc7ba3055d4c68e6017587539a9e4b9b527831e865769cbebdfb0b3e286",
+    "docs/architecture/MESSAGE_SCHEMA.md": "f543bb9c21f4b2d000ae9034c0da68a4881433204540bbd26575ca1cd7b85e08",
+    "contracts/src/interfaces/IGlyphMessengerAdapter.sol": "05061ad1f1aad001a7073cd60ffd540c459bb1b33a678ab457792314c3ca080f"
+  },
+  "adapterRequirements": {
+    "requiredTransport": "authenticated arbitrary/application messaging",
+    "trustedContextRequired": true,
+    "payloadClaimsAloneInsufficient": true,
+    "proofKindForRecommendedAdapter": "AUTHENTICATED_ADAPTER",
+    "sourceFinalizationNeedsAuthenticatedDestinationAcknowledgement": true,
+    "replayRequirements": [
+      "unique messageId consumption",
+      "unique (operationId,messageType,routeNonce) economic effect",
+      "unknown version/type fail closed",
+      "domain-bound source/destination chain and application"
+    ]
+  },
+  "exactLaneVerdict": "VERIFIED_SUPPORTED",
+  "recommendedProvider": "LayerZero V2",
+  "recommendedNextGate": "Implement and locally test a LayerZero V2 IGlyphMessengerAdapter candidate in a separate implementation phase; do not deploy/sign/broadcast until explicit approval.",
+  "providers": [
+    {
+      "name": "LayerZero V2",
+      "verdict": "VERIFIED_SUPPORTED",
+      "supportsAuthenticatedArbitraryMessaging": true,
+      "supportsExactSourceEndpoint": true,
+      "supportsExactDestinationEndpoint": true,
+      "supportsExactLane": true,
+      "officialIdentifiers": {
+        "source": {
+          "chainKey": "base-sepolia",
+          "nativeChainId": 84532,
+          "eid": 40245,
+          "stage": "testnet",
+          "chainStatus": "ACTIVE",
+          "endpointV2": "0x6EDCE65403992e310A62460808c4b910D972f10f",
+          "endpointV2View": "0xf49d162484290EaEaD7BbC2c7E3a6F8f52E32d6",
+          "sendUln302": "0xC1868e054425D378095A003EcbA3823a5D0135C9",
+          "receiveUln302": "0x12523DE19Dc41c91f7D2093E0CFbB76b17012C8d",
+          "executor": "0x8A3D588d9F6AC041476b094F97fF94ec30169d3D"
+        },
+        "destination": {
+          "chainKey": "monad-testnet",
+          "nativeChainId": 10143,
+          "eid": 40204,
+          "stage": "testnet",
+          "chainStatus": "ACTIVE",
+          "endpointV2": "0x6C7Ab2202C98C4227C5c46f1417D81144DA716Ff",
+          "endpointV2View": "0x145c041566b21bEC558b2a37f1A5fF261Ab55998",
+          "sendUln302": "0xD682ECF100f6F4284138AA925348633B0611Ae21",
+          "receiveUln302": "0xcf1B0F4106B0324f96fEFCc31bA9498caa80701C",
+          "executor": "0x9dB9Ca3305B48F196D18082e91cB64663b13d014"
+        }
+      },
+      "officialEvidence": [
+        {
+          "url": "https://metadata.layerzero-api.com/v1/metadata/deployments",
+          "quote": "base-sepolia nativeChainId 84532 chainStatus ACTIVE deployment version 2 eid 40245 endpointV2 0x6EDCE65403992e310A62460808c4b910D972f10f; monad-testnet nativeChainId 10143 chainStatus ACTIVE deployment version 2 eid 40204 endpointV2 0x6C7Ab2202C98C4227C5c46f1417D81144DA716Ff"
+        },
+        {
+          "url": "https://docs.layerzero.network/v2/concepts/layerzero-protocol-architecture.md",
+          "quote": "LayerZero is an omnichain interoperability protocol that provides a stable, immutable interface for crosschain messaging."
+        },
+        {
+          "url": "https://docs.layerzero.network/v2/concepts/layerzero-protocol-architecture.md",
+          "quote": "applications can define any custom data as bytes and send them as crosschain messages"
+        }
+      ],
+      "sourceAuthenticationModel": "OApp sends through EndpointV2 with configured send library/DVNs/executor options; source message emits LayerZero GUID/nonce.",
+      "destinationAuthenticationModel": "Destination OApp receives through EndpointV2 and must validate trusted endpoint, Origin.srcEid, trusted remote peer/source application, destination app, schema version/type, GUID/messageId, and payload hash.",
+      "finalityAssumptions": "Depends on selected LayerZero DVN confirmations/finality and executor delivery configuration. Must be recorded in messengerPolicyHash and proof must be classified AUTHENTICATED_ADAPTER, not LIGHT_CLIENT_VERIFIED.",
+      "replayMessageIdGuarantees": "LayerZero MessagingReceipt includes bytes32 guid and uint64 nonce; Glyph adapter must map GUID or a domain-separated GUID/nonce hash to messageId and enforce consumed messageId plus consumed (operationId,messageType,routeNonce).",
+      "testnetAvailability": "Official active testnet deployments for both endpoints.",
+      "liquidityProviderDependencies": "None for transport; Glyph still needs its own destination liquidity/provider model.",
+      "satisfiesLockedAdapterAuthenticationRequirements": true,
+      "implementationRequirements": [
+        "bind Base Sepolia chainId 84532/EID 40245 and Monad Testnet chainId 10143/EID 40204",
+        "bind EndpointV2 addresses and trusted peers",
+        "map LayerZero GUID to Glyph messageId",
+        "fail closed on wrong endpoint, EID, peer, destination app, message version/type, or payload hash",
+        "store consumed message IDs and consumed (operationId,messageType,routeNonce)",
+        "add adversarial local tests before any public testnet proof"
+      ]
+    },
+    {
+      "name": "Hyperlane",
+      "verdict": "VERIFIED_UNSUPPORTED",
+      "supportsAuthenticatedArbitraryMessaging": true,
+      "supportsExactSourceEndpoint": true,
+      "supportsExactDestinationEndpoint": false,
+      "supportsExactLane": false,
+      "officialIdentifiers": {
+        "source": {
+          "chainName": "basesepolia",
+          "chainId": 84532,
+          "domainId": 84532,
+          "mailbox": "0x6966b0E55883d49BFB24539356a2f8A673E02039",
+          "interchainGasPaymaster": "0x28B02B97a850872C4D33C3E024fab6499ad96564"
+        },
+        "destination": {
+          "chainName": "monadtestnet",
+          "chainId": 10143,
+          "domainId": 10143,
+          "availabilityStatus": "disabled",
+          "availabilityReasons": ["deprecated"],
+          "mailbox": "0x589C201a07c26b4725A4A829d772f24423da480B",
+          "interchainGasPaymaster": "0x8584590ad637C61C7cDF72eFF3381Ee1c3D1bC8E"
+        }
+      },
+      "officialEvidence": [
+        {
+          "url": "https://docs.hyperlane.xyz/docs/protocol/protocol-overview.md",
+          "quote": "Hyperlane is the first permissionless interoperability layer that allows smart contract developers to send arbitrary data between blockchains."
+        },
+        {
+          "url": "https://raw.githubusercontent.com/hyperlane-xyz/hyperlane-registry/main/chains/monadtestnet/metadata.yaml",
+          "quote": "availability: reasons: [deprecated] status: disabled"
+        }
+      ],
+      "sourceAuthenticationModel": "Mailbox dispatch emits message; relayer delivers metadata/message.",
+      "destinationAuthenticationModel": "Destination Mailbox consults recipient ISM verify(metadata,message) before handle(origin,sender,body).",
+      "finalityAssumptions": "ISM/validator/relayer dependent; unavailable because Monad Testnet registry status is disabled.",
+      "replayMessageIdGuarantees": "Hyperlane messages are Mailbox messages; Glyph would still need messageId/semantic replay storage.",
+      "testnetAvailability": "Base Sepolia available; Monad Testnet disabled/deprecated in official registry.",
+      "liquidityProviderDependencies": "None for messaging; transport disabled for destination.",
+      "satisfiesLockedAdapterAuthenticationRequirements": false
+    },
+    {
+      "name": "Wormhole",
+      "verdict": "VERIFIED_UNSUPPORTED",
+      "supportsAuthenticatedArbitraryMessaging": true,
+      "supportsExactSourceEndpoint": true,
+      "supportsExactDestinationEndpoint": false,
+      "supportsExactLane": false,
+      "officialIdentifiers": {
+        "source": {
+          "wormholeChainName": "base_sepolia",
+          "wormholeChainId": 10004
+        },
+        "destination": null
+      },
+      "officialEvidence": [
+        {
+          "url": "https://raw.githubusercontent.com/wormhole-foundation/wormhole/main/sdk/js/src/utils/consts.ts",
+          "quote": "base_sepolia: 10004 is present; no monad or monad_testnet entry was found in the checked official constants."
+        }
+      ],
+      "sourceAuthenticationModel": "Guardian/VAA attestation where supported.",
+      "destinationAuthenticationModel": "VAA verification where supported; no exact Monad Testnet endpoint found.",
+      "finalityAssumptions": "Guardian observation/finality dependent; not evaluated for exact lane because destination unsupported.",
+      "replayMessageIdGuarantees": "VAA/emitter sequence can be mapped when supported; no exact lane.",
+      "testnetAvailability": "Base Sepolia listed; Monad Testnet not found.",
+      "liquidityProviderDependencies": "None for core messaging where supported.",
+      "satisfiesLockedAdapterAuthenticationRequirements": false
+    },
+    {
+      "name": "Axelar",
+      "verdict": "VERIFIED_UNSUPPORTED",
+      "supportsAuthenticatedArbitraryMessaging": true,
+      "supportsExactSourceEndpoint": false,
+      "supportsExactDestinationEndpoint": false,
+      "supportsExactLane": false,
+      "officialIdentifiers": null,
+      "officialEvidence": [
+        {
+          "url": "https://docs.axelar.dev/dev/reference/testnet-contract-addresses/",
+          "quote": "Fetched official page contained Gateway/Gas Service data but no matches for Monad, Base Sepolia, 10143, or 84532."
+        },
+        {
+          "url": "https://docs.axelar.dev/dev/reference/mainnet-contract-addresses/",
+          "quote": "Fetched official page contained Gateway/Gas Service data but no matches for Monad, Base Sepolia, 10143, or 84532."
+        }
+      ],
+      "sourceAuthenticationModel": "Axelar Gateway/GMP where chain supported.",
+      "destinationAuthenticationModel": "Axelar Gateway validates approved contract call where chain supported.",
+      "finalityAssumptions": "Axelar validator/GMP dependent; not applicable to unsupported exact endpoints.",
+      "replayMessageIdGuarantees": "Axelar command/contract-call IDs where supported; no exact lane.",
+      "testnetAvailability": "No exact endpoint evidence found.",
+      "liquidityProviderDependencies": "None for GMP where supported.",
+      "satisfiesLockedAdapterAuthenticationRequirements": false
+    },
+    {
+      "name": "Chainlink CCIP",
+      "verdict": "INCONCLUSIVE",
+      "subVerdict": "VERIFIED_SUPPORTED for one-way outbound Base Sepolia -> Monad Testnet; INCONCLUSIVE for full Glyph source-finalization because reverse Monad Testnet -> Base Sepolia acknowledgement lane was not found in visible directory data.",
+      "supportsAuthenticatedArbitraryMessaging": true,
+      "supportsExactSourceEndpoint": true,
+      "supportsExactDestinationEndpoint": true,
+      "supportsExactLane": true,
+      "officialIdentifiers": {
+        "source": {
+          "chainKey": "ethereum-testnet-sepolia-base-1",
+          "name": "Base Sepolia",
+          "router": "0xD3b06cEbF099CE7DA4AcCf578aaebFDBd6e88a93",
+          "chainSelector": "10344971235874465080"
+        },
+        "destination": {
+          "chainKey": "monad-testnet",
+          "name": "Monad Testnet",
+          "router": "0x5aD0A67f4Da0E8665a3fbf15E4215A780407Cf33",
+          "chainSelector": "2183018362218727504"
+        },
+        "laneBaseSepoliaToMonadTestnet": {
+          "onRamp": "0x28A025d34c830BF212f5D2357C8DcAB32dD92A20",
+          "offRamp": "0xF4EbCC2c077d3939434C7Ab0572660c5A45e4df5",
+          "version": "1.6.0",
+          "enforceOutOfOrder": false
+        }
+      },
+      "officialEvidence": [
+        {
+          "url": "https://docs.chain.link/ccip/directory/testnet/chain/ethereum-testnet-sepolia-base-1",
+          "quote": "Base Sepolia page contains source Base Sepolia, destination Monad Testnet, onRamp 0x28A025d34c830BF212f5D2357C8DcAB32dD92A20, offRamp 0xF4EbCC2c077d3939434C7Ab0572660c5A45e4df5, version 1.6.0."
+        },
+        {
+          "url": "https://docs.chain.link/ccip/directory/testnet/chain/monad-testnet",
+          "quote": "Monad Testnet chain data includes router 0x5aD0A67f4Da0E8665a3fbf15E4215A780407Cf33 and chainSelector 2183018362218727504."
+        }
+      ],
+      "sourceAuthenticationModel": "CCIP Router/onRamp accepts EVM2Any messages on source lane.",
+      "destinationAuthenticationModel": "CCIP offRamp/router delivers to receiver on destination lane; receiver must validate CCIP sender/source selector and messageId.",
+      "finalityAssumptions": "CCIP lane security/RMN/commit-execution dependent; proof class should be AUTHENTICATED_ADAPTER.",
+      "replayMessageIdGuarantees": "CCIP messageId can map to Glyph messageId; Glyph still needs consumed messageId and semantic nonce storage.",
+      "testnetAvailability": "Exact outbound lane visible in official testnet directory.",
+      "liquidityProviderDependencies": "None for data messages; token-transfer lanes/tokens are separate and not required for Glyph messaging. Destination liquidity remains Glyph/provider-owned.",
+      "satisfiesLockedAdapterAuthenticationRequirements": false,
+      "blockerToUseAsPrimary": "Verify reverse Monad Testnet -> Base Sepolia lane or get an approved alternate authenticated destination-acknowledgement path."
+    },
+    {
+      "name": "deBridge / DLN",
+      "verdict": "VERIFIED_UNSUPPORTED",
+      "supportsAuthenticatedArbitraryMessaging": false,
+      "supportsExactSourceEndpoint": false,
+      "supportsExactDestinationEndpoint": false,
+      "supportsExactLane": false,
+      "officialIdentifiers": null,
+      "officialEvidence": [
+        {
+          "url": "https://dln.debridge.finance/v1.0/supported-chains-info",
+          "quote": "Official API response did not include chainId 84532 or chainId 10143."
+        }
+      ],
+      "sourceAuthenticationModel": "DLN/order infrastructure, not accepted as arbitrary-message authentication here.",
+      "destinationAuthenticationModel": "No exact lane.",
+      "finalityAssumptions": "Solver/order dependent; not applicable.",
+      "replayMessageIdGuarantees": "Not applicable to IGlyphMessengerAdapter.",
+      "testnetAvailability": "No exact testnet endpoints found.",
+      "liquidityProviderDependencies": "Solver/liquidity-provider dependent.",
+      "satisfiesLockedAdapterAuthenticationRequirements": false
+    },
+    {
+      "name": "LI.FI",
+      "verdict": "VERIFIED_UNSUPPORTED",
+      "supportsAuthenticatedArbitraryMessaging": false,
+      "supportsExactSourceEndpoint": true,
+      "supportsExactDestinationEndpoint": false,
+      "supportsExactLane": false,
+      "officialIdentifiers": {
+        "source": {
+          "key": "bast",
+          "id": 84532,
+          "name": "Base Sepolia Testnet",
+          "relayerSupported": false
+        },
+        "destination": null,
+        "monadMainnetOnlyObserved": {
+          "key": "mon",
+          "id": 143,
+          "name": "Monad"
+        }
+      },
+      "officialEvidence": [
+        {
+          "url": "https://li.quest/v1/chains",
+          "quote": "Base Sepolia Testnet id 84532 listed; Monad id 143 listed; no Monad Testnet id 10143 entry found."
+        }
+      ],
+      "sourceAuthenticationModel": "Route aggregator, not an arbitrary-message authentication layer.",
+      "destinationAuthenticationModel": "No Monad Testnet exact endpoint.",
+      "finalityAssumptions": "Bridge/solver-route dependent; not applicable to adapter semantics.",
+      "replayMessageIdGuarantees": "Not applicable to IGlyphMessengerAdapter.",
+      "testnetAvailability": "Base Sepolia only; Monad Testnet absent.",
+      "liquidityProviderDependencies": "Requires bridge/DEX/liquidity providers for token routes.",
+      "satisfiesLockedAdapterAuthenticationRequirements": false
+    },
+    {
+      "name": "Relay",
+      "verdict": "VERIFIED_UNSUPPORTED",
+      "supportsAuthenticatedArbitraryMessaging": false,
+      "supportsExactSourceEndpoint": false,
+      "supportsExactDestinationEndpoint": false,
+      "supportsExactLane": false,
+      "officialIdentifiers": {
+        "monadMainnetOnlyObserved": {
+          "id": 143,
+          "name": "monad",
+          "displayName": "Monad"
+        }
+      },
+      "officialEvidence": [
+        {
+          "url": "https://api.relay.link/chains",
+          "quote": "Relay API lists Monad mainnet id 143 but no id 84532 and no id 10143."
+        }
+      ],
+      "sourceAuthenticationModel": "Solver/liquidity routing API, not arbitrary-message authentication.",
+      "destinationAuthenticationModel": "No exact endpoints.",
+      "finalityAssumptions": "Solver/liquidity dependent; not applicable.",
+      "replayMessageIdGuarantees": "Not applicable to IGlyphMessengerAdapter.",
+      "testnetAvailability": "No exact Base Sepolia or Monad Testnet support found.",
+      "liquidityProviderDependencies": "Solver/liquidity-provider dependent.",
+      "satisfiesLockedAdapterAuthenticationRequirements": false
+    }
+  ],
+  "explicitUnknowns": [
+    "No live public send/receive transaction was performed in this research-only phase.",
+    "LayerZero DVN confirmation policy, executor gas options, OApp peers, enforced options, and fee quoting still require implementation-phase verification.",
+    "Chainlink CCIP reverse Monad Testnet -> Base Sepolia acknowledgement lane was not found in visible directory data.",
+    "No private support channels or non-public registries were queried.",
+    "No RPC bytecode readback was performed; official registries/APIs/docs were used as authority."
+  ],
+  "sideEffects": {
+    "deployed": false,
+    "signed": false,
+    "broadcast": false,
+    "funded": false,
+    "privateKeysAccessed": false,
+    "servicesExposed": false,
+    "hermesConfigChanged": false,
+    "infrastructureChanged": false,
+    "pushed": false
+  },
+  "sourceUrlsChecked": [
+    "https://docs.layerzero.network/v2/deployments/chains/base-sepolia.md",
+    "https://docs.layerzero.network/v2/deployments/chains/monad-testnet.md",
+    "https://docs.layerzero.network/v2/deployments/deployed-contracts.md",
+    "https://metadata.layerzero-api.com/v1/metadata/deployments",
+    "https://docs.layerzero.network/v2/concepts/layerzero-protocol-architecture.md",
+    "https://docs.hyperlane.xyz/docs/protocol/protocol-overview.md",
+    "https://raw.githubusercontent.com/hyperlane-xyz/hyperlane-registry/main/chains/basesepolia/metadata.yaml",
+    "https://raw.githubusercontent.com/hyperlane-xyz/hyperlane-registry/main/chains/basesepolia/addresses.yaml",
+    "https://raw.githubusercontent.com/hyperlane-xyz/hyperlane-registry/main/chains/monadtestnet/metadata.yaml",
+    "https://raw.githubusercontent.com/hyperlane-xyz/hyperlane-registry/main/chains/monadtestnet/addresses.yaml",
+    "https://raw.githubusercontent.com/wormhole-foundation/wormhole/main/sdk/js/src/utils/consts.ts",
+    "https://docs.axelar.dev/dev/reference/testnet-contract-addresses/",
+    "https://docs.axelar.dev/dev/reference/mainnet-contract-addresses/",
+    "https://docs.chain.link/ccip/directory/testnet",
+    "https://docs.chain.link/ccip/directory/testnet/chain/ethereum-testnet-sepolia-base-1",
+    "https://docs.chain.link/ccip/directory/testnet/chain/monad-testnet",
+    "https://dln.debridge.finance/v1.0/supported-chains-info",
+    "https://li.quest/v1/chains",
+    "https://api.relay.link/chains"
+  ]
+}
