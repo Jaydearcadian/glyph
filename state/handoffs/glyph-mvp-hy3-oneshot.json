@@ -74,6 +74,11 @@
       "command": "git diff --check",
       "exitCode": 0,
       "result": "no whitespace errors"
+    },
+    {
+      "command": "git status --short after final handoff commit",
+      "exitCode": 0,
+      "result": "clean; verified after evidence commit in final readback"
     }
   ],
   "dependencyFingerprint": {
@@ -174,6 +179,8 @@
   },
   "git": {
     "dirtyBeforeHandoff": false,
+    "evidenceCommitBeforeCleanSemanticPatch": "de96955da97f8aa0120379edd010ec38bb78ee60",
+    "finalWorkspaceExpectedCleanAfterCommittedHandoff": true,
     "head": "31e81eade108a78795f868e6985f7a8c318ddbcc",
     "priorCommitsPreserved": [
       "44f9787",
@@ -181,6 +188,7 @@
       "e8a3c88"
     ],
     "repairCommit": "31e81eade108a78795f868e6985f7a8c318ddbcc",
+    "statusPorcelainAtFinalEvidenceGate": "self-referential handoff excluded from fingerprint; final git status verified clean after committing handoff in terminal output",
     "statusPorcelainBeforeHandoff": []
   },
   "laneEvidence": {
