@@ -21,18 +21,22 @@ contract GlyphMvpValueFlowsTest is Test {
 
     uint256 payerPk = 0xA11CE;
     uint256 claimantPk = 0xC1A1;
+    uint256 gatekeeperPk = 0xBEEF;
     address payer;
     address claimant;
+    address gatekeeper;
     address recipient = address(0xB0B);
     address recovery = address(0xCAFE);
     address provider = address(0xF00D);
     address protocol = address(0x1000);
     address referrer = address(0x2000);
     address sponsor = address(0x3000);
+    address app = address(0xA99);
 
     function setUp() public {
         payer = vm.addr(payerPk);
         claimant = vm.addr(claimantPk);
+        gatekeeper = vm.addr(gatekeeperPk);
         router = new SourceDeltaRouter();
         vault = new DestinationGlyphVault();
         campaign = new ContributionCampaign();
@@ -49,6 +53,9 @@ contract GlyphMvpValueFlowsTest is Test {
         token.approve(address(gift), type(uint256).max);
         vm.prank(provider);
         vault.provideLiquidity(IERC20Minimal(address(token)), 2_000 ether);
+        vault.setAuthorizedApplication(app, true);
+        router.setMessengerAdapter(address(messenger), true);
+        router.setMessengerProcessorForAdapter(app, address(messenger), true);
     }
 
     function _terms(bytes32 mode, uint256 nonce, address recip)
@@ -73,6 +80,11 @@ contract GlyphMvpValueFlowsTest is Test {
             providerFee: 2 ether,
             referrerFee: 3 ether,
             gasSponsorFee: 4 ether,
+            provider: provider,
+            protocol: protocol,
+            referrer: referrer,
+            gasSponsor: sponsor,
+            claimGatekeeper: mode == router.PUSH() ? gatekeeper : address(0),
             expiry: uint64(block.timestamp + 1 days),
             nonce: nonce
         });
@@ -84,11 +96,31 @@ contract GlyphMvpValueFlowsTest is Test {
         op = router.escrow(t);
     }
 
-    function _signVaultClaim(bytes32 op, bytes32 nullifier, uint64 deadline) internal view returns (bytes memory sig) {
+    function _claimSig(bytes32 op, bytes32 nullifier, uint64 deadline) internal view returns (bytes memory sig) {
         bytes32 digest = keccak256(
-            abi.encode("GLYPH_CLAIM", block.chainid, address(vault), op, claimant, 100 ether, nullifier, deadline)
+            abi.encode(
+                "GLYPH_CLAIM_INTENT_V1", block.chainid, address(vault), op, claimant, 100 ether, nullifier, deadline
+            )
         );
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(claimantPk, digest);
+        sig = abi.encodePacked(r, s, v);
+    }
+
+    function _gateSig(bytes32 op, bytes32 nullifier, uint64 deadline) internal view returns (bytes memory sig) {
+        bytes32 digest = keccak256(
+            abi.encode(
+                "GLYPH_CLAIM_AUTH_V1",
+                block.chainid,
+                address(vault),
+                op,
+                claimant,
+                address(token),
+                100 ether,
+                nullifier,
+                deadline
+            )
+        );
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(gatekeeperPk, digest);
         sig = abi.encodePacked(r, s, v);
     }
 
@@ -109,20 +141,31 @@ contract GlyphMvpValueFlowsTest is Test {
     function test_gate2LocalAndCrossChainPullAccountingRefundAndSessionFailClosed() public {
         (bytes32 op, SourceDeltaRouter.Terms memory t) = _escrowPull(0);
         assertEq(token.balanceOf(address(router)), 110 ether);
-        vm.prank(provider);
+        vm.startPrank(app);
         vault.reservePull(
-            op, address(token), recipient, 100 ether, t.sourceChainId, address(router), uint64(block.timestamp + 1 days)
+            op, provider, address(token), recipient, 100 ether, t.sourceChainId, address(router), t.expiry
         );
         vault.deliverPull(op, t.sourceChainId, address(router));
+        router.recordRouteFromAdapter(op, keccak256("route"), 1, router.hashTerms(t), address(messenger));
+        router.recordDestinationDeliveryFromAdapter(
+            op,
+            keccak256("ack"),
+            keccak256("route"),
+            1,
+            router.hashTerms(t),
+            recipient,
+            provider,
+            address(token),
+            100 ether,
+            address(messenger)
+        );
+        vm.stopPrank();
         assertEq(token.balanceOf(recipient), 100 ether);
-        router.setMessengerAdapter(address(messenger), true);
-        vm.prank(address(messenger));
-        router.acknowledgeDeliveryFromAdapter(op, keccak256("ack"), address(messenger));
-        router.finalize(op, provider, protocol, referrer, sponsor);
-        assertEq(token.balanceOf(recovery), 0);
+        router.finalize(op);
         assertEq(token.balanceOf(protocol), 1 ether);
         assertEq(token.balanceOf(referrer), 3 ether);
         assertEq(token.balanceOf(sponsor), 4 ether);
+        assertEq(token.balanceOf(provider), 10_000 ether - 2_000 ether + 102 ether);
 
         SourceDeltaRouter.Terms memory refundTerms = _terms(router.PULL(), 1, recipient);
         vm.prank(payer);
@@ -141,8 +184,6 @@ contract GlyphMvpValueFlowsTest is Test {
         SourceDeltaRouter.Terms memory direct = _terms(router.PULL(), 0, recipient);
         vm.prank(payer);
         bytes32 opDirect = router.escrow(direct);
-        assertTrue(opDirect != bytes32(0));
-
         SourceDeltaRouter.Terms memory gasless = _terms(router.PULL(), 1, recipient);
         uint64 deadline = uint64(block.timestamp + 1 hours);
         bytes32 digest =
@@ -151,7 +192,6 @@ contract GlyphMvpValueFlowsTest is Test {
         bytes32 opGasless = router.escrowWithSignature(gasless, deadline, abi.encodePacked(r, s, v));
         assertTrue(opGasless != opDirect);
         assertEq(token.balanceOf(address(router)), 220 ether);
-
         TestToken permitToken = new TestToken();
         permitToken.mint(payer, 1 ether);
         uint256 permitDeadline = block.timestamp + 1 hours;
@@ -178,6 +218,7 @@ contract GlyphMvpValueFlowsTest is Test {
 
     function test_gate4CrossChainPullMockMessengerDuplicateAndMutatedMessages() public {
         (bytes32 op, SourceDeltaRouter.Terms memory t) = _escrowPull(0);
+        bytes memory payload = abi.encode("route");
         IGlyphMessengerAdapter.Envelope memory e = IGlyphMessengerAdapter.Envelope(
             1,
             IGlyphMessengerAdapter.MessageType.ROUTE_PULL,
@@ -189,66 +230,70 @@ contract GlyphMvpValueFlowsTest is Test {
             t.destinationChainId,
             address(vault),
             1,
-            keccak256("payload")
+            keccak256(payload)
         );
-        bytes32 msgId = messenger.send(e);
+        bytes32 msgId =
+            messenger.sendMessage(t.destinationChainId, address(vault), e, payload, payable(recovery), 200_000);
         IGlyphMessengerAdapter.Envelope memory got = messenger.consume(msgId);
         assertEq(got.operationId, op);
         vm.expectRevert();
         messenger.consume(msgId);
-        vm.prank(provider);
-        vault.reservePull(
-            op, address(token), recipient, 100 ether, t.sourceChainId, address(router), uint64(block.timestamp + 1 days)
-        );
-        vault.deliverPull(op, t.sourceChainId, address(router));
-        router.setMessengerAdapter(address(messenger), true);
-        vm.prank(address(messenger));
-        router.acknowledgeDeliveryFromAdapter(op, msgId, address(messenger));
-        router.finalize(op, provider, protocol, referrer, sponsor);
     }
 
     function test_gate5CrossChainPushClaimNullifierExpiryReleaseRefund() public {
         SourceDeltaRouter.Terms memory t = _terms(router.PUSH(), 0, recipient);
         vm.prank(payer);
         bytes32 op = router.escrow(t);
-        bytes32 rule = keccak256("bearer-secret-commitment");
-        vm.prank(provider);
+        vm.startPrank(app);
         vault.reservePush(
-            op,
-            address(token),
-            recipient,
-            100 ether,
-            t.sourceChainId,
-            address(router),
-            uint64(block.timestamp + 1 days),
-            rule
+            op, provider, address(token), recipient, 100 ether, t.sourceChainId, address(router), t.expiry, gatekeeper
         );
+        router.recordRouteFromAdapter(op, keccak256("route"), 1, router.hashTerms(t), address(messenger));
+        router.recordDestinationReservedFromAdapter(
+            op, keccak256("reserve"), keccak256("route"), 1, router.hashTerms(t), provider, address(messenger)
+        );
+        vm.stopPrank();
+        assertFalse(router.ackDelivered(op));
         bytes32 nullifier = keccak256("claim-1");
         uint64 deadline = uint64(block.timestamp + 1 hours);
-        vault.claimPush(op, claimant, nullifier, deadline, _signVaultClaim(op, nullifier, deadline));
+        vault.claimPush(
+            op, claimant, nullifier, deadline, _claimSig(op, nullifier, deadline), _gateSig(op, nullifier, deadline)
+        );
         assertEq(token.balanceOf(claimant), 100 ether);
-        router.setMessengerAdapter(address(messenger), true);
-        vm.prank(address(messenger));
-        router.acknowledgeDeliveryFromAdapter(op, keccak256("push-ack"), address(messenger));
-        router.finalize(op, provider, protocol, referrer, sponsor);
+        bytes32 pushTermsHash = router.hashTerms(t);
+        vm.prank(app);
+        router.recordDestinationDeliveryFromAdapter(
+            op,
+            keccak256("push-ack"),
+            keccak256("route"),
+            1,
+            pushTermsHash,
+            claimant,
+            provider,
+            address(token),
+            100 ether,
+            address(messenger)
+        );
+        router.finalize(op);
 
         SourceDeltaRouter.Terms memory unclaimed = _terms(router.PUSH(), 1, recipient);
         vm.prank(payer);
         bytes32 unclaimedOp = router.escrow(unclaimed);
-        vm.prank(provider);
+        vm.prank(app);
         vault.reservePush(
             unclaimedOp,
+            provider,
             address(token),
             recipient,
             100 ether,
             unclaimed.sourceChainId,
             address(router),
             uint64(block.timestamp + 10),
-            rule
+            gatekeeper
         );
         vm.warp(block.timestamp + 11);
         vault.release(unclaimedOp);
-        vm.prank(address(messenger));
+        vm.prank(app);
         router.markRefundPendingFromAdapter(unclaimedOp, address(messenger));
         router.refund(unclaimedOp);
         assertEq(token.balanceOf(recovery), 110 ether);

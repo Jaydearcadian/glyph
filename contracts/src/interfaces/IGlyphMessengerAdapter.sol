@@ -8,8 +8,8 @@ interface IGlyphMessengerAdapter {
         RESERVE_PUSH,
         DESTINATION_RESERVED_ACK,
         DESTINATION_DELIVERED_ACK,
-        RESERVATION_RELEASED_ACK,
         DESTINATION_FAILED_ACK,
+        RESERVATION_RELEASED_ACK,
         SOURCE_FINALIZED_RECEIPT,
         SOURCE_REFUNDED_RECEIPT
     }
@@ -28,8 +28,8 @@ interface IGlyphMessengerAdapter {
         bytes32 payloadHash;
     }
 
-    event MessageQueued(bytes32 indexed messageId, bytes32 indexed operationId, MessageType indexed messageType);
-    event MessageDelivered(bytes32 indexed messageId, bytes32 indexed operationId, MessageType indexed messageType);
+    event MessageQueued(bytes32 indexed messageId, bytes32 indexed operationId, MessageType messageType);
+    event MessageDelivered(bytes32 indexed messageId, bytes32 indexed operationId, MessageType messageType);
 
     function quote(
         uint64 destinationChainId,
@@ -48,9 +48,5 @@ interface IGlyphMessengerAdapter {
         uint256 gasLimit
     ) external payable returns (bytes32 messageId);
 
-    /// @dev Legacy/mock compatibility queue API. Production adapters may restrict this to configured apps.
-    function send(Envelope calldata envelope) external returns (bytes32 messageId);
-
-    /// @dev Legacy/mock compatibility consume API. Production adapters must never allow arbitrary bypass.
     function consume(bytes32 messageId) external returns (Envelope memory envelope);
 }

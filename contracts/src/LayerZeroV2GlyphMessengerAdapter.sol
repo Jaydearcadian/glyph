@@ -67,13 +67,15 @@ contract LayerZeroV2GlyphMessengerAdapter is IGlyphMessengerAdapter, ILayerZeroR
     uint64 public immutable remoteChainId;
     uint32 public immutable localEid;
     uint32 public immutable remoteEid;
-    bytes32 public immutable messengerPolicyHash;
+    bytes32 public messengerPolicyHash;
     address public owner;
     address public trustedPeer;
     address public localApplication;
     address public remoteApplication;
     uint256 public enforcedGasLimit = 200_000;
     bool public orderedExecution = true;
+    bool public configFrozen;
+    bytes32 public externalSecurityConfigHash;
     bool internal locked;
 
     mapping(bytes32 => Envelope) public envelopes;
@@ -86,6 +88,7 @@ contract LayerZeroV2GlyphMessengerAdapter is IGlyphMessengerAdapter, ILayerZeroR
     event ApplicationsSet(address indexed localApplication, address indexed remoteApplication);
     event EnforcedGasLimitSet(uint256 gasLimit);
     event OrderedExecutionSet(bool ordered);
+    event ConfigFrozen(bytes32 indexed policyHash, bytes32 indexed externalSecurityConfigHash);
     event MessageStaged(bytes32 indexed messageId, bytes32 indexed operationId);
     event MessageProcessingFailed(bytes32 indexed messageId, bytes reason);
     event MessageProcessed(bytes32 indexed messageId, bytes32 indexed operationId);
@@ -97,6 +100,16 @@ contract LayerZeroV2GlyphMessengerAdapter is IGlyphMessengerAdapter, ILayerZeroR
 
     modifier onlyLocalApplication() {
         if (msg.sender != localApplication) revert Unauthorized();
+        _;
+    }
+
+    modifier mutableConfig() {
+        if (configFrozen) revert InvalidConfig();
+        _;
+    }
+
+    modifier frozenConfig() {
+        if (!configFrozen) revert InvalidConfig();
         _;
     }
 
@@ -127,7 +140,7 @@ contract LayerZeroV2GlyphMessengerAdapter is IGlyphMessengerAdapter, ILayerZeroR
         remoteChainId = remoteChainId_;
         remoteEid = remoteEid_;
         owner = owner_;
-        messengerPolicyHash = messengerPolicyHash_;
+        externalSecurityConfigHash = messengerPolicyHash_;
     }
 
     receive() external payable {
@@ -139,33 +152,56 @@ contract LayerZeroV2GlyphMessengerAdapter is IGlyphMessengerAdapter, ILayerZeroR
         owner = nextOwner;
     }
 
-    function setTrustedPeer(address peer) external onlyOwner {
+    function setTrustedPeer(address peer) external onlyOwner mutableConfig {
         if (peer == address(0)) revert InvalidConfig();
         trustedPeer = peer;
         emit TrustedPeerSet(peer);
     }
 
-    function setLocalApplication(address app) external onlyOwner {
+    function setLocalApplication(address app) external onlyOwner mutableConfig {
         if (app == address(0)) revert InvalidConfig();
         localApplication = app;
         emit ApplicationsSet(localApplication, remoteApplication);
     }
 
-    function setRemoteApplication(address app) external onlyOwner {
+    function setRemoteApplication(address app) external onlyOwner mutableConfig {
         if (app == address(0)) revert InvalidConfig();
         remoteApplication = app;
         emit ApplicationsSet(localApplication, remoteApplication);
     }
 
-    function setEnforcedGasLimit(uint256 gasLimit) external onlyOwner {
+    function setEnforcedGasLimit(uint256 gasLimit) external onlyOwner mutableConfig {
         if (gasLimit < 50_000 || gasLimit > 5_000_000) revert InvalidConfig();
         enforcedGasLimit = gasLimit;
         emit EnforcedGasLimitSet(gasLimit);
     }
 
-    function setOrderedExecution(bool ordered) external onlyOwner {
+    function setOrderedExecution(bool ordered) external onlyOwner mutableConfig {
         orderedExecution = ordered;
         emit OrderedExecutionSet(ordered);
+    }
+
+    function computedPolicyHash(bytes32 externalCommitment) public view returns (bytes32) {
+        bytes32 lane = keccak256(abi.encode(endpoint, localChainId, localEid, remoteChainId, remoteEid));
+        bytes32 apps = keccak256(abi.encode(trustedPeer, localApplication, remoteApplication));
+        bytes32 options =
+            keccak256(abi.encode(PROOF_KIND, WIRE_VERSION, orderedExecution, enforcedGasLimit, externalCommitment));
+        return keccak256(abi.encode("GLYPH_LZ_V2_POLICY_V1", lane, apps, options));
+    }
+
+    function freezeConfig(bytes32 externalCommitment) external onlyOwner {
+        if (
+            configFrozen || trustedPeer == address(0) || localApplication == address(0)
+                || remoteApplication == address(0)
+        ) {
+            revert InvalidConfig();
+        }
+        if (externalCommitment == bytes32(0) || externalCommitment != externalSecurityConfigHash) {
+            revert WrongPolicy(externalCommitment);
+        }
+        messengerPolicyHash = externalCommitment;
+        configFrozen = true;
+        emit ConfigFrozen(messengerPolicyHash, externalCommitment);
     }
 
     function quote(
@@ -174,7 +210,7 @@ contract LayerZeroV2GlyphMessengerAdapter is IGlyphMessengerAdapter, ILayerZeroR
         Envelope calldata envelope,
         bytes calldata payload,
         uint256 gasLimit
-    ) external view onlyLocalApplication returns (uint256 nativeFee) {
+    ) external view onlyLocalApplication frozenConfig returns (uint256 nativeFee) {
         _validateOutbound(destinationChainId, destinationApplication, envelope, payload);
         MessagingFee memory fee =
             ILayerZeroEndpointV2(endpoint).quote(_params(envelope, payload, gasLimit), address(this));
@@ -188,7 +224,7 @@ contract LayerZeroV2GlyphMessengerAdapter is IGlyphMessengerAdapter, ILayerZeroR
         bytes calldata payload,
         address payable refundAddress,
         uint256 gasLimit
-    ) external payable onlyLocalApplication nonReentrant returns (bytes32 messageId) {
+    ) external payable onlyLocalApplication frozenConfig nonReentrant returns (bytes32 messageId) {
         _validateOutbound(destinationChainId, destinationApplication, envelope, payload);
         if (refundAddress == address(0)) revert InvalidConfig();
         bytes32 semanticId = _semanticId(envelope);
@@ -210,19 +246,6 @@ contract LayerZeroV2GlyphMessengerAdapter is IGlyphMessengerAdapter, ILayerZeroR
         emit MessageQueued(messageId, stored.operationId, stored.messageType);
     }
 
-    function send(Envelope calldata envelope) external onlyLocalApplication returns (bytes32) {
-        bytes memory payload = payloads[envelope.messageId];
-        if (payload.length == 0) revert UnknownMessage(envelope.messageId);
-        return this.sendMessage{value: 0}(
-            envelope.destinationChainId,
-            envelope.destinationApplication,
-            envelope,
-            payload,
-            payable(msg.sender),
-            enforcedGasLimit
-        );
-    }
-
     function allowInitializePath(Origin calldata origin) external view returns (bool) {
         return origin.srcEid == remoteEid && origin.sender == bytes32(uint256(uint160(trustedPeer)));
     }
@@ -236,6 +259,7 @@ contract LayerZeroV2GlyphMessengerAdapter is IGlyphMessengerAdapter, ILayerZeroR
         external
         payable
         override
+        frozenConfig
     {
         if (msg.sender != endpoint) revert WrongEndpoint(msg.sender);
         if (origin.srcEid != remoteEid) revert WrongEid(origin.srcEid);
