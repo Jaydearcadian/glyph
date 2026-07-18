@@ -1,0 +1,371 @@
+{
+  "schemaVersion": "1.0.0",
+  "taskId": "p1-correctness-review3",
+  "execution": {
+    "provider": "openai-codex",
+    "model": "gpt-5.6-sol",
+    "source": "glyph-p1-correctness-review3",
+    "independentSession": true
+  },
+  "frozenTreeSha256": "fc36f0b30632fd8f0084eac05cc372b0c92d1bb049624abef54a7c46680592ab",
+  "commands": [
+    {
+      "command": "python3 frozen seven-file path-and-content SHA-256 algorithm",
+      "exitCode": 0,
+      "summary": "Recomputed fc36f0b30632fd8f0084eac05cc372b0c92d1bb049624abef54a7c46680592ab; exact match."
+    },
+    {
+      "command": "forge build",
+      "exitCode": 0,
+      "summary": "Compiled 31 files with Solc 0.8.24 successfully; warnings only."
+    },
+    {
+      "command": "forge test -vv",
+      "exitCode": 0,
+      "summary": "35 passed, 0 failed, 0 skipped across four suites; P1 suites contributed 15 ledger and 12 attestation tests."
+    },
+    {
+      "command": "forge fmt --check src/GlyphReceiptLedger.sol src/GlyphAttestationRegistry.sol src/interfaces/IGlyphReceiptLedger.sol src/libraries/GlyphSignatureChecker.sol test/GlyphReceiptLedger.t.sol test/GlyphAttestationRegistry.t.sol test/mocks/MockERC1271Wallet.sol",
+      "exitCode": 0,
+      "summary": "Allowed seven-file surface is formatted."
+    }
+  ],
+  "verdict": "fail",
+  "summary": {
+    "critical": 0,
+    "high": 0,
+    "medium": 2,
+    "low": 1
+  },
+  "priorFindings": [
+    {
+      "id": "P1-R2-001",
+      "status": "closed",
+      "evidence": [
+        "contracts/src/GlyphReceiptLedger.sol:461-465 enforces block.timestamp >= immutable expiry before EXPIRED/REFUND_PENDING",
+        "contracts/src/GlyphReceiptLedger.sol:566-584 rejects reservation, delivery, provider, fee, delta, and source-finalization evidence on the refund path",
+        "contracts/test/GlyphReceiptLedger.t.sol:391-424 exercises expiry equality and delivery-before-refund ordering"
+      ],
+      "notes": "Actual source closes the delivery/refund race identified in review2; checks are leg-presence based and therefore independent of append/status ordering."
+    },
+    {
+      "id": "P1-R2-002",
+      "status": "closed",
+      "evidence": [
+        "contracts/src/GlyphReceiptLedger.sol:226-245 accepts delivered >= expected and validates expected, actual, excess, and RECIPIENT_RETAINS",
+        "contracts/src/GlyphReceiptLedger.sol:272-275 stores reconciliation only after independent STN-Delta conservation",
+        "contracts/test/GlyphReceiptLedger.t.sol:426-470 covers underdelivery rejection and overdelivery recording"
+      ],
+      "notes": "Overdelivery is not credited into source principal, fee, or residual accounting."
+    },
+    {
+      "id": "P1-R2-003",
+      "status": "closed",
+      "evidence": [
+        "contracts/src/GlyphAttestationRegistry.sol:79-100 makes purpose records role-scoped",
+        "contracts/src/GlyphAttestationRegistry.sol:387-435 authorizes and indexes the exact operation role",
+        "contracts/src/GlyphAttestationRegistry.sol:451-463 requires distinct nonzero payer-role and recipient-role records"
+      ],
+      "notes": "The implementation now requires separate role records even when payer and recipient addresses coincide; the explicitly required coincident-party regression is still absent and is captured under P1-R3-002."
+    },
+    {
+      "id": "P1-R2-004",
+      "status": "closed",
+      "evidence": [
+        "contracts/src/GlyphAttestationRegistry.sol:259-261 derives expiry using expiresAt <= block.timestamp",
+        "contracts/src/GlyphAttestationRegistry.sol:513-520 rejects an expired claim before binding"
+      ],
+      "notes": "Production boundary behavior is corrected. The exact-equality binding test remains missing and is included in P1-R3-002."
+    },
+    {
+      "id": "P1-R2-005",
+      "status": "open",
+      "evidence": [
+        "contracts/test/GlyphReceiptLedger.t.sol:142-154 still derives both expected hashes from the implementation and mutates none of the locked fields",
+        "contracts/test/GlyphReceiptLedger.t.sol:162-179 never calls role configuration as a non-admin and never performs a financial write as admin-without-role",
+        "contracts/test/GlyphReceiptLedger.t.sol:181-200 never reaches RECONCILED or REFUNDED before its claimed terminal-reentry check",
+        "contracts/test/GlyphReceiptLedger.t.sol:243-267 does not isolate every missing leg or reach the conservation guard with huge inputs",
+        "contracts/test/GlyphReceiptLedger.t.sol:353-379 supplies neither a wrong destination chain nor a wrong router despite naming both"
+      ],
+      "notes": "Repair2 added useful tests but did not close the material name/branch evidence gaps from review2."
+    },
+    {
+      "id": "P1-R2-006",
+      "status": "open",
+      "evidence": [
+        "contracts/test/GlyphAttestationRegistry.t.sol:165-183 has no changed-chain or second-verifying-contract signature case despite naming wrong domain",
+        "contracts/test/GlyphAttestationRegistry.t.sol:185-201 covers magic/wrong/revert but not malformed or short EIP-1271 return data",
+        "contracts/test/GlyphAttestationRegistry.t.sol:251-295 does not attempt a fresh binding of the revoked claim and tests expiry after, not at, equality",
+        "contracts/test/GlyphAttestationRegistry.t.sol:376-388 fails signature authorization before proving an authentically authorized non-party reaches UnauthorizedAttestor",
+        "contracts/test/GlyphAttestationRegistry.t.sol contains no malformed v, high-s, zero-s/r/recovered-zero ECDSA vectors or nonexistent-getter tests"
+      ],
+      "notes": "The signature checker source is defensively implemented, but required adversarial acceptance evidence remains absent."
+    },
+    {
+      "id": "P1-R2-007",
+      "status": "closed",
+      "evidence": [
+        "contracts/src/GlyphAttestationRegistry.sol:30-41 stores registeredAt",
+        "contracts/src/GlyphAttestationRegistry.sol:173-184 emits registeredAt",
+        "contracts/src/GlyphAttestationRegistry.sol:486-510 assigns block.timestamp as registry admission time"
+      ],
+      "notes": "The ABI no longer labels registry admission as issuer-verified issuance time."
+    }
+  ],
+  "findings": [
+    {
+      "id": "P1-R3-001",
+      "severity": "medium",
+      "title": "Ledger tests still do not prove required accounting and authority branches",
+      "evidence": [
+        "contracts/test/GlyphReceiptLedger.t.sol:142-154 uses computeTermsHash/computeOperationId as its own oracle and does not mutate routers, vault, fee, claimant rule, chain/domain, or nonce",
+        "contracts/test/GlyphReceiptLedger.t.sol:162-179 omits unauthorized configureWriterAuthorization and admin-without-role financial writes",
+        "contracts/test/GlyphReceiptLedger.t.sol:181-200 claims terminal reentry without first reaching a terminal state",
+        "contracts/test/GlyphReceiptLedger.t.sol:243-267 labels missing/mismatched/overflow coverage but the huge principal mismatches the stored provider leg before conservation and no required leg is missing",
+        "contracts/test/GlyphReceiptLedger.t.sol:269-291 contains valid/double refund only, not mismatched refund fields",
+        "contracts/test/GlyphReceiptLedger.t.sol:353-379 names wrong destination chain and wrong router but exercises neither"
+      ],
+      "impact": "Security- and accounting-sensitive behavior is not accepted by explicit adversarial evidence. Passing tests can regress field binding, role separation, per-leg reconciliation checks, overflow-safe conservation, or refund matching without the named suite detecting every required branch.",
+      "requiredFix": "Add isolated selector-specific tests for each locked terms field, unauthorized admin configuration and admin non-bypass, actual post-RECONCILED and post-REFUNDED reentry, every required missing leg and immutable leg mismatch, a huge-input case that reaches InvalidConservationEquation, and each refund field/proof mismatch. Correct test names so every stated branch is genuinely reached."
+    },
+    {
+      "id": "P1-R3-002",
+      "severity": "medium",
+      "title": "Attestation tests omit required signature, boundary, getter, and role-consensus adversarial cases",
+      "evidence": [
+        "contracts/test/GlyphAttestationRegistry.t.sol:165-183 never signs under a changed chain or another registry/verifying contract",
+        "contracts/test/GlyphAttestationRegistry.t.sol:185-201 and contracts/test/mocks/MockERC1271Wallet.sol:4-27 cannot produce malformed or short return data",
+        "contracts/test/GlyphAttestationRegistry.t.sol:251-295 omits revoked-claim fresh-binding rejection and exact expiry equality",
+        "contracts/test/GlyphAttestationRegistry.t.sol:331-389 omits payer==recipient dual-role consensus and uses an unsigned outsider that fails before party authorization",
+        "contracts/test/GlyphAttestationRegistry.t.sol has no explicit low-s/high-s, invalid-v, zero-s/r, recovered-zero, wrong-chain, wrong-verifying-contract, or nonexistent claim/binding/purpose getter vectors"
+      ],
+      "impact": "Required replay/domain and wallet-signature trust boundaries, exact expiry semantics, coincident-role consensus, and fail-closed reads lack acceptance-grade tests. These are security-sensitive paths, so source inspection and a green aggregate suite are insufficient under the locked acceptance rule.",
+      "requiredFix": "Add focused tests using changed chain ID and a second registry, explicit ECDSA edge vectors, raw malformed/short/wrong/reverting EIP-1271 return mocks, exact expiry equality, fresh binding attempts for revoked/superseded claims, nonexistent getters, validly authorized non-party purpose attempts, and payer==recipient with two independently authorized role records."
+    },
+    {
+      "id": "P1-R3-003",
+      "severity": "low",
+      "title": "Two named authoritative architecture inputs are absent from the frozen workspace",
+      "evidence": [
+        "docs/architecture/INVARIANT_MATRIX.md is absent; the only matching invariant specification is docs/architecture/INVARIANTS.md",
+        "docs/architecture/MONADGLYPH_TARGET_ARCHITECTURE.md is absent and no TARGET_ARCHITECTURE file exists under the workspace",
+        "docs/architecture contains 14 architecture Markdown files, including INVARIANTS.md, RECEIPT_LEDGER.md, IDENTITY_ATTESTATIONS.md, and STATE_MACHINES.md"
+      ],
+      "impact": "The review could apply P1_LOCKED_DECISIONS.md, the available invariant specification, prior review/handoff, and current source, but could not inspect the requested target-architecture sections under the exact authoritative path.",
+      "requiredFix": "Restore the named authoritative files or update the review instruction/canonical documentation index to the actual authoritative paths before the next acceptance review."
+    }
+  ],
+  "invariantResults": [
+    {
+      "id": "I-001",
+      "status": "partial",
+      "evidence": [
+        "contracts/src/GlyphReceiptLedger.sol:586-592 implements subtraction-based conservation; tests cover zero/minimal/nonzero residual, but required isolated over/under/huge rejection evidence is incomplete (P1-R3-001)."
+      ]
+    },
+    {
+      "id": "I-002",
+      "status": "pass",
+      "evidence": [
+        "contracts/src/GlyphReceiptLedger.sol:226-245 and contracts/test/GlyphReceiptLedger.t.sol:426-470 enforce delivered >= expected and record RECIPIENT_RETAINS excess."
+      ]
+    },
+    {
+      "id": "I-003",
+      "status": "pass",
+      "evidence": [
+        "contracts/src/GlyphReceiptLedger.sol:477-522 requires destination-delivery evidence before DESTINATION_SETTLED and SOURCE_FINALIZED."
+      ]
+    },
+    {
+      "id": "I-004",
+      "status": "partial",
+      "evidence": [
+        "P1_LOCKED_DECISIONS.md:9-17 excludes source-router transfers, callback retry, and atomic local settlement from P1."
+      ]
+    },
+    {
+      "id": "I-005",
+      "status": "pass",
+      "evidence": [
+        "contracts/src/GlyphReceiptLedger.sol:207-212,295-323,427-429,566-584 makes RECONCILED/REFUNDED mutually exclusive and blocks unsafe refund evidence."
+      ]
+    },
+    {
+      "id": "I-006",
+      "status": "partial",
+      "evidence": [
+        "contracts/src/GlyphReceiptLedger.sol:375-402 binds all OperationTerms plus chain and verifying contract; required field-mutation test evidence is incomplete (P1-R3-001)."
+      ]
+    },
+    {
+      "id": "I-007",
+      "status": "partial",
+      "evidence": [
+        "contracts/src/GlyphReceiptLedger.sol:179-190 consumes unique remote message IDs, while messenger adapter source-domain authentication is deferred beyond P1."
+      ]
+    },
+    {
+      "id": "I-008",
+      "status": "pass",
+      "evidence": [
+        "contracts/src/interfaces/IGlyphReceiptLedger.sol:20-25 and contracts/src/GlyphReceiptLedger.sol:172-190 separate LOCAL_VERIFIED, AUTHENTICATED_ADAPTER, and LIGHT_CLIENT_VERIFIED."
+      ]
+    },
+    {
+      "id": "I-009",
+      "status": "pass",
+      "evidence": [
+        "contracts/src/GlyphReceiptLedger.sol:193-200,431-469 enumerates transitions and reserves terminal outcomes for reconcile/refund."
+      ]
+    },
+    {
+      "id": "I-010",
+      "status": "partial",
+      "evidence": [
+        "contracts/src/GlyphReceiptLedger.sol:566-584 rejects known reservation/delivery/settlement/finalization evidence; cross-chain finality/challenge timing is outside P1."
+      ]
+    },
+    {
+      "id": "I-011",
+      "status": "partial",
+      "evidence": [
+        "Claim execution and fragment-secret authorization are explicitly outside the P1 ledger/attestation scope."
+      ]
+    },
+    {
+      "id": "I-012",
+      "status": "pass",
+      "evidence": [
+        "contracts/src/GlyphReceiptLedger.sol:137-170 stores immutable operation terms keyed by their domain-bound hash with no mutation path."
+      ]
+    },
+    {
+      "id": "I-013",
+      "status": "pass",
+      "evidence": [
+        "contracts/src/GlyphReceiptLedger.sol:94-105,172-204 applies distinct financial writer roles; admin has no direct write bypass."
+      ]
+    },
+    {
+      "id": "I-014",
+      "status": "pass",
+      "evidence": [
+        "contracts/src/GlyphReceiptLedger.sol:329-360 derives exact leg IDs and rejects duplicate IDs and duplicate semantic leg types."
+      ]
+    },
+    {
+      "id": "I-015",
+      "status": "partial",
+      "evidence": [
+        "contracts/src/GlyphAttestationRegistry.sol:296-323,466-511 enforces subject/issuer paths and EIP-712/EIP-1271; adversarial signature evidence remains incomplete (P1-R3-002)."
+      ]
+    },
+    {
+      "id": "I-016",
+      "status": "pass",
+      "evidence": [
+        "contracts/src/GlyphAttestationRegistry.sol:10-18,296-316 forces SELF_ASSERTED or ISSUER_VERIFIED; acknowledgement is separate and does not mutate level."
+      ]
+    },
+    {
+      "id": "I-017",
+      "status": "pass",
+      "evidence": [
+        "contracts/src/GlyphAttestationRegistry.sol:358-385,513-537 changes claim status append-only while preserving existing binding snapshots."
+      ]
+    },
+    {
+      "id": "I-018",
+      "status": "partial",
+      "evidence": [
+        "contracts/src/GlyphAttestationRegistry.sol:387-463 implements role-scoped append-only purpose consensus; payer==recipient and valid non-party tests are missing (P1-R3-002)."
+      ]
+    },
+    {
+      "id": "I-019",
+      "status": "pass",
+      "evidence": [
+        "Reviewed P1 structs, public/external inputs, storage, and events: identity/purpose/private content is bytes32 commitments/references; dynamic bytes is signature-only."
+      ]
+    },
+    {
+      "id": "I-020",
+      "status": "partial",
+      "evidence": [
+        "URL fragment handling is frontend/SDK behavior outside the seven-file P1 source scope."
+      ]
+    },
+    {
+      "id": "I-021",
+      "status": "pass",
+      "evidence": [
+        "contracts/src/GlyphReceiptLedger.sol:375-397 binds recoveryAddress; reconciliation/refund checks at lines 213-220 and 307-316 enforce it."
+      ]
+    },
+    {
+      "id": "I-022",
+      "status": "pass",
+      "evidence": [
+        "contracts/src/GlyphReceiptLedger.sol:218-221,255-272 bounds realized fees and records fee realization in reconciliation."
+      ]
+    },
+    {
+      "id": "I-023",
+      "status": "pass",
+      "evidence": [
+        "P1 ledger stores generic proof kinds/references and contains no messenger-specific imports or storage."
+      ]
+    },
+    {
+      "id": "I-024",
+      "status": "partial",
+      "evidence": [
+        "Destination vault liquidity accounting is explicitly deferred beyond P1."
+      ]
+    },
+    {
+      "id": "I-025",
+      "status": "pass",
+      "evidence": [
+        "P1 contracts contain no token transfer, escrow, or external value-moving path."
+      ]
+    },
+    {
+      "id": "I-026",
+      "status": "pass",
+      "evidence": [
+        "contracts/src/GlyphReceiptLedger.sol:202-275 requires source escrow, destination delivery, provider, fee, delta, source finalization, and conservation before RECONCILED."
+      ]
+    },
+    {
+      "id": "I-027",
+      "status": "partial",
+      "evidence": [
+        "No deployment was requested or performed; deployment evidence is outside this local P1 source review."
+      ]
+    },
+    {
+      "id": "I-028",
+      "status": "pass",
+      "evidence": [
+        "The seven-file P1 surface has no dependency on GlyphSessionProxy or the deprecated authority storage slot."
+      ]
+    }
+  ],
+  "testEvidence": {
+    "credible": false,
+    "gaps": [
+      "P1-R2-005 remains open: multiple ledger tests do not reach every branch stated in their names or required by the lock.",
+      "P1-R2-006 remains open: changed-chain/verifying-contract, malformed ECDSA/EIP-1271, exact expiry, nonexistent getter, valid non-party, and coincident-role tests are absent.",
+      "A green 35-test regression confirms compilation/execution but is not acceptance evidence for omitted security/accounting branches."
+    ]
+  },
+  "sideEffects": {
+    "sourceModified": false,
+    "deployed": false,
+    "broadcast": false,
+    "funded": false,
+    "signed": false
+  }
+}

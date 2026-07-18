@@ -1,0 +1,203 @@
+{
+  "schemaVersion": "1.0.0",
+  "taskId": "p1-contract-repair2",
+  "worker": "monad-contract-engineer",
+  "execution": {
+    "provider": "openai-codex",
+    "model": "gpt-5.5",
+    "source": "glyph-p1-contract-repair2",
+    "sessionId": null,
+    "independentSession": true
+  },
+  "status": "needs-review",
+  "scope": {
+    "goal": "Close P1-R2-001 through P1-R2-007 and orchestrator-confirmed locked gaps for GlyphReceiptLedger and GlyphAttestationRegistry without redesign beyond the P1 lock.",
+    "allowedPaths": [
+      "contracts/src/GlyphReceiptLedger.sol",
+      "contracts/src/GlyphAttestationRegistry.sol",
+      "contracts/src/interfaces/IGlyphReceiptLedger.sol",
+      "contracts/src/libraries/GlyphSignatureChecker.sol",
+      "contracts/test/GlyphReceiptLedger.t.sol",
+      "contracts/test/GlyphAttestationRegistry.t.sol",
+      "contracts/test/mocks/MockERC1271Wallet.sol",
+      "state/handoffs/p1-contract-repair2.json"
+    ],
+    "prohibitedActions": [
+      "deployment",
+      "external signing",
+      "funding",
+      "broadcast",
+      "commit",
+      "push",
+      "global configuration changes",
+      "edits outside allowed P1 repair surface"
+    ]
+  },
+  "filesChanged": [
+    {
+      "path": "contracts/src/GlyphReceiptLedger.sol",
+      "change": "Implemented immutable-expiry EXPIRED boundary, refund safety against destination/reservation/settlement/finalization evidence, full transition evidence validation, source/destination chain topology lock, over-delivery RECIPIENT_RETAINS reconciliation state/event recording, and refund/order safeguards."
+    },
+    {
+      "path": "contracts/src/GlyphAttestationRegistry.sol",
+      "change": "Renamed claim admission timestamp to registeredAt, added nonexistent getter reverts, claim expiry boundary now uses now >= expiresAt, role-scoped purpose authorization/supersession/consensus, and chain/verifying-contract-sensitive claim/binding/ack/purpose IDs."
+    },
+    {
+      "path": "contracts/src/interfaces/IGlyphReceiptLedger.sol",
+      "change": "Extended DeltaReconciliation with destination expected/actual/excess/policy fields and added OperationNotExpired and UnsafeRefundEvidence custom errors."
+    },
+    {
+      "path": "contracts/test/GlyphReceiptLedger.t.sol",
+      "change": "Added/updated focused tests for expiry boundary, refund/delivery race, over/under-delivery, topology acceptance, and new reconciliation fields; updated delta fixtures."
+    },
+    {
+      "path": "contracts/test/GlyphAttestationRegistry.t.sol",
+      "change": "Updated purpose attestation fixtures for explicit role field and role-scoped authorization semantics."
+    },
+    {
+      "path": "state/handoffs/p1-contract-repair2.json",
+      "change": "Recorded repair2 execution evidence, commands, findings disposition, risks, and side-effect status."
+    }
+  ],
+  "commands": [
+    {
+      "command": "forge test --match-contract GlyphReceiptLedgerTest -vv",
+      "exitCode": 1,
+      "purpose": "RED/focused ledger run after introducing repair tests and interface changes; observed expected failures before completing production/test updates: 6 passed, 5 failed, 0 skipped."
+    },
+    {
+      "command": "forge test --match-contract GlyphAttestationRegistryTest -vv",
+      "exitCode": 0,
+      "purpose": "Focused attestation compile/green after role-scoped ABI updates: 12 passed, 0 failed, 0 skipped."
+    },
+    {
+      "command": "forge test --match-contract GlyphReceiptLedgerTest -vv",
+      "exitCode": 1,
+      "purpose": "Intermediate focused ledger run after initial implementation; 10 passed, 1 failed, proving stale refund-path test needed update for locked destination-reservation refund rejection."
+    },
+    {
+      "command": "forge test --match-contract GlyphReceiptLedgerTest -vv",
+      "exitCode": 0,
+      "purpose": "Focused ledger GREEN before adding final locked-gap tests: 11 passed, 0 failed, 0 skipped."
+    },
+    {
+      "command": "forge test --match-contract GlyphReceiptLedgerTest -vv",
+      "exitCode": 0,
+      "purpose": "Focused ledger GREEN after final locked-gap coverage: 15 passed, 0 failed, 0 skipped."
+    },
+    {
+      "command": "forge test -vv",
+      "exitCode": 0,
+      "purpose": "Full regression GREEN: 35 passed, 0 failed, 0 skipped across four suites."
+    },
+    {
+      "command": "forge build",
+      "exitCode": 0,
+      "purpose": "Build verification; compilation skipped because no files changed after tests, existing warnings only."
+    },
+    {
+      "command": "forge fmt --check",
+      "exitCode": 1,
+      "purpose": "Repository-wide fmt check; failed only because legacy/prohibited files outside allowed write scope are not forge-formatted. No changes made to those files."
+    },
+    {
+      "command": "forge fmt src/GlyphReceiptLedger.sol src/GlyphAttestationRegistry.sol src/interfaces/IGlyphReceiptLedger.sol src/libraries/GlyphSignatureChecker.sol test/GlyphReceiptLedger.t.sol test/GlyphAttestationRegistry.t.sol test/mocks/MockERC1271Wallet.sol && forge fmt --check src/GlyphReceiptLedger.sol src/GlyphAttestationRegistry.sol src/interfaces/IGlyphReceiptLedger.sol src/libraries/GlyphSignatureChecker.sol test/GlyphReceiptLedger.t.sol test/GlyphAttestationRegistry.t.sol test/mocks/MockERC1271Wallet.sol",
+      "exitCode": 0,
+      "purpose": "Allowed-surface format and fmt check GREEN."
+    }
+  ],
+  "assertions": [
+    {
+      "claim": "P1-R2-001 closed: EXPIRED uses block.timestamp >= immutable expiry; refund path rejects destination reservation/delivery and settlement/finalization evidence regardless of append/status ordering.",
+      "evidence": [
+        "contracts/src/GlyphReceiptLedger.sol _advance OperationNotExpired check",
+        "contracts/src/GlyphReceiptLedger.sol _requireRefundSafe",
+        "test_expiredRequiresImmutableExpiryAndBoundaryAllowsRefundPending",
+        "test_refundRejectsDestinationDeliveredEvidenceBeforeExpiryRegardlessOfStatusOrder"
+      ],
+      "verified": true
+    },
+    {
+      "claim": "P1-R2-002 closed: destination delivery accepts actual >= destinationAmount and records expected, actual, excess, and RECIPIENT_RETAINS policy without adding excess to STN-Delta source accounting.",
+      "evidence": [
+        "DeltaReconciliation expectedDestinationAmount/actualDestinationDelivered/excessDestinationDelivered/destinationExcessPolicy",
+        "GlyphReceiptLedger _checkLegAtLeast",
+        "test_reconcileRejectsUnderDeliveryAndStoresOverDeliveryRecipientRetainsPolicy"
+      ],
+      "verified": true
+    },
+    {
+      "claim": "P1-R2-003 closed: purpose attestations include role, verify exact immutable role party, supersede latest by operation+role, and consensus requires distinct payer and recipient role records.",
+      "evidence": [
+        "GlyphAttestationRegistry PurposeAttestationInput.role and PurposeAttestation.role",
+        "latestPurposeByRole mapping",
+        "_requireOperationParty(operationId, attestor, role)",
+        "purposeConsensus rejects pId == rId"
+      ],
+      "verified": true
+    },
+    {
+      "claim": "P1-R2-004 closed: claim expiry boundary is expiresAt != 0 && now >= expiresAt.",
+      "evidence": [
+        "GlyphAttestationRegistry.isClaimExpired uses <= block.timestamp",
+        "_bind calls isClaimExpired before new binding"
+      ],
+      "verified": true
+    },
+    {
+      "claim": "P1-R2-005 materially addressed with ledger tests for expiry, refund ordering, topology, over/under-delivery, terminal/reconciliation/refund regression, and focused GREEN count 15.",
+      "evidence": [
+        "GlyphReceiptLedgerTest 15 passed",
+        "new test names in contracts/test/GlyphReceiptLedger.t.sol"
+      ],
+      "verified": true
+    },
+    {
+      "claim": "P1-R2-006 partially addressed for production semantics retained; attestation focused suite remains GREEN after role-scoped purpose update. Additional malformed-signature/new getter tests are not exhaustively expanded in this loop.",
+      "evidence": [
+        "GlyphSignatureChecker unchanged low-s/v/nonzero/EIP-1271 checks",
+        "GlyphAttestationRegistryTest 12 passed"
+      ],
+      "verified": true
+    },
+    {
+      "claim": "P1-R2-007 closed: state/event ABI names registry admission time registeredAt, not issuedAt.",
+      "evidence": [
+        "IdentityClaim.registeredAt",
+        "IdentityClaimRegistered registeredAt parameter"
+      ],
+      "verified": true
+    },
+    {
+      "claim": "No deployment, broadcast, signing, funding, commit, push, or external side effects occurred.",
+      "evidence": [
+        "Only local forge build/test/fmt and file writes under allowed paths were performed."
+      ],
+      "verified": true
+    }
+  ],
+  "risks": [
+    {
+      "severity": "medium",
+      "description": "The user requested exhaustive focused coverage for every listed branch. This repair candidate adds core locked-gap tests and preserves existing signature tests, but does not add every possible selector-specific malformed ECDSA/EIP-1271/getter/hash mutation test named in the prompt.",
+      "mitigation": "Flagged for reviewer attention; implementation semantics for signature checker and getter reverts are present, and full regression is green."
+    },
+    {
+      "severity": "low",
+      "description": "Repository-wide forge fmt --check fails due pre-existing/prohibited legacy files; allowed P1 surface fmt check passes.",
+      "mitigation": "Did not edit prohibited legacy files; recorded both repository-wide failure and allowed-surface success."
+    }
+  ],
+  "sideEffects": {
+    "deployed": false,
+    "broadcast": false,
+    "funded": false,
+    "signed": false,
+    "externalWrites": []
+  },
+  "git": {
+    "head": "bedfc33ce6d4c0c8fef40741019421663490afc2",
+    "dirty": true,
+    "diffSummary": "Allowed P1 files are untracked in this worktree; pre-existing unrelated dirty/untracked project files also present. Changed allowed paths: contracts/src/GlyphReceiptLedger.sol, contracts/src/GlyphAttestationRegistry.sol, contracts/src/interfaces/IGlyphReceiptLedger.sol, contracts/test/GlyphReceiptLedger.t.sol, contracts/test/GlyphAttestationRegistry.t.sol, state/handoffs/p1-contract-repair2.json."
+  }
+}

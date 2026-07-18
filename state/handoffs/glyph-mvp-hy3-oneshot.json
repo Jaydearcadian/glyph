@@ -1,0 +1,414 @@
+{
+  "commands": [
+    {
+      "command": "sha256sum docs/architecture/GLYPH_MVP_EXECUTION_CONTRACT.md",
+      "exitCode": 0,
+      "outputDigest": "74a88f873bc10451629aef536d5c757604607345d7418264faee119357fbe3a1",
+      "purpose": "execution-contract hash gate"
+    },
+    {
+      "command": "forge build --force",
+      "exitCode": 0,
+      "purpose": "compile all contracts with Solc 0.8.24 / Cancun"
+    },
+    {
+      "command": "forge test --match-contract Adversarial -vv",
+      "exitCode": 0,
+      "purpose": "Gate 1 focused P1 review3 adversarial closure",
+      "result": "15 passed, 0 failed, 0 skipped"
+    },
+    {
+      "command": "forge test --match-path test/GlyphMvpValueFlows.t.sol -vv",
+      "exitCode": 0,
+      "purpose": "Gates 2-7 value/gasless/cross-chain/program flows",
+      "result": "6 passed, 0 failed, 0 skipped"
+    },
+    {
+      "command": "forge test --match-path test/GlyphMvpFuzzInvariant.t.sol -vv",
+      "exitCode": 0,
+      "purpose": "fuzz and stateful invariant",
+      "result": "2 passed; fuzz runs 256; invariant runs 256, calls 128000, reverts 0"
+    },
+    {
+      "command": "forge fmt --check",
+      "exitCode": 0,
+      "purpose": "format gate"
+    },
+    {
+      "command": "forge test -vv",
+      "exitCode": 0,
+      "purpose": "full regression",
+      "result": "58 passed, 0 failed, 0 skipped"
+    },
+    {
+      "command": "for f in state/receipts/*.receipt.json; do scripts/receipt_tool.py verify \"$f\"; done",
+      "exitCode": 0,
+      "purpose": "receipt fixture verification",
+      "result": "5 canonical receipt JSON fixtures verified individually"
+    },
+    {
+      "command": "git diff --check",
+      "exitCode": 0,
+      "purpose": "whitespace/diff integrity"
+    },
+    {
+      "command": "dangerous-pattern search",
+      "exitCode": 0,
+      "purpose": "manual inspection of encodePacked/delegatecall/selfdestruct/tx.origin/call/send/sweep/legacy proxy hits",
+      "result": "new MVP core has no delegatecall/selfdestruct/tx.origin/sweep/raw transfer/send; legacy/test/forge-std hits recorded as inspected"
+    }
+  ],
+  "completionBoundary": {
+    "claimedDeployed": false,
+    "claimedLive": false,
+    "finalStatus": "BLOCKED"
+  },
+  "executionContract": {
+    "expectedSha256": "74a88f873bc10451629aef536d5c757604607345d7418264faee119357fbe3a1",
+    "matched": true,
+    "path": "docs/architecture/GLYPH_MVP_EXECUTION_CONTRACT.md",
+    "sha256": "74a88f873bc10451629aef536d5c757604607345d7418264faee119357fbe3a1"
+  },
+  "filesChanged": [
+    {
+      "path": "README.md",
+      "status": "M"
+    },
+    {
+      "path": "contracts/foundry.toml",
+      "status": "M"
+    },
+    {
+      "path": "contracts/src/GlyphRegistry.sol",
+      "status": "M"
+    },
+    {
+      "path": "contracts/src/GlyphSessionProxy.sol",
+      "status": "M"
+    },
+    {
+      "path": "contracts/src/IGlyphRegistry.sol",
+      "status": "M"
+    },
+    {
+      "path": "contracts/test/GlyphRegistry.t.sol",
+      "status": "M"
+    },
+    {
+      "path": "docs/glyph-core-arch.md",
+      "status": "M"
+    },
+    {
+      "path": "AGENTS.md",
+      "status": "??"
+    },
+    {
+      "path": "contracts/script/",
+      "status": "??"
+    },
+    {
+      "path": "contracts/src/ContributionCampaign.sol",
+      "status": "??"
+    },
+    {
+      "path": "contracts/src/DestinationGlyphVault.sol",
+      "status": "??"
+    },
+    {
+      "path": "contracts/src/GiftPool.sol",
+      "status": "??"
+    },
+    {
+      "path": "contracts/src/GlyphAttestationRegistry.sol",
+      "status": "??"
+    },
+    {
+      "path": "contracts/src/GlyphReceiptLedger.sol",
+      "status": "??"
+    },
+    {
+      "path": "contracts/src/MockGlyphMessengerAdapter.sol",
+      "status": "??"
+    },
+    {
+      "path": "contracts/src/SourceDeltaRouter.sol",
+      "status": "??"
+    },
+    {
+      "path": "contracts/src/interfaces/",
+      "status": "??"
+    },
+    {
+      "path": "contracts/src/libraries/",
+      "status": "??"
+    },
+    {
+      "path": "contracts/test/GlyphAttestationRegistry.t.sol",
+      "status": "??"
+    },
+    {
+      "path": "contracts/test/GlyphAttestationRegistryAdversarial.t.sol",
+      "status": "??"
+    },
+    {
+      "path": "contracts/test/GlyphMvpFuzzInvariant.t.sol",
+      "status": "??"
+    },
+    {
+      "path": "contracts/test/GlyphMvpValueFlows.t.sol",
+      "status": "??"
+    },
+    {
+      "path": "contracts/test/GlyphReceiptLedger.t.sol",
+      "status": "??"
+    },
+    {
+      "path": "contracts/test/GlyphReceiptLedgerAdversarial.t.sol",
+      "status": "??"
+    },
+    {
+      "path": "contracts/test/mocks/",
+      "status": "??"
+    },
+    {
+      "path": "docs/PRODUCT_DOCTRINE.md",
+      "status": "??"
+    },
+    {
+      "path": "docs/architecture/",
+      "status": "??"
+    },
+    {
+      "path": "scripts/",
+      "status": "??"
+    },
+    {
+      "path": "state/",
+      "status": "??"
+    },
+    {
+      "path": "workers/",
+      "status": "??"
+    }
+  ],
+  "fuzzInvariant": {
+    "fuzzRuns": 256,
+    "handler": "GlyphMvpInvariantHandler.setLegs",
+    "invariantCalls": 128000,
+    "invariantReverts": 0,
+    "invariantRuns": 256
+  },
+  "git": {
+    "dirty": true,
+    "head": "bedfc33ce6d4c0c8fef40741019421663490afc2",
+    "statusPorcelain": [
+      "M README.md",
+      " M contracts/foundry.toml",
+      " M contracts/src/GlyphRegistry.sol",
+      " M contracts/src/GlyphSessionProxy.sol",
+      " M contracts/src/IGlyphRegistry.sol",
+      " M contracts/test/GlyphRegistry.t.sol",
+      " M docs/glyph-core-arch.md",
+      "?? AGENTS.md",
+      "?? contracts/script/",
+      "?? contracts/src/ContributionCampaign.sol",
+      "?? contracts/src/DestinationGlyphVault.sol",
+      "?? contracts/src/GiftPool.sol",
+      "?? contracts/src/GlyphAttestationRegistry.sol",
+      "?? contracts/src/GlyphReceiptLedger.sol",
+      "?? contracts/src/MockGlyphMessengerAdapter.sol",
+      "?? contracts/src/SourceDeltaRouter.sol",
+      "?? contracts/src/interfaces/",
+      "?? contracts/src/libraries/",
+      "?? contracts/test/GlyphAttestationRegistry.t.sol",
+      "?? contracts/test/GlyphAttestationRegistryAdversarial.t.sol",
+      "?? contracts/test/GlyphMvpFuzzInvariant.t.sol",
+      "?? contracts/test/GlyphMvpValueFlows.t.sol",
+      "?? contracts/test/GlyphReceiptLedger.t.sol",
+      "?? contracts/test/GlyphReceiptLedgerAdversarial.t.sol",
+      "?? contracts/test/mocks/",
+      "?? docs/PRODUCT_DOCTRINE.md",
+      "?? docs/architecture/",
+      "?? scripts/",
+      "?? state/",
+      "?? workers/"
+    ]
+  },
+  "importedSourceFingerprints": [
+    {
+      "path": "contracts/src/GlyphReceiptLedger.sol",
+      "sha256AtImport": "7bbd86cb7ed67edb304d03af20e19bc20c06d2676076ec2c386ea08154370a25"
+    },
+    {
+      "path": "contracts/src/GlyphAttestationRegistry.sol",
+      "sha256AtImport": "0bde14f3d0404926fedab5cd7eec2cbcfc1f41575ade3f4b185206f9eac7d39e"
+    },
+    {
+      "path": "contracts/src/interfaces/IGlyphReceiptLedger.sol",
+      "sha256AtImport": "3cb32d418340a51491b6b8cd41fdb39b3437e80bf11e1a334a7c0060bddf8c7c"
+    },
+    {
+      "path": "contracts/src/libraries/GlyphSignatureChecker.sol",
+      "sha256AtImport": "f07ae1195380209dfa9484581ee4f65ed922ec704fa7edff567c1a45a7b5b508"
+    },
+    {
+      "path": "contracts/test/GlyphReceiptLedger.t.sol",
+      "sha256AtImport": "d5c14c4fd566b3d342f69f06793c17ad838d76bab7e97a05df70a1849cba1ecc"
+    },
+    {
+      "path": "contracts/test/GlyphAttestationRegistry.t.sol",
+      "sha256AtImport": "9f7a4a01ed4cbf18ba69688cfd45a513aa91cbcc0887532e54b0af62670e46dc"
+    },
+    {
+      "path": "contracts/test/mocks/MockERC1271Wallet.sol",
+      "sha256AtImport": "e598de7bcb705fef6565cb6c39e860cde5a48cb43f3f2e1db352603de0f3d210"
+    }
+  ],
+  "inputWorkspace": {
+    "gitHead": "bedfc33ce6d4c0c8fef40741019421663490afc2",
+    "initialP1Candidate": "/root/monadglyph-p1-engineer",
+    "p1FrozenHash": "fc36f0b30632fd8f0084eac05cc372b0c92d1bb049624abef54a7c46680592ab",
+    "path": "/root/monadglyph-hy3-oneshot"
+  },
+  "laneEvidence": {
+    "adapterCandidateImplemented": false,
+    "authoritativeChecks": [
+      "https://docs.layerzero.network/v2/deployments/deployed-contracts fetched via curl; Monad Mainnet and Base Sepolia pages present, no clear Monad Testnet pathway proof extracted",
+      "https://docs.layerzero.network/v2/deployments/chains/monad fetched; page appears Monad Mainnet-focused; sidebar contains testnet strings but no verified Base Sepolia -> Monad Testnet lane configuration",
+      "web_search/web_extract API attempts failed with HTTP 432; direct docs fetch used as fallback"
+    ],
+    "configTemplate": "state/adapter/base-sepolia-monad-testnet.adapter.template.json",
+    "mockMessengerImplementedAndTested": true,
+    "status": "BLOCKED_LANE_SUPPORT"
+  },
+  "modelTransition": {
+    "continuedAs": "gpt-5.5",
+    "note": "User explicitly superseded only executor model selection; all product scope/gates/boundaries preserved. Partial hy3 changes inspected and repaired in-place.",
+    "supersededInitialRoute": "tencent/hy3:free interrupted mid-run"
+  },
+  "receiptFixtures": [
+    {
+      "path": "state/receipts/CONTRIBUTION.receipt.card.svg",
+      "sha256": "caf92c790dd6a4ab50333c8df816c10cdf2ad27c596f8676058aced4ca55b352"
+    },
+    {
+      "path": "state/receipts/CONTRIBUTION.receipt.json",
+      "sha256": "589529b8c45e9298af6030afb0b70cf7701f74d862d0b952b0a79d55f8899c57"
+    },
+    {
+      "path": "state/receipts/GIFT_CLAIM.receipt.card.svg",
+      "sha256": "c5d8a57a4e45e68a10d08ac570711f42d67abc14968678d8df76d919afe6a08b"
+    },
+    {
+      "path": "state/receipts/GIFT_CLAIM.receipt.json",
+      "sha256": "fa2ff3c3d07fb906c0a6417c4b170531db6ff33dff2aabbaa21a1532445840bb"
+    },
+    {
+      "path": "state/receipts/GIFT_POOL.receipt.card.svg",
+      "sha256": "174439529751ffc08d4374515f5215dede229a4ee7a18ec0546671465fb84522"
+    },
+    {
+      "path": "state/receipts/GIFT_POOL.receipt.json",
+      "sha256": "b7f41a9c4b4e50877103cbfb999016ecedd066712d0d7b4db110c4407ac7267e"
+    },
+    {
+      "path": "state/receipts/PULL.receipt.card.svg",
+      "sha256": "aa09efc7b710dedd643a7c35c6df9ae7f74b51e1705068ddeaafb5875461fda2"
+    },
+    {
+      "path": "state/receipts/PULL.receipt.json",
+      "sha256": "e23f2822ac15cc7bd1fee6916c19c6b3412f7dafc5cfffc5e220bbc79383a400"
+    },
+    {
+      "path": "state/receipts/PUSH.receipt.card.svg",
+      "sha256": "dbe6baa1f35a9c149c9617034655c59ecc9988d3b566889f04d83ff24eddcab5"
+    },
+    {
+      "path": "state/receipts/PUSH.receipt.json",
+      "sha256": "5c176b4965044af4559c325212ddb595a9be3564c9469b6bef540d66b6ef4580"
+    }
+  ],
+  "redGreenEvidence": {
+    "green": "After repairing test-authoring issues and implementing gates 2-7, full forge test -vv returned 58 passed, 0 failed, 0 skipped.",
+    "red": "Interrupted hy3 Gate 1 adversarial run produced failing tests before repair: 5/16 passed then 14/15 passed with one expected prank-consumption failure; these failures were preserved in command outputs during session."
+  },
+  "risks": [
+    {
+      "description": "Real Base Sepolia -> Monad Testnet adapter support/configuration not verified from authoritative current docs, so DEPLOY_READY is prohibited.",
+      "mitigation": "Keep messenger-neutral mock; verify official support/endpoints/default configs before implementing real adapter.",
+      "severity": "blocker"
+    },
+    {
+      "description": "MVP value core is local/test harness grade and not deployed/audited; legacy GlyphRegistry/GlyphSessionProxy remain in tree but are not integrated.",
+      "mitigation": "Independent security review and adapter-specific implementation before deployment.",
+      "severity": "medium"
+    }
+  ],
+  "runtime": {
+    "currentModel": "gpt-5.5",
+    "currentProvider": "openai-codex",
+    "currentSessionId": "20260718_113408_01c2db",
+    "independentSession": false,
+    "source": "Hermes Agent CLI direct sequential executor"
+  },
+  "schemaVersion": "glyph.mvp.handoff.v1",
+  "sideEffects": {
+    "broadcast": false,
+    "deployed": false,
+    "externalWrites": [],
+    "funded": false,
+    "privateKeysAccessed": false,
+    "signed": false
+  },
+  "status": "BLOCKED",
+  "statusReason": "BLOCKED_LANE_SUPPORT: mandatory local gates are GREEN, but current authoritative public Base Sepolia -> Monad Testnet adapter lane support/configuration was not verified; no DEPLOY_READY claim made.",
+  "taskId": "glyph-mvp-hy3-oneshot",
+  "testsBySuite": {
+    "GlyphAttestationRegistryAdversarialTest": {
+      "failed": 0,
+      "passed": 8,
+      "skipped": 0
+    },
+    "GlyphAttestationRegistryTest": {
+      "failed": 0,
+      "passed": 12,
+      "skipped": 0
+    },
+    "GlyphMvpFuzzInvariantTest": {
+      "failed": 0,
+      "passed": 2,
+      "skipped": 0
+    },
+    "GlyphMvpValueFlowsTest": {
+      "failed": 0,
+      "passed": 6,
+      "skipped": 0
+    },
+    "GlyphReceiptLedgerAdversarialTest": {
+      "failed": 0,
+      "passed": 7,
+      "skipped": 0
+    },
+    "GlyphReceiptLedgerTest": {
+      "failed": 0,
+      "passed": 15,
+      "skipped": 0
+    },
+    "GlyphRegistryTest": {
+      "failed": 0,
+      "passed": 4,
+      "skipped": 0
+    },
+    "GlyphSessionProxyTest_legacy_only": {
+      "failed": 0,
+      "note": "legacy tests retained; deprecated proxy not integrated into MVP core",
+      "passed": 4,
+      "skipped": 0
+    }
+  },
+  "treeFingerprint": {
+    "algorithm": "sha256(path + sha256(file), sorted, excludes .git/contracts/out/contracts/cache/self-referential handoff)",
+    "fileCount": 155,
+    "sha256": "ee5f2e1eb7c5006d71a4bf34d3f9833c38fa261bf02421a49334da08b9e5068b"
+  }
+}

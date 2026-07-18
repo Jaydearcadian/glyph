@@ -1,0 +1,129 @@
+{
+  "schemaVersion": "1.0.0",
+  "taskId": "p1-mini-matrix",
+  "worker": "receipt-ledger-architect",
+  "execution": {
+    "provider": "openai-codex",
+    "model": "gpt-5.4-mini",
+    "source": "glyph-p1-mini",
+    "sessionId": null,
+    "independentSession": true
+  },
+  "status": "needs-review",
+  "scope": {
+    "goal": "Produce the P1 invariant -> interface -> event -> Foundry test matrix for GlyphReceiptLedger and GlyphAttestationRegistry, with explicit P1 exclusions and unresolved blockers called out.",
+    "allowedPaths": [
+      "docs/architecture/P1_INTERFACE_TEST_MATRIX.md",
+      "state/handoffs/p1-mini-matrix.json"
+    ],
+    "prohibitedActions": [
+      "edit contracts",
+      "edit tests",
+      "edit Foundry config",
+      "edit AGENTS.md",
+      "edit existing architecture specs",
+      "edit MGlyph.session.json",
+      "edit vessel_sync.json",
+      "edit global config",
+      "deploy",
+      "sign",
+      "fund",
+      "broadcast",
+      "commit",
+      "push"
+    ]
+  },
+  "filesChanged": [
+    {
+      "path": "/root/monadglyph/docs/architecture/P1_INTERFACE_TEST_MATRIX.md",
+      "change": "Created the P1 interface/event/test matrix for GlyphReceiptLedger and GlyphAttestationRegistry, including boundaries, proposed data model, EIP-712/EIP-1271 path, ID derivations, transition table, reconciliation rules, purpose/identity behavior, exclusions, and blockers."
+    },
+    {
+      "path": "/root/monadglyph/state/handoffs/p1-mini-matrix.json",
+      "change": "Created the required handoff record for review."
+    }
+  ],
+  "commands": [
+    {
+      "command": "git -C /root/monadglyph rev-parse HEAD && git -C /root/monadglyph status --short",
+      "exitCode": 0,
+      "purpose": "Capture current Git HEAD and dirty state."
+    },
+    {
+      "command": "python3 - <<'PY'\ntry:\n    import jsonschema\n    print('jsonschema-available', jsonschema.__version__)\nexcept Exception as e:\n    print('jsonschema-unavailable', type(e).__name__, e)\nPY",
+      "exitCode": 0,
+      "purpose": "Check whether jsonschema is available for handoff validation."
+    },
+    {
+      "command": "python3 - <<'PY'\nimport json\nfrom pathlib import Path\nfrom jsonschema import validate\nschema = json.loads(Path('/root/monadglyph/state/handoff.schema.json').read_text())\ndata = json.loads(Path('/root/monadglyph/state/handoffs/p1-mini-matrix.json').read_text())\nvalidate(instance=data, schema=schema)\nprint('schema-validation: ok')\nPY",
+      "exitCode": 0,
+      "purpose": "Validate the handoff JSON against state/handoff.schema.json."
+    }
+  ],
+  "assertions": [
+    {
+      "claim": "The requested matrix document was written to the allowed architecture path.",
+      "evidence": [
+        "/root/monadglyph/docs/architecture/P1_INTERFACE_TEST_MATRIX.md",
+        "write_file result: resolved_path=/root/monadglyph/docs/architecture/P1_INTERFACE_TEST_MATRIX.md"
+      ],
+      "verified": true
+    },
+    {
+      "claim": "The handoff record was written to the allowed state path.",
+      "evidence": [
+        "/root/monadglyph/state/handoffs/p1-mini-matrix.json",
+        "write_file result: resolved_path=/root/monadglyph/state/handoffs/p1-mini-matrix.json"
+      ],
+      "verified": true
+    },
+    {
+      "claim": "jsonschema is available in this runtime, so schema validation can be performed.",
+      "evidence": [
+        "terminal output: jsonschema-available 4.26.0"
+      ],
+      "verified": true
+    },
+    {
+      "claim": "Current repository state is dirty and HEAD was captured for the handoff.",
+      "evidence": [
+        "terminal output: bedfc33ce6d4c0c8fef40741019421663490afc2",
+        "terminal output: M README.md",
+        "terminal output: M contracts/foundry.toml",
+        "terminal output: M docs/glyph-core-arch.md",
+        "terminal output: ?? AGENTS.md",
+        "terminal output: ?? docs/PRODUCT_DOCTRINE.md",
+        "terminal output: ?? docs/architecture/",
+        "terminal output: ?? state/",
+        "terminal output: ?? workers/"
+      ],
+      "verified": true
+    }
+  ],
+  "risks": [
+    {
+      "severity": "medium",
+      "description": "Several source docs leave later-phase routing/messenger/vault surfaces intentionally out of P1; the matrix therefore defers those invariant IDs rather than fabricating P1 behavior."
+    },
+    {
+      "severity": "medium",
+      "description": "Claim expiry handling is split between append-only stored status and derived EXPIRED view state; this document chooses the derived-view interpretation and flags it for review."
+    },
+    {
+      "severity": "low",
+      "description": "Exact EIP-712 contract names/version strings are proposed, not locked."
+    }
+  ],
+  "sideEffects": {
+    "deployed": false,
+    "broadcast": false,
+    "funded": false,
+    "signed": false,
+    "externalWrites": []
+  },
+  "git": {
+    "head": "bedfc33ce6d4c0c8fef40741019421663490afc2",
+    "dirty": true,
+    "diffSummary": "Repository was already dirty before this task; new review artifacts were added under docs/architecture and state/handoffs."
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "glyph.adapter.config.v1",
+  "candidate": "LayerZeroV2-or-Hyperlane",
+  "lane": {
+    "source": { "name": "Base Sepolia", "chainId": 84532, "endpointOrMailbox": null, "eidOrDomain": null },
+    "destination": { "name": "Monad Testnet", "chainId": 10143, "endpointOrMailbox": null, "eidOrDomain": null }
+  },
+  "status": "BLOCKED_LANE_SUPPORT",
+  "reason": "No current authoritative proof was obtained that Base Sepolia -> Monad Testnet is officially supported/configured as a usable public testnet messaging lane. MockGlyphMessengerAdapter remains messenger-neutral and tested.",
+  "secrets": {},
+  "broadcast": false,
+  "deployed": false
+}

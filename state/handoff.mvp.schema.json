@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://glyph.local/schemas/glyph-mvp-handoff.schema.json",
+  "title": "Glyph MVP One-Shot Handoff Extension",
+  "type": "object",
+  "required": ["schemaVersion", "taskId", "status", "statusReason", "executionContract", "runtime", "modelTransition", "commands", "redGreenEvidence", "testsBySuite", "fuzzInvariant", "receiptFixtures", "treeFingerprint", "laneEvidence", "risks", "sideEffects", "git"],
+  "properties": {
+    "schemaVersion": {"const": "glyph.mvp.handoff.v1"},
+    "taskId": {"const": "glyph-mvp-hy3-oneshot"},
+    "status": {"enum": ["DEPLOY_READY", "BLOCKED", "FAILED"]},
+    "statusReason": {"type": "string"},
+    "executionContract": {"type": "object"},
+    "runtime": {"type": "object"},
+    "modelTransition": {"type": "object"},
+    "commands": {"type": "array"},
+    "redGreenEvidence": {"type": "object"},
+    "testsBySuite": {"type": "object"},
+    "fuzzInvariant": {"type": "object"},
+    "receiptFixtures": {"type": "array"},
+    "treeFingerprint": {"type": "object"},
+    "laneEvidence": {"type": "object"},
+    "risks": {"type": "array"},
+    "sideEffects": {"type": "object", "required": ["deployed", "broadcast", "funded", "signed", "externalWrites", "privateKeysAccessed"]},
+    "git": {"type": "object"}
+  },
+  "additionalProperties": true
+}

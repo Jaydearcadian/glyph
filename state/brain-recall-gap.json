@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "1.0.0",
+  "project": "Glyph",
+  "phase": "P0",
+  "recordedAt": "2026-07-18T05:37:03Z",
+  "status": "brain-recall-blocked",
+  "retainedNodeIds": [
+    "b2af1e04",
+    "5738f9cb",
+    "4e3fd07d",
+    "32995ab4",
+    "1292b00b"
+  ],
+  "relationshipsCreated": 8,
+  "projectNode": "c0529eb8",
+  "receiptArchitectureNode": "97e4683a",
+  "recallQuery": "Glyph P0 control plane canonical product doctrine v1 protocol invariants v1 project-local worker system",
+  "recallResult": "No newly retained Glyph nodes returned; unrelated OpenRails and legacy nodes dominated results.",
+  "contextResult": "No requested node IDs returned.",
+  "graphResult": "missing primitive",
+  "sessionRegenerated": false,
+  "reason": "Canonical MGlyph.session.json regeneration requires targeted recall of the intended Brain subgraph.",
+  "canonical": false
+}

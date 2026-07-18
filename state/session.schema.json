@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://glyph.local/schemas/session.schema.json",
+  "title": "Glyph Canonical Session Projection",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "project",
+    "projectDir",
+    "phase",
+    "status",
+    "brain",
+    "git",
+    "runtime",
+    "deprecated",
+    "nextGate",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "project": { "const": "Glyph" },
+    "projectDir": { "const": "/root/monadglyph" },
+    "phase": { "enum": ["P0", "P1", "P2", "P3", "P4", "P5", "P6", "P7"] },
+    "status": { "enum": ["active", "blocked", "complete", "paused"] },
+    "brain": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["projectNode", "brainVerified", "retainedNodeIds", "relationCount", "recallQuery", "recalledNodeIds"],
+      "properties": {
+        "projectNode": { "type": "string", "minLength": 1 },
+        "brainVerified": { "type": "boolean" },
+        "retainedNodeIds": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "relationCount": { "type": "integer", "minimum": 0 },
+        "recallQuery": { "type": "string" },
+        "recalledNodeIds": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "recallGap": { "type": ["string", "null"] }
+      }
+    },
+    "git": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["head", "dirty"],
+      "properties": {
+        "head": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "dirty": { "type": "boolean" },
+        "changedPaths": { "type": "array", "items": { "type": "string" }, "uniqueItems": true }
+      }
+    },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contractsChanged", "deployed", "broadcast", "funded", "liveRoutes"],
+      "properties": {
+        "contractsChanged": { "type": "boolean" },
+        "deployed": { "type": "boolean" },
+        "broadcast": { "type": "boolean" },
+        "funded": { "type": "boolean" },
+        "liveRoutes": { "type": "array", "items": { "type": "string" }, "uniqueItems": true }
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "status"],
+        "properties": {
+          "path": { "type": "string" },
+          "status": { "enum": ["canonical", "draft", "deprecated", "stale", "verified"] }
+        }
+      }
+    },
+    "deprecated": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "nextGate": { "type": "string", "minLength": 1 },
+    "blockers": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "updatedAt": { "type": "string", "format": "date-time" }
+  }
+}

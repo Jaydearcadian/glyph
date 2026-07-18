@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://glyph.local/schemas/handoff.schema.json",
+  "title": "Glyph Worker Handoff",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "taskId",
+    "worker",
+    "execution",
+    "status",
+    "scope",
+    "filesChanged",
+    "commands",
+    "assertions",
+    "risks",
+    "sideEffects",
+    "git"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "taskId": { "type": "string", "minLength": 1 },
+    "worker": {
+      "type": "string",
+      "enum": [
+        "monad-contract-engineer",
+        "crosschain-delta-architect",
+        "receipt-ledger-architect",
+        "adversarial-reviewer",
+        "testnet-e2e-proof"
+      ]
+    },
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "model", "source", "independentSession"],
+      "properties": {
+        "provider": { "type": "string", "minLength": 1 },
+        "model": { "type": "string", "minLength": 1 },
+        "source": { "type": "string", "minLength": 1 },
+        "sessionId": { "type": ["string", "null"] },
+        "independentSession": { "type": "boolean" }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": ["completed", "blocked", "failed", "needs-review"]
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["goal", "allowedPaths", "prohibitedActions"],
+      "properties": {
+        "goal": { "type": "string", "minLength": 1 },
+        "allowedPaths": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "prohibitedActions": { "type": "array", "items": { "type": "string" }, "uniqueItems": true }
+      }
+    },
+    "filesChanged": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "change"],
+        "properties": {
+          "path": { "type": "string" },
+          "change": { "type": "string" }
+        }
+      }
+    },
+    "commands": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["command", "exitCode", "purpose"],
+        "properties": {
+          "command": { "type": "string" },
+          "exitCode": { "type": "integer" },
+          "purpose": { "type": "string" },
+          "outputDigest": { "type": "string" }
+        }
+      }
+    },
+    "assertions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["claim", "evidence", "verified"],
+        "properties": {
+          "claim": { "type": "string" },
+          "evidence": { "type": "array", "items": { "type": "string" } },
+          "verified": { "type": "boolean" }
+        }
+      }
+    },
+    "risks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["severity", "description"],
+        "properties": {
+          "severity": { "enum": ["blocker", "high", "medium", "low", "info"] },
+          "description": { "type": "string" },
+          "mitigation": { "type": "string" }
+        }
+      }
+    },
+    "sideEffects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["deployed", "broadcast", "funded", "signed", "externalWrites"],
+      "properties": {
+        "deployed": { "type": "boolean" },
+        "broadcast": { "type": "boolean" },
+        "funded": { "type": "boolean" },
+        "signed": { "type": "boolean" },
+        "externalWrites": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "git": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["head", "dirty"],
+      "properties": {
+        "head": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "dirty": { "type": "boolean" },
+        "diffSummary": { "type": "string" }
+      }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://glyph.local/schemas/receipt.schema.json",
+  "type": "object",
+  "required": ["schemaVersion", "operationId", "mode", "topology", "status", "termsHash", "valueLegs", "feeBreakdown", "reconciliation", "proofs", "messageIds", "finalReceiptHash", "verification"],
+  "properties": {
+    "schemaVersion": {"const": "glyph.receipt.v1"},
+    "operationId": {"type": "string"},
+    "mode": {"enum": ["PUSH", "PULL", "CONTRIBUTION", "GIFT_CLAIM", "GIFT_POOL"]},
+    "topology": {"enum": ["LOCAL", "CROSS_CHAIN"]},
+    "status": {"enum": ["RECONCILED", "REFUNDED"]},
+    "termsHash": {"type": "string"},
+    "valueLegs": {"type": "array"},
+    "feeBreakdown": {"type": "object"},
+    "reconciliation": {"type": "object"},
+    "proofs": {"type": "array"},
+    "messageIds": {"type": "array"},
+    "finalReceiptHash": {"type": "string"},
+    "verification": {"type": "object"}
+  }
+}

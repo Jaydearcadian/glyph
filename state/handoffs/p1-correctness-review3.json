@@ -1,0 +1,145 @@
+{
+  "schemaVersion": "1.0.0",
+  "taskId": "p1-correctness-review3",
+  "worker": "adversarial-reviewer",
+  "execution": {
+    "provider": "openai-codex",
+    "model": "gpt-5.6-sol",
+    "source": "glyph-p1-correctness-review3",
+    "sessionId": null,
+    "independentSession": true
+  },
+  "status": "completed",
+  "scope": {
+    "goal": "Independently review the frozen seven-file P1 Glyph receipt-ledger and attestation-registry candidate for correctness, spec conformance, prior-finding closure, adversarial state ordering, accounting, signatures, identity/purpose trust boundaries, and acceptance-grade test evidence.",
+    "allowedPaths": [
+      "state/reviews/p1-correctness-review3.json",
+      "state/handoffs/p1-correctness-review3.json"
+    ],
+    "prohibitedActions": [
+      "modify contracts",
+      "modify tests",
+      "modify architecture or configuration",
+      "modify prior handoffs",
+      "deploy",
+      "broadcast",
+      "fund",
+      "sign",
+      "invoke another model"
+    ]
+  },
+  "filesChanged": [
+    {
+      "path": "state/reviews/p1-correctness-review3.json",
+      "change": "Created the independent correctness review with frozen-hash evidence, command results, prior-finding dispositions, verdict, findings, invariant results, test gaps, and side-effect declaration."
+    },
+    {
+      "path": "state/handoffs/p1-correctness-review3.json",
+      "change": "Created this schema-conforming execution handoff."
+    }
+  ],
+  "commands": [
+    {
+      "command": "python3 frozen seven-file path-and-content SHA-256 algorithm",
+      "exitCode": 0,
+      "purpose": "Recomputed fc36f0b30632fd8f0084eac05cc372b0c92d1bb049624abef54a7c46680592ab and matched the frozen candidate exactly."
+    },
+    {
+      "command": "forge build",
+      "exitCode": 0,
+      "purpose": "Compiled 31 files successfully with Solc 0.8.24; warnings only."
+    },
+    {
+      "command": "forge test -vv",
+      "exitCode": 0,
+      "purpose": "Executed the full regression: 35 passed, 0 failed, 0 skipped across four suites."
+    },
+    {
+      "command": "forge fmt --check src/GlyphReceiptLedger.sol src/GlyphAttestationRegistry.sol src/interfaces/IGlyphReceiptLedger.sol src/libraries/GlyphSignatureChecker.sol test/GlyphReceiptLedger.t.sol test/GlyphAttestationRegistry.t.sol test/mocks/MockERC1271Wallet.sol",
+      "exitCode": 0,
+      "purpose": "Verified formatting on the exact allowed seven-file contract/test surface."
+    },
+    {
+      "command": "python3 jsonschema validation against state/handoff.schema.json",
+      "exitCode": 0,
+      "purpose": "Validate this handoff against the authoritative handoff schema before exit."
+    }
+  ],
+  "assertions": [
+    {
+      "claim": "The reviewed seven-file candidate exactly matches frozen SHA-256 fc36f0b30632fd8f0084eac05cc372b0c92d1bb049624abef54a7c46680592ab.",
+      "evidence": [
+        "Independent execution of the user-supplied path-and-content hashing algorithm returned the exact frozen digest."
+      ],
+      "verified": true
+    },
+    {
+      "claim": "Build, full test execution, and allowed-surface formatting checks pass.",
+      "evidence": [
+        "forge build: exit 0, 31 files compiled with Solc 0.8.24",
+        "forge test -vv: exit 0, 35 passed, 0 failed, 0 skipped",
+        "allowed-surface forge fmt --check: exit 0"
+      ],
+      "verified": true
+    },
+    {
+      "claim": "Review3 verdict is fail with 0 critical, 0 high, 2 medium, and 1 low findings.",
+      "evidence": [
+        "state/reviews/p1-correctness-review3.json summary and findings",
+        "P1-R3-001: missing ledger accounting/authority branch evidence",
+        "P1-R3-002: missing attestation signature/boundary/getter/role-consensus adversarial evidence",
+        "P1-R3-003: absent named authoritative architecture inputs"
+      ],
+      "verified": true
+    },
+    {
+      "claim": "Prior production correctness findings P1-R2-001, P1-R2-002, P1-R2-003, P1-R2-004, and P1-R2-007 are actually closed in source.",
+      "evidence": [
+        "GlyphReceiptLedger expiry/refund evidence guards and overdelivery reconciliation",
+        "GlyphAttestationRegistry role-scoped purpose records, exact claim expiry boundary, and registeredAt ABI",
+        "Detailed line evidence in state/reviews/p1-correctness-review3.json priorFindings"
+      ],
+      "verified": true
+    },
+    {
+      "claim": "Prior test-evidence findings P1-R2-005 and P1-R2-006 remain open.",
+      "evidence": [
+        "Ledger tests still use implementation helpers as hash oracle, omit claimed terminal and mismatch branches, and do not reach huge-value conservation",
+        "Attestation tests still omit changed chain/verifying contract, malformed ECDSA/EIP-1271, exact expiry equality, nonexistent getters, valid non-party authorization, and payer==recipient role consensus"
+      ],
+      "verified": true
+    },
+    {
+      "claim": "No contract, test, architecture, configuration, or prior handoff source was modified and no external side effect occurred.",
+      "evidence": [
+        "Only state/reviews/p1-correctness-review3.json and state/handoffs/p1-correctness-review3.json were written",
+        "No deployment, transaction broadcast, funding, signing, or model invocation was performed"
+      ],
+      "verified": true
+    }
+  ],
+  "risks": [
+    {
+      "severity": "medium",
+      "description": "Acceptance is blocked because required security- and accounting-sensitive adversarial tests are absent or do not reach every branch stated by their names.",
+      "mitigation": "Add the isolated tests specified by P1-R3-001 and P1-R3-002, freeze a new candidate, and run another independent correctness review."
+    },
+    {
+      "severity": "low",
+      "description": "docs/architecture/INVARIANT_MATRIX.md and docs/architecture/MONADGLYPH_TARGET_ARCHITECTURE.md, named as authoritative review inputs, are absent from this workspace.",
+      "mitigation": "Restore those canonical files or update the authoritative path references; this review used the available docs/architecture/INVARIANTS.md plus P1_LOCKED_DECISIONS.md and related P1 architecture documents."
+    }
+  ],
+  "sideEffects": {
+    "deployed": false,
+    "broadcast": false,
+    "funded": false,
+    "signed": false,
+    "externalWrites": []
+  },
+  "git": {
+    "head": "bedfc33ce6d4c0c8fef40741019421663490afc2",
+    "dirty": true,
+    "diffSummary": "Pre-existing worktree modifications/untracked files remain. This reviewer wrote only state/reviews/p1-correctness-review3.json and state/handoffs/p1-correctness-review3.json; the frozen seven-file digest remained unchanged."
+  }
+}
