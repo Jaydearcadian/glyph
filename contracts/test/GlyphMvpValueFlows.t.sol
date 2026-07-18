@@ -115,7 +115,9 @@ contract GlyphMvpValueFlowsTest is Test {
         );
         vault.deliverPull(op, t.sourceChainId, address(router));
         assertEq(token.balanceOf(recipient), 100 ether);
-        router.acknowledgeDelivery(op, keccak256("ack"));
+        router.setMessengerAdapter(address(messenger), true);
+        vm.prank(address(messenger));
+        router.acknowledgeDeliveryFromAdapter(op, keccak256("ack"), address(messenger));
         router.finalize(op, provider, protocol, referrer, sponsor);
         assertEq(token.balanceOf(recovery), 0);
         assertEq(token.balanceOf(protocol), 1 ether);
@@ -199,7 +201,9 @@ contract GlyphMvpValueFlowsTest is Test {
             op, address(token), recipient, 100 ether, t.sourceChainId, address(router), uint64(block.timestamp + 1 days)
         );
         vault.deliverPull(op, t.sourceChainId, address(router));
-        router.acknowledgeDelivery(op, msgId);
+        router.setMessengerAdapter(address(messenger), true);
+        vm.prank(address(messenger));
+        router.acknowledgeDeliveryFromAdapter(op, msgId, address(messenger));
         router.finalize(op, provider, protocol, referrer, sponsor);
     }
 
@@ -223,7 +227,9 @@ contract GlyphMvpValueFlowsTest is Test {
         uint64 deadline = uint64(block.timestamp + 1 hours);
         vault.claimPush(op, claimant, nullifier, deadline, _signVaultClaim(op, nullifier, deadline));
         assertEq(token.balanceOf(claimant), 100 ether);
-        router.acknowledgeDelivery(op, keccak256("push-ack"));
+        router.setMessengerAdapter(address(messenger), true);
+        vm.prank(address(messenger));
+        router.acknowledgeDeliveryFromAdapter(op, keccak256("push-ack"), address(messenger));
         router.finalize(op, provider, protocol, referrer, sponsor);
 
         SourceDeltaRouter.Terms memory unclaimed = _terms(router.PUSH(), 1, recipient);
@@ -242,7 +248,8 @@ contract GlyphMvpValueFlowsTest is Test {
         );
         vm.warp(block.timestamp + 11);
         vault.release(unclaimedOp);
-        router.markRefundPending(unclaimedOp);
+        vm.prank(address(messenger));
+        router.markRefundPendingFromAdapter(unclaimedOp, address(messenger));
         router.refund(unclaimedOp);
         assertEq(token.balanceOf(recovery), 110 ether);
     }

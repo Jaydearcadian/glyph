@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "glyph.layerzeroV2.officialSources.v1",
+  "status": "PINNED_VERIFIED",
+  "packages": [
+    {
+      "name": "@layerzerolabs/lz-evm-protocol-v2",
+      "version": "3.0.168",
+      "tarball": "https://registry.npmjs.org/@layerzerolabs/lz-evm-protocol-v2/-/lz-evm-protocol-v2-3.0.168.tgz",
+      "tarballSha256": "4f8fcf8173a0ff841a6e9f6891662eeaea6a44b2af410298b921a43169f6485c",
+      "packageLicense": "LZBL-1.2",
+      "files": [
+        {
+          "path": "contracts/interfaces/ILayerZeroEndpointV2.sol",
+          "sourceSha256": "a88fb702b371527c3791d7e5c168c1157d39021ed29b51e627e02973e6a740e0",
+          "localSubset": "contracts/src/interfaces/ILayerZeroV2Endpoint.sol",
+          "notes": "MessagingParams, MessagingReceipt, MessagingFee, Origin, quote, send, receive/clear/admin view subset copied ABI-compatibly."
+        },
+        {
+          "path": "contracts/interfaces/ILayerZeroReceiver.sol",
+          "sourceSha256": "24e4add7dd95a72dad23e26c4fadfc1b6ce63148e0c7f4d6ad5dfaeda79db3e7",
+          "localSubset": "contracts/src/interfaces/ILayerZeroV2Endpoint.sol",
+          "notes": "allowInitializePath, nextNonce, lzReceive receiver ABI copied ABI-compatibly."
+        }
+      ]
+    },
+    {
+      "name": "@layerzerolabs/oapp-evm",
+      "version": "0.4.1",
+      "tarball": "https://registry.npmjs.org/@layerzerolabs/oapp-evm/-/oapp-evm-0.4.1.tgz",
+      "tarballSha256": "1b8bccf829c464607dd117b83c7ca3a03ac95c60818aed2b8047fcf2bfedfe82",
+      "repository": "git+https://github.com/LayerZero-Labs/devtools.git packages/oapp-evm",
+      "packageLicense": "MIT",
+      "files": [
+        {
+          "path": "contracts/oapp/libs/OptionsBuilder.sol",
+          "sourceSha256": "34699bf11b40b6ae8a818375ccfa758b7e03df986bc8d52d29882e57144ace17",
+          "localSubset": "contracts/src/LayerZeroV2GlyphMessengerAdapter.sol buildOptions(uint256)",
+          "notes": "Local options builder follows official TYPE_3 and addExecutorLzReceiveOption/addExecutorOrderedExecutionOption byte layout."
+        }
+      ]
+    },
+    {
+      "name": "@layerzerolabs/lz-evm-messagelib-v2",
+      "version": "3.0.168",
+      "tarball": "https://registry.npmjs.org/@layerzerolabs/lz-evm-messagelib-v2/-/lz-evm-messagelib-v2-3.0.168.tgz",
+      "tarballSha256": "0c6e8b10e46b0868150f0e69158c9b030da69b85c94fb0a4ef01ba26776f8259",
+      "packageLicense": "LZBL-1.2",
+      "files": [
+        {
+          "path": "contracts/libs/ExecutorOptions.sol",
+          "sourceSha256": "51a865ee90596427f27ab9421a8606130d7fdee8d1d9e4fe98d18eea5edaac45",
+          "localSubset": "contracts/src/LayerZeroV2GlyphMessengerAdapter.sol buildOptions(uint256)",
+          "notes": "Local options builder uses WORKER_ID=1, OPTION_TYPE_LZRECEIVE=1, OPTION_TYPE_ORDERED_EXECUTION=4, and uint128 gas/value encoding from official source."
+        }
+      ]
+    }
+  ],
+  "selectorChecks": [
+    {
+      "signature": "quote((uint32,bytes32,bytes,bytes,bool),address)",
+      "selector": "0xddc28c58",
+      "localVerifiedBy": "LayerZeroV2GlyphMessengerAdapter.endpointQuoteSelector()"
+    },
+    {
+      "signature": "send((uint32,bytes32,bytes,bytes,bool),address)",
+      "selector": "0x2637a450",
+      "localVerifiedBy": "LayerZeroV2GlyphMessengerAdapter.endpointSendSelector()"
+    },
+    {
+      "rejectedNonOfficialPriorSignature": "quote(uint32,address,bytes,uint256)",
+      "selector": "0x9b4c6f3a"
+    },
+    {
+      "rejectedNonOfficialPriorSignature": "send(uint32,address,bytes,address,uint256)",
+      "selector": "0x6006aea7"
+    }
+  ]
+}

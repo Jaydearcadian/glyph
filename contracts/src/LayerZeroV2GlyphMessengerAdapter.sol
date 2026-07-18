@@ -2,19 +2,35 @@
 pragma solidity ^0.8.24;
 
 import {IGlyphMessengerAdapter} from "./interfaces/IGlyphMessengerAdapter.sol";
-import {ILayerZeroEndpointV2Like, ILayerZeroV2Receiver} from "./interfaces/ILayerZeroV2Endpoint.sol";
+import {
+    ILayerZeroEndpointV2,
+    ILayerZeroReceiver,
+    MessagingFee,
+    MessagingParams,
+    MessagingReceipt,
+    Origin
+} from "./interfaces/ILayerZeroV2Endpoint.sol";
 
 interface IGlyphMessageHandler {
     function handleGlyphMessage(IGlyphMessengerAdapter.Envelope calldata envelope, bytes calldata payload) external;
 }
 
-contract LayerZeroV2GlyphMessengerAdapter is IGlyphMessengerAdapter, ILayerZeroV2Receiver {
+contract LayerZeroV2GlyphMessengerAdapter is IGlyphMessengerAdapter, ILayerZeroReceiver {
     enum MessageStatus {
         NONE,
         SENT,
         STAGED,
         PROCESSED,
         FAILED
+    }
+
+    struct WireMessage {
+        uint16 wireVersion;
+        bytes32 messengerPolicyHash;
+        bytes32 proofKind;
+        bool ordered;
+        Envelope envelope;
+        bytes payload;
     }
 
     error Unauthorized();
@@ -31,9 +47,21 @@ contract LayerZeroV2GlyphMessengerAdapter is IGlyphMessengerAdapter, ILayerZeroV
     error UnknownMessage(bytes32 messageId);
     error HandlerFailed(bytes32 messageId);
     error InsufficientNativeFee(uint256 required, uint256 supplied);
+    error RefundFailed();
+    error WrongPolicy(bytes32 policyHash);
+    error WrongProofKind(bytes32 proofKind);
+    error StaleNonce(uint64 expected, uint64 actual);
+    error Reentrant();
+    error NativeValueRejected();
 
     uint16 public constant MESSAGE_VERSION = 1;
+    uint16 public constant WIRE_VERSION = 1;
     bytes32 public constant PROOF_KIND = keccak256("AUTHENTICATED_ADAPTER");
+    uint16 internal constant OPTIONS_TYPE_3 = 3;
+    uint8 internal constant EXECUTOR_WORKER_ID = 1;
+    uint8 internal constant OPTION_TYPE_LZRECEIVE = 1;
+    uint8 internal constant OPTION_TYPE_ORDERED_EXECUTION = 4;
+
     address public immutable endpoint;
     uint64 public immutable localChainId;
     uint64 public immutable remoteChainId;
@@ -45,15 +73,19 @@ contract LayerZeroV2GlyphMessengerAdapter is IGlyphMessengerAdapter, ILayerZeroV
     address public localApplication;
     address public remoteApplication;
     uint256 public enforcedGasLimit = 200_000;
+    bool public orderedExecution = true;
+    bool internal locked;
 
     mapping(bytes32 => Envelope) public envelopes;
     mapping(bytes32 => bytes) public payloads;
     mapping(bytes32 => MessageStatus) public messageStatus;
     mapping(bytes32 => bool) public consumedSemantic;
+    mapping(uint32 => mapping(bytes32 => uint64)) public lastInboundNonce;
 
     event TrustedPeerSet(address indexed peer);
     event ApplicationsSet(address indexed localApplication, address indexed remoteApplication);
     event EnforcedGasLimitSet(uint256 gasLimit);
+    event OrderedExecutionSet(bool ordered);
     event MessageStaged(bytes32 indexed messageId, bytes32 indexed operationId);
     event MessageProcessingFailed(bytes32 indexed messageId, bytes reason);
     event MessageProcessed(bytes32 indexed messageId, bytes32 indexed operationId);
@@ -61,6 +93,18 @@ contract LayerZeroV2GlyphMessengerAdapter is IGlyphMessengerAdapter, ILayerZeroV
     modifier onlyOwner() {
         if (msg.sender != owner) revert Unauthorized();
         _;
+    }
+
+    modifier onlyLocalApplication() {
+        if (msg.sender != localApplication) revert Unauthorized();
+        _;
+    }
+
+    modifier nonReentrant() {
+        if (locked) revert Reentrant();
+        locked = true;
+        _;
+        locked = false;
     }
 
     constructor(
@@ -86,7 +130,9 @@ contract LayerZeroV2GlyphMessengerAdapter is IGlyphMessengerAdapter, ILayerZeroV
         messengerPolicyHash = messengerPolicyHash_;
     }
 
-    receive() external payable {}
+    receive() external payable {
+        revert NativeValueRejected();
+    }
 
     function transferOwnership(address nextOwner) external onlyOwner {
         if (nextOwner == address(0)) revert InvalidConfig();
@@ -117,49 +163,57 @@ contract LayerZeroV2GlyphMessengerAdapter is IGlyphMessengerAdapter, ILayerZeroV
         emit EnforcedGasLimitSet(gasLimit);
     }
 
+    function setOrderedExecution(bool ordered) external onlyOwner {
+        orderedExecution = ordered;
+        emit OrderedExecutionSet(ordered);
+    }
+
     function quote(
         uint64 destinationChainId,
         address destinationApplication,
-        Envelope memory envelope,
-        bytes memory payload,
+        Envelope calldata envelope,
+        bytes calldata payload,
         uint256 gasLimit
-    ) public view returns (uint256 nativeFee) {
+    ) external view onlyLocalApplication returns (uint256 nativeFee) {
         _validateOutbound(destinationChainId, destinationApplication, envelope, payload);
-        if (gasLimit < enforcedGasLimit) revert InvalidConfig();
-        nativeFee =
-            ILayerZeroEndpointV2Like(endpoint).quote(remoteEid, trustedPeer, abi.encode(envelope, payload), gasLimit);
+        MessagingFee memory fee =
+            ILayerZeroEndpointV2(endpoint).quote(_params(envelope, payload, gasLimit), address(this));
+        nativeFee = fee.nativeFee;
     }
 
-    function send(
+    function sendMessage(
         uint64 destinationChainId,
         address destinationApplication,
-        Envelope memory envelope,
-        bytes memory payload,
+        Envelope calldata envelope,
+        bytes calldata payload,
         address payable refundAddress,
         uint256 gasLimit
-    ) public payable returns (bytes32 messageId) {
+    ) external payable onlyLocalApplication nonReentrant returns (bytes32 messageId) {
         _validateOutbound(destinationChainId, destinationApplication, envelope, payload);
-        if (gasLimit < enforcedGasLimit || refundAddress == address(0)) revert InvalidConfig();
+        if (refundAddress == address(0)) revert InvalidConfig();
         bytes32 semanticId = _semanticId(envelope);
         if (consumedSemantic[semanticId]) revert DuplicateSemantic(semanticId);
-        uint256 nativeFee = quote(destinationChainId, destinationApplication, envelope, payload, gasLimit);
-        if (msg.value < nativeFee) revert InsufficientNativeFee(nativeFee, msg.value);
-        (messageId,,) = ILayerZeroEndpointV2Like(endpoint).send{value: nativeFee}(
-            remoteEid, trustedPeer, abi.encode(envelope, payload), refundAddress, gasLimit
-        );
+        MessagingParams memory params = _params(envelope, payload, gasLimit);
+        MessagingFee memory fee = ILayerZeroEndpointV2(endpoint).quote(params, address(this));
+        if (msg.value < fee.nativeFee) revert InsufficientNativeFee(fee.nativeFee, msg.value);
+        MessagingReceipt memory receipt =
+            ILayerZeroEndpointV2(endpoint).send{value: fee.nativeFee}(params, refundAddress);
+        messageId = receipt.guid;
         if (messageStatus[messageId] != MessageStatus.NONE) revert DuplicateMessage(messageId);
-        envelope.messageId = messageId;
-        envelopes[messageId] = envelope;
+        Envelope memory stored = envelope;
+        stored.messageId = messageId;
+        envelopes[messageId] = stored;
         payloads[messageId] = payload;
         messageStatus[messageId] = MessageStatus.SENT;
         consumedSemantic[semanticId] = true;
-        if (msg.value > nativeFee) refundAddress.transfer(msg.value - nativeFee);
-        emit MessageQueued(messageId, envelope.operationId, envelope.messageType);
+        _safeRefund(refundAddress, msg.value - fee.nativeFee);
+        emit MessageQueued(messageId, stored.operationId, stored.messageType);
     }
 
-    function send(Envelope calldata envelope) external returns (bytes32 messageId) {
+    function send(Envelope calldata envelope) external onlyLocalApplication returns (bytes32) {
         bytes memory payload = payloads[envelope.messageId];
-        return send(
+        if (payload.length == 0) revert UnknownMessage(envelope.messageId);
+        return this.sendMessage{value: 0}(
             envelope.destinationChainId,
             envelope.destinationApplication,
             envelope,
@@ -169,22 +223,43 @@ contract LayerZeroV2GlyphMessengerAdapter is IGlyphMessengerAdapter, ILayerZeroV
         );
     }
 
+    function allowInitializePath(Origin calldata origin) external view returns (bool) {
+        return origin.srcEid == remoteEid && origin.sender == bytes32(uint256(uint160(trustedPeer)));
+    }
+
+    function nextNonce(uint32 eid, bytes32 sender) external view returns (uint64) {
+        if (!orderedExecution) return 0;
+        return lastInboundNonce[eid][sender] + 1;
+    }
+
     function lzReceive(Origin calldata origin, bytes32 guid, bytes calldata message, address, bytes calldata)
         external
+        payable
         override
     {
         if (msg.sender != endpoint) revert WrongEndpoint(msg.sender);
         if (origin.srcEid != remoteEid) revert WrongEid(origin.srcEid);
-        if (origin.sender != bytes32(uint256(uint160(trustedPeer)))) revert WrongPeer(origin.sender);
+        bytes32 peer = bytes32(uint256(uint160(trustedPeer)));
+        if (origin.sender != peer) revert WrongPeer(origin.sender);
+        if (orderedExecution) {
+            uint64 expected = lastInboundNonce[origin.srcEid][origin.sender] + 1;
+            if (origin.nonce != expected) revert StaleNonce(expected, origin.nonce);
+            lastInboundNonce[origin.srcEid][origin.sender] = origin.nonce;
+        }
         if (messageStatus[guid] != MessageStatus.NONE) revert DuplicateMessage(guid);
-        (Envelope memory envelope, bytes memory payload) = abi.decode(message, (Envelope, bytes));
+        WireMessage memory wire = abi.decode(message, (WireMessage));
+        if (wire.wireVersion != WIRE_VERSION) revert UnsupportedMessage();
+        if (wire.messengerPolicyHash != messengerPolicyHash) revert WrongPolicy(wire.messengerPolicyHash);
+        if (wire.proofKind != PROOF_KIND) revert WrongProofKind(wire.proofKind);
+        if (wire.ordered != orderedExecution) revert UnsupportedMessage();
+        Envelope memory envelope = wire.envelope;
         envelope.messageId = guid;
-        _validateInbound(envelope, payload);
+        _validateInbound(envelope, wire.payload);
         bytes32 semanticId = _semanticId(envelope);
         if (consumedSemantic[semanticId]) revert DuplicateSemantic(semanticId);
         consumedSemantic[semanticId] = true;
         envelopes[guid] = envelope;
-        payloads[guid] = payload;
+        payloads[guid] = wire.payload;
         messageStatus[guid] = MessageStatus.STAGED;
         emit MessageStaged(guid, envelope.operationId);
         _tryProcess(guid);
@@ -197,12 +272,46 @@ contract LayerZeroV2GlyphMessengerAdapter is IGlyphMessengerAdapter, ILayerZeroV
         if (messageStatus[messageId] != MessageStatus.PROCESSED) revert HandlerFailed(messageId);
     }
 
-    function consume(bytes32 messageId) external returns (Envelope memory envelope) {
-        if (messageStatus[messageId] == MessageStatus.NONE) revert UnknownMessage(messageId);
-        if (messageStatus[messageId] == MessageStatus.PROCESSED) revert DuplicateMessage(messageId);
+    function consume(bytes32 messageId) external onlyLocalApplication returns (Envelope memory envelope) {
+        if (messageStatus[messageId] != MessageStatus.PROCESSED) revert UnknownMessage(messageId);
         envelope = envelopes[messageId];
-        messageStatus[messageId] = MessageStatus.PROCESSED;
-        emit MessageDelivered(messageId, envelope.operationId, envelope.messageType);
+    }
+
+    function buildOptions(uint256 gasLimit) public view returns (bytes memory) {
+        if (gasLimit < enforcedGasLimit || gasLimit > type(uint128).max) revert InvalidConfig();
+        bytes memory receiveOption = abi.encodePacked(uint128(gasLimit), uint128(0));
+        bytes memory options = abi.encodePacked(
+            OPTIONS_TYPE_3, EXECUTOR_WORKER_ID, uint16(receiveOption.length + 1), OPTION_TYPE_LZRECEIVE, receiveOption
+        );
+        if (orderedExecution) {
+            options = abi.encodePacked(options, EXECUTOR_WORKER_ID, uint16(1), OPTION_TYPE_ORDERED_EXECUTION);
+        }
+        return options;
+    }
+
+    function endpointQuoteSelector() external pure returns (bytes4) {
+        return ILayerZeroEndpointV2.quote.selector;
+    }
+
+    function endpointSendSelector() external pure returns (bytes4) {
+        return ILayerZeroEndpointV2.send.selector;
+    }
+
+    function _params(Envelope calldata envelope, bytes calldata payload, uint256 gasLimit)
+        internal
+        view
+        returns (MessagingParams memory)
+    {
+        if (gasLimit < enforcedGasLimit) revert InvalidConfig();
+        WireMessage memory wire =
+            WireMessage(WIRE_VERSION, messengerPolicyHash, PROOF_KIND, orderedExecution, envelope, payload);
+        return MessagingParams({
+            dstEid: remoteEid,
+            receiver: bytes32(uint256(uint160(trustedPeer))),
+            message: abi.encode(wire),
+            options: buildOptions(gasLimit),
+            payInLzToken: false
+        });
     }
 
     function _tryProcess(bytes32 messageId) internal {
@@ -220,8 +329,8 @@ contract LayerZeroV2GlyphMessengerAdapter is IGlyphMessengerAdapter, ILayerZeroV
     function _validateOutbound(
         uint64 destinationChainId,
         address destinationApplication,
-        Envelope memory e,
-        bytes memory payload
+        Envelope calldata e,
+        bytes calldata payload
     ) internal view {
         if (trustedPeer == address(0) || localApplication == address(0) || remoteApplication == address(0)) revert InvalidConfig();
         if (destinationChainId != remoteChainId || e.destinationChainId != remoteChainId) {
@@ -260,5 +369,11 @@ contract LayerZeroV2GlyphMessengerAdapter is IGlyphMessengerAdapter, ILayerZeroV
 
     function _semanticId(Envelope memory e) internal pure returns (bytes32) {
         return keccak256(abi.encode(e.operationId, e.messageType, e.routeNonce));
+    }
+
+    function _safeRefund(address payable to, uint256 amount) internal {
+        if (amount == 0) return;
+        (bool ok,) = to.call{value: amount}("");
+        if (!ok) revert RefundFailed();
     }
 }

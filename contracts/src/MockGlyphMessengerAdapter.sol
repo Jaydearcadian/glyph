@@ -17,7 +17,23 @@ contract MockGlyphMessengerAdapter is IGlyphMessengerAdapter {
         mutateNext = value;
     }
 
+    function quote(uint64, address, Envelope calldata, bytes calldata, uint256) external pure returns (uint256) {
+        return 0;
+    }
+
+    function sendMessage(uint64, address, Envelope calldata e, bytes calldata, address payable, uint256)
+        external
+        payable
+        returns (bytes32 messageId)
+    {
+        return _send(e);
+    }
+
     function send(Envelope calldata e) external returns (bytes32 messageId) {
+        return _send(e);
+    }
+
+    function _send(Envelope calldata e) internal returns (bytes32 messageId) {
         if (e.messageVersion != 1 || e.messageType == MessageType.NONE) revert MutatedEnvelope();
         messageId = e.messageId == bytes32(0) ? keccak256(abi.encode(e)) : e.messageId;
         if (exists[messageId]) revert DuplicateMessage(messageId);

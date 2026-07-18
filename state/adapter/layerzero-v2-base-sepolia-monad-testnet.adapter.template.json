@@ -1,6 +1,6 @@
 {
   "schemaVersion": "glyph.layerzeroV2.adapter.config.template.v1",
-  "status": "LOCAL_DEPLOY_READY_TEMPLATE_NO_SECRETS_NO_BROADCAST",
+  "status": "LOCAL_REVIEW_REPAIR_TEMPLATE_NO_SECRETS_NO_BROADCAST",
   "proofKind": "AUTHENTICATED_ADAPTER",
   "messageVersion": 1,
   "messengerPolicyHashPlaceholder": "0x<keccak256-of-reviewed-dvn-executor-confirmations-enforced-options-peer-policy>",

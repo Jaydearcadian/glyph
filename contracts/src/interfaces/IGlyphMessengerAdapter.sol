@@ -31,6 +31,26 @@ interface IGlyphMessengerAdapter {
     event MessageQueued(bytes32 indexed messageId, bytes32 indexed operationId, MessageType indexed messageType);
     event MessageDelivered(bytes32 indexed messageId, bytes32 indexed operationId, MessageType indexed messageType);
 
+    function quote(
+        uint64 destinationChainId,
+        address destinationApplication,
+        Envelope calldata envelope,
+        bytes calldata payload,
+        uint256 gasLimit
+    ) external view returns (uint256 nativeFee);
+
+    function sendMessage(
+        uint64 destinationChainId,
+        address destinationApplication,
+        Envelope calldata envelope,
+        bytes calldata payload,
+        address payable refundAddress,
+        uint256 gasLimit
+    ) external payable returns (bytes32 messageId);
+
+    /// @dev Legacy/mock compatibility queue API. Production adapters may restrict this to configured apps.
     function send(Envelope calldata envelope) external returns (bytes32 messageId);
+
+    /// @dev Legacy/mock compatibility consume API. Production adapters must never allow arbitrary bypass.
     function consume(bytes32 messageId) external returns (Envelope memory envelope);
 }

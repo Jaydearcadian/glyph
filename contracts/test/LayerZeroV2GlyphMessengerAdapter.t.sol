@@ -4,51 +4,16 @@ pragma solidity ^0.8.24;
 import {Test} from "forge-std/Test.sol";
 import {SourceDeltaRouter} from "../src/SourceDeltaRouter.sol";
 import {DestinationGlyphVault} from "../src/DestinationGlyphVault.sol";
+import {GlyphLayerZeroApplication} from "../src/GlyphLayerZeroApplication.sol";
 import {LayerZeroV2GlyphMessengerAdapter} from "../src/LayerZeroV2GlyphMessengerAdapter.sol";
 import {LocalLayerZeroEndpointV2Mock} from "../src/mocks/LocalLayerZeroEndpointV2Mock.sol";
 import {IGlyphMessengerAdapter} from "../src/interfaces/IGlyphMessengerAdapter.sol";
 import {IERC20Minimal} from "../src/libraries/SafeToken.sol";
 import {TestToken} from "./mocks/TestToken.sol";
 
-contract GlyphLzAppHarness {
-    DestinationGlyphVault public vault;
-    SourceDeltaRouter public router;
-    address public adapter;
-    bool public failNext;
-
-    constructor(DestinationGlyphVault v, SourceDeltaRouter r, address a) {
-        vault = v;
-        router = r;
-        adapter = a;
-    }
-
-    function setAdapter(address a) external {
-        adapter = a;
-    }
-
-    function setFailNext(bool value) external {
-        failNext = value;
-    }
-
-    function handleGlyphMessage(IGlyphMessengerAdapter.Envelope calldata e, bytes calldata payload) external {
-        require(msg.sender == adapter, "only adapter");
-        require(keccak256(payload) == e.payloadHash, "payload hash");
-        if (failNext) {
-            failNext = false;
-            revert("handler failure");
-        }
-        if (e.messageType == IGlyphMessengerAdapter.MessageType.ROUTE_PULL) {
-            (address asset, address recipient, uint256 amount, uint64 expiry) =
-                abi.decode(payload, (address, address, uint256, uint64));
-            vault.reservePull(e.operationId, asset, recipient, amount, e.sourceChainId, e.sourceApplication, expiry);
-            vault.deliverPull(e.operationId, e.sourceChainId, e.sourceApplication);
-        } else if (e.messageType == IGlyphMessengerAdapter.MessageType.DESTINATION_DELIVERED_ACK) {
-            router.acknowledgeDeliveryFromAdapter(e.operationId, e.messageId, adapter);
-        } else if (e.messageType == IGlyphMessengerAdapter.MessageType.DESTINATION_FAILED_ACK) {
-            router.markRefundPendingFromAdapter(e.operationId, adapter);
-        } else {
-            revert("unknown operation");
-        }
+contract RevertingRefundReceiver {
+    receive() external payable {
+        revert("no refund");
     }
 }
 
@@ -67,11 +32,13 @@ contract LayerZeroV2GlyphMessengerAdapterTest is Test {
     LocalLayerZeroEndpointV2Mock monadEndpoint;
     LayerZeroV2GlyphMessengerAdapter baseAdapter;
     LayerZeroV2GlyphMessengerAdapter monadAdapter;
-    GlyphLzAppHarness baseApp;
-    GlyphLzAppHarness monadApp;
+    GlyphLayerZeroApplication baseApp;
+    GlyphLayerZeroApplication monadApp;
 
     uint256 payerPk = 0xA11CE;
+    uint256 claimantPk = 0xC1A1;
     address payer;
+    address claimant;
     address recipient = address(0xB0B);
     address recovery = address(0xCAFE);
     address provider = address(0xF00D);
@@ -82,6 +49,9 @@ contract LayerZeroV2GlyphMessengerAdapterTest is Test {
 
     function setUp() public {
         payer = vm.addr(payerPk);
+        claimant = vm.addr(claimantPk);
+        vm.deal(address(this), 100 ether);
+        vm.deal(payer, 100 ether);
         router = new SourceDeltaRouter();
         vault = new DestinationGlyphVault();
         token = new TestToken();
@@ -95,10 +65,16 @@ contract LayerZeroV2GlyphMessengerAdapterTest is Test {
         monadAdapter = new LayerZeroV2GlyphMessengerAdapter(
             address(monadEndpoint), MONAD_CHAIN, MONAD_EID, BASE_CHAIN, BASE_EID, address(this), policy
         );
-        baseApp = new GlyphLzAppHarness(vault, router, address(baseAdapter));
-        monadApp = new GlyphLzAppHarness(vault, router, address(monadAdapter));
-        baseApp.setAdapter(address(baseAdapter));
-        monadApp.setAdapter(address(monadAdapter));
+        baseApp = new GlyphLayerZeroApplication(
+            GlyphLayerZeroApplication.Side.SOURCE, BASE_CHAIN, MONAD_CHAIN, router, vault, address(this)
+        );
+        monadApp = new GlyphLayerZeroApplication(
+            GlyphLayerZeroApplication.Side.DESTINATION, MONAD_CHAIN, BASE_CHAIN, router, vault, address(this)
+        );
+        baseApp.setAdapter(IGlyphMessengerAdapter(address(baseAdapter)));
+        monadApp.setAdapter(IGlyphMessengerAdapter(address(monadAdapter)));
+        baseApp.setRemoteApplication(address(monadApp));
+        monadApp.setRemoteApplication(address(baseApp));
         baseAdapter.setTrustedPeer(address(monadAdapter));
         monadAdapter.setTrustedPeer(address(baseAdapter));
         baseAdapter.setLocalApplication(address(baseApp));
@@ -107,8 +83,10 @@ contract LayerZeroV2GlyphMessengerAdapterTest is Test {
         monadAdapter.setRemoteApplication(address(baseApp));
         router.setMessengerAdapter(address(baseAdapter), true);
         router.setMessengerAdapter(address(monadAdapter), true);
-        router.setMessengerProcessor(address(baseApp), true);
-        router.setMessengerProcessor(address(monadApp), true);
+        router.setMessengerProcessorForAdapter(address(baseApp), address(baseAdapter), true);
+        router.setMessengerProcessorForAdapter(address(monadApp), address(monadAdapter), true);
+        payable(address(baseApp)).transfer(10 ether);
+        payable(address(monadApp)).transfer(10 ether);
         token.mint(payer, 50_000 ether);
         token.mint(provider, 50_000 ether);
         vm.prank(payer);
@@ -119,9 +97,9 @@ contract LayerZeroV2GlyphMessengerAdapterTest is Test {
         vault.provideLiquidity(IERC20Minimal(address(token)), 3_000 ether);
     }
 
-    function _terms(uint256 nonce) internal view returns (SourceDeltaRouter.Terms memory t) {
+    function _terms(uint256 nonce, bytes32 mode) internal view returns (SourceDeltaRouter.Terms memory t) {
         t = SourceDeltaRouter.Terms({
-            mode: router.PULL(),
+            mode: mode,
             programId: bytes32(0),
             payer: payer,
             recipient: recipient,
@@ -140,6 +118,16 @@ contract LayerZeroV2GlyphMessengerAdapterTest is Test {
             expiry: uint64(block.timestamp + 1 days),
             nonce: nonce
         });
+    }
+
+    function _route(SourceDeltaRouter.Terms memory t, bytes32 rule)
+        internal
+        pure
+        returns (GlyphLayerZeroApplication.RoutePayload memory)
+    {
+        return GlyphLayerZeroApplication.RoutePayload(
+            address(t.destinationAsset), t.recipient, t.destinationAmount, t.expiry, rule
+        );
     }
 
     function _routeEnvelope(bytes32 op, SourceDeltaRouter.Terms memory t, bytes memory payload, uint256 routeNonce)
@@ -162,159 +150,187 @@ contract LayerZeroV2GlyphMessengerAdapterTest is Test {
         );
     }
 
-    function _ackEnvelope(bytes32 op, bytes32 termsHash, bytes memory payload, uint256 routeNonce)
-        internal
-        view
-        returns (IGlyphMessengerAdapter.Envelope memory e)
-    {
-        e = IGlyphMessengerAdapter.Envelope(
-            1,
-            IGlyphMessengerAdapter.MessageType.DESTINATION_DELIVERED_ACK,
-            bytes32(0),
-            op,
-            termsHash,
-            MONAD_CHAIN,
-            address(monadApp),
-            BASE_CHAIN,
-            address(baseApp),
-            routeNonce,
-            keccak256(payload)
+    function _signVaultClaim(bytes32 op, bytes32 nullifier, uint64 deadline) internal view returns (bytes memory sig) {
+        bytes32 digest = keccak256(
+            abi.encode("GLYPH_CLAIM", block.chainid, address(vault), op, claimant, 100 ether, nullifier, deadline)
         );
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(claimantPk, digest);
+        sig = abi.encodePacked(r, s, v);
     }
 
-    function test_redBidirectionalRequestAckQuoteRefundAndFinalizeRetry() public {
-        SourceDeltaRouter.Terms memory t = _terms(0);
+    function test_officialEndpointSelectorsAndOptionsAreAbiCompatible() public view {
+        assertEq(baseAdapter.endpointQuoteSelector(), bytes4(0xddc28c58));
+        assertEq(baseAdapter.endpointSendSelector(), bytes4(0x2637a450));
+        assertTrue(baseAdapter.endpointQuoteSelector() != bytes4(0x9b4c6f3a));
+        assertTrue(baseAdapter.endpointSendSelector() != bytes4(0x6006aea7));
+        bytes memory options = baseAdapter.buildOptions(200_000);
+        uint16 optionType;
+        assembly { optionType := mload(add(options, 2)) }
+        assertEq(optionType, uint16(3));
+        assertEq(uint8(options[2]), uint8(1));
+        assertEq(uint8(options[5]), uint8(1));
+    }
+
+    function test_pullRequestDeliveryAckAndFinalizeThroughProductionApps() public {
+        SourceDeltaRouter.Terms memory t = _terms(0, router.PULL());
         vm.prank(payer);
         bytes32 op = router.escrow(t);
-        bytes memory payload = abi.encode(address(token), recipient, 100 ether, uint64(block.timestamp + 1 days));
-        IGlyphMessengerAdapter.Envelope memory route = _routeEnvelope(op, t, payload, 7);
-        uint256 quote = baseAdapter.quote(MONAD_CHAIN, address(monadApp), route, payload, 200_000);
-        vm.expectRevert();
-        baseAdapter.send{value: quote - 1}(MONAD_CHAIN, address(monadApp), route, payload, payable(payer), 200_000);
-        uint256 beforeRefund = payer.balance;
-        bytes32 outbound = baseAdapter.send{value: quote + 1 ether}(
-            MONAD_CHAIN, address(monadApp), route, payload, payable(payer), 200_000
+        GlyphLayerZeroApplication.RoutePayload memory r = _route(t, bytes32(0));
+        bytes32 th = router.hashTerms(t);
+        uint256 quote = baseApp.quoteRoute(IGlyphMessengerAdapter.MessageType.ROUTE_PULL, op, th, r, 200_000);
+        vm.expectRevert(
+            abi.encodeWithSelector(LayerZeroV2GlyphMessengerAdapter.InsufficientNativeFee.selector, quote, quote - 1)
         );
-        assertGt(payer.balance, beforeRefund);
-        monadEndpoint.deliver(address(baseAdapter), address(monadAdapter), outbound, payload);
+        baseApp.sendRoute{value: quote - 1}(
+            IGlyphMessengerAdapter.MessageType.ROUTE_PULL, op, th, r, payable(payer), 200_000
+        );
+        uint256 payerBefore = payer.balance;
+        bytes32 outbound = baseApp.sendRoute{value: quote + 1 ether}(
+            IGlyphMessengerAdapter.MessageType.ROUTE_PULL, op, th, r, payable(payer), 200_000
+        );
+        assertGt(payer.balance, payerBefore);
+        monadEndpoint.deliver(address(monadAdapter), outbound);
         assertEq(token.balanceOf(recipient), 100 ether);
-        bytes memory ackPayload = abi.encode(op, bytes32("destTx"), uint32(1));
-        IGlyphMessengerAdapter.Envelope memory ack = _ackEnvelope(op, router.hashTerms(t), ackPayload, 7);
-        uint256 ackQuote = monadAdapter.quote(BASE_CHAIN, address(baseApp), ack, ackPayload, 200_000);
-        bytes32 ackId = monadAdapter.send{value: ackQuote}(
-            BASE_CHAIN, address(baseApp), ack, ackPayload, payable(provider), 200_000
-        );
-        baseApp.setFailNext(true);
-        baseEndpoint.deliver(address(monadAdapter), address(baseAdapter), ackId, ackPayload);
-        assertFalse(router.ackDelivered(op));
-        baseApp.setFailNext(false);
-        baseAdapter.retry(ackId);
+        bytes32 ackId = monadEndpoint.lastGuid();
+        baseEndpoint.deliver(address(baseAdapter), ackId);
         assertTrue(router.ackDelivered(op));
         router.finalize(op, provider, protocol, referrer, sponsor);
         assertEq(token.balanceOf(protocol), 1 ether);
     }
 
-    function test_redFailClosedAuthenticationReplayMalformedAndOrdering() public {
-        SourceDeltaRouter.Terms memory t = _terms(0);
+    function test_pushReserveClaimAckAndReleaseRefundRace() public {
+        bytes32 rule = keccak256("bearer-secret-commitment");
+        SourceDeltaRouter.Terms memory t = _terms(0, router.PUSH());
         vm.prank(payer);
         bytes32 op = router.escrow(t);
-        bytes memory payload = abi.encode(address(token), recipient, 100 ether, uint64(block.timestamp + 1 days));
-        IGlyphMessengerAdapter.Envelope memory e = _routeEnvelope(op, t, payload, 1);
-        uint256 q = baseAdapter.quote(MONAD_CHAIN, address(monadApp), e, payload, 200_000);
-        bytes32 id = baseAdapter.send{value: q}(MONAD_CHAIN, address(monadApp), e, payload, payable(payer), 200_000);
-        vm.expectRevert();
-        baseEndpoint.deliver(address(0xBAD), address(monadAdapter), id, payload);
-        vm.expectRevert();
-        monadEndpoint.deliverWith(
-            address(baseAdapter),
-            address(monadAdapter),
-            id,
-            payload,
-            BASE_EID + 1,
-            bytes32(uint256(uint160(address(baseAdapter))))
+        uint256 q = baseApp.quoteRoute(
+            IGlyphMessengerAdapter.MessageType.RESERVE_PUSH, op, router.hashTerms(t), _route(t, rule), 200_000
         );
-        vm.expectRevert();
-        monadEndpoint.deliverWith(
-            address(baseAdapter),
-            address(monadAdapter),
-            id,
-            payload,
-            BASE_EID,
-            bytes32(uint256(uint160(address(0xBEEF))))
+        bytes32 outbound = baseApp.sendRoute{value: q}(
+            IGlyphMessengerAdapter.MessageType.RESERVE_PUSH,
+            op,
+            router.hashTerms(t),
+            _route(t, rule),
+            payable(payer),
+            200_000
         );
-        IGlyphMessengerAdapter.Envelope memory wrong = e;
-        wrong.destinationApplication = address(0xBEEF);
-        vm.expectRevert();
-        baseAdapter.send{value: q}(MONAD_CHAIN, address(monadApp), wrong, payload, payable(payer), 200_000);
-        IGlyphMessengerAdapter.Envelope memory badVersion = e;
-        badVersion.messageVersion = 2;
-        vm.expectRevert();
-        baseAdapter.send{value: q}(MONAD_CHAIN, address(monadApp), badVersion, payload, payable(payer), 200_000);
-        IGlyphMessengerAdapter.Envelope memory badType = e;
-        badType.messageType = IGlyphMessengerAdapter.MessageType.NONE;
-        vm.expectRevert();
-        baseAdapter.send{value: q}(MONAD_CHAIN, address(monadApp), badType, payload, payable(payer), 200_000);
-        vm.expectRevert();
-        monadEndpoint.deliverCorrupt(
-            address(monadAdapter), id, bytes("malformed"), BASE_EID, bytes32(uint256(uint160(address(baseAdapter))))
-        );
-        monadEndpoint.deliver(address(baseAdapter), address(monadAdapter), id, payload);
-        vm.expectRevert();
-        monadEndpoint.deliver(address(baseAdapter), address(monadAdapter), id, payload);
-    }
-
-    function test_redDuplicateSemanticTupleRejected() public {
-        SourceDeltaRouter.Terms memory t = _terms(0);
-        vm.prank(payer);
-        bytes32 op = router.escrow(t);
-        bytes memory payload = abi.encode(address(token), recipient, 100 ether, uint64(block.timestamp + 1 days));
-        IGlyphMessengerAdapter.Envelope memory e = _routeEnvelope(op, t, payload, 1);
-        uint256 q = baseAdapter.quote(MONAD_CHAIN, address(monadApp), e, payload, 200_000);
-        baseAdapter.send{value: q}(MONAD_CHAIN, address(monadApp), e, payload, payable(payer), 200_000);
-        SourceDeltaRouter.Terms memory t2 = _terms(1);
-        vm.prank(payer);
-        router.escrow(t2);
-        IGlyphMessengerAdapter.Envelope memory semanticDup = _routeEnvelope(op, t2, payload, 1);
-        semanticDup.messageId = keccak256("different-guid");
-        vm.expectRevert();
-        baseAdapter.send{value: q}(MONAD_CHAIN, address(monadApp), semanticDup, payload, payable(payer), 200_000);
-    }
-
-    function test_redFailureAckRefundRaceInsufficientLiquidityAndAccessControl() public {
-        SourceDeltaRouter.Terms memory t = _terms(0);
-        vm.prank(payer);
-        bytes32 op = router.escrow(t);
-        vm.expectRevert();
-        router.acknowledgeDeliveryFromAdapter(op, bytes32("x"), address(this));
-        vm.expectRevert();
-        baseAdapter.setTrustedPeer(address(0));
-        vm.prank(address(0xBAD));
-        vm.expectRevert();
-        baseAdapter.setTrustedPeer(address(monadAdapter));
-        vm.expectRevert();
-        new LayerZeroV2GlyphMessengerAdapter(
-            address(0), BASE_CHAIN, BASE_EID, MONAD_CHAIN, MONAD_EID, address(this), policy
-        );
-        vm.prank(address(baseAdapter));
-        router.markRefundPendingFromAdapter(op, address(baseAdapter));
+        monadEndpoint.deliver(address(monadAdapter), outbound);
+        baseEndpoint.deliver(address(baseAdapter), monadEndpoint.lastGuid());
+        assertTrue(router.ackDelivered(op));
+        bytes32 nullifier = keccak256("claim-1");
+        uint64 deadline = uint64(block.timestamp + 1 hours);
+        monadApp.claimPushAndAck(op, claimant, nullifier, deadline, _signVaultClaim(op, nullifier, deadline));
+        assertEq(token.balanceOf(claimant), 100 ether);
+        router.finalize(op, provider, protocol, referrer, sponsor);
+        vm.expectRevert(SourceDeltaRouter.AlreadyTerminal.selector);
         router.refund(op);
-        assertEq(token.balanceOf(recovery), 110 ether);
-        SourceDeltaRouter.Terms memory t2 = _terms(1);
-        t2.destinationAmount = 9_999 ether;
-        t2.maximumInput = 10_010 ether;
+    }
+
+    function test_authorityConsumeAndRouterTransitionsFailClosed() public {
+        SourceDeltaRouter.Terms memory t = _terms(0, router.PULL());
         vm.prank(payer);
-        bytes32 op2 = router.escrow(t2);
-        bytes memory payload = abi.encode(address(token), recipient, 9_999 ether, uint64(block.timestamp + 1 days));
-        bytes32 id = baseAdapter.send{
-            value: baseAdapter.quote(
-                MONAD_CHAIN, address(monadApp), _routeEnvelope(op2, t2, payload, 2), payload, 200_000
+        bytes32 op = router.escrow(t);
+        bytes32 mid = keccak256("msg");
+        vm.expectRevert(SourceDeltaRouter.UnauthorizedActor.selector);
+        router.acknowledgeDelivery(op, mid);
+        vm.expectRevert(SourceDeltaRouter.UnauthorizedActor.selector);
+        router.markRefundPending(op);
+        vm.expectRevert(SourceDeltaRouter.UnauthorizedActor.selector);
+        router.acknowledgeDeliveryFromAdapter(op, mid, address(monadAdapter));
+        vm.prank(address(baseApp));
+        vm.expectRevert(SourceDeltaRouter.UnauthorizedActor.selector);
+        router.acknowledgeDeliveryFromAdapter(op, mid, address(monadAdapter));
+        vm.expectRevert(LayerZeroV2GlyphMessengerAdapter.Unauthorized.selector);
+        baseAdapter.consume(mid);
+    }
+
+    function test_publicQuoteSendAndWrongPayloadPolicyProofEndpointPeerNonceRejected() public {
+        SourceDeltaRouter.Terms memory t = _terms(0, router.PULL());
+        vm.prank(payer);
+        bytes32 op = router.escrow(t);
+        bytes memory payload =
+            abi.encode(address(token), recipient, 100 ether, uint64(block.timestamp + 1 days), bytes32(0));
+        IGlyphMessengerAdapter.Envelope memory e = _routeEnvelope(op, t, payload, 1);
+        vm.expectRevert(LayerZeroV2GlyphMessengerAdapter.Unauthorized.selector);
+        baseAdapter.quote(MONAD_CHAIN, address(monadApp), e, payload, 200_000);
+        vm.expectRevert(LayerZeroV2GlyphMessengerAdapter.Unauthorized.selector);
+        baseAdapter.sendMessage{value: 1 ether}(MONAD_CHAIN, address(monadApp), e, payload, payable(payer), 200_000);
+
+        bytes32 outbound = baseApp.sendRoute{
+            value: baseApp.quoteRoute(
+                IGlyphMessengerAdapter.MessageType.ROUTE_PULL, op, router.hashTerms(t), _route(t, bytes32(0)), 200_000
             )
         }(
-            MONAD_CHAIN, address(monadApp), _routeEnvelope(op2, t2, payload, 2), payload, payable(payer), 200_000
+            IGlyphMessengerAdapter.MessageType.ROUTE_PULL,
+            op,
+            router.hashTerms(t),
+            _route(t, bytes32(0)),
+            payable(payer),
+            200_000
         );
-        monadEndpoint.deliver(address(baseAdapter), address(monadAdapter), id, payload);
-        assertEq(uint8(monadAdapter.messageStatus(id)), uint8(LayerZeroV2GlyphMessengerAdapter.MessageStatus.FAILED));
-        vm.expectRevert();
-        router.refund(op2);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                LocalLayerZeroEndpointV2Mock.WrongReceiver.selector, address(monadAdapter), address(baseAdapter)
+            )
+        );
+        monadEndpoint.deliver(address(baseAdapter), outbound);
+        vm.expectRevert(abi.encodeWithSelector(LayerZeroV2GlyphMessengerAdapter.WrongEid.selector, BASE_EID + 1));
+        monadEndpoint.deliverWithForgedOrigin(
+            address(monadAdapter), outbound, BASE_EID + 1, bytes32(uint256(uint160(address(baseAdapter))))
+        );
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                LayerZeroV2GlyphMessengerAdapter.WrongPeer.selector, bytes32(uint256(uint160(address(0xBEEF))))
+            )
+        );
+        monadEndpoint.deliverWithForgedOrigin(
+            address(monadAdapter), outbound, BASE_EID, bytes32(uint256(uint160(address(0xBEEF))))
+        );
+        bytes memory wire = monadEndpoint.packetMessage(outbound);
+        LayerZeroV2GlyphMessengerAdapter.WireMessage memory decoded =
+            abi.decode(wire, (LayerZeroV2GlyphMessengerAdapter.WireMessage));
+        bytes32 wrongPolicy = keccak256("wrong-policy");
+        decoded.messengerPolicyHash = wrongPolicy;
+        vm.expectRevert(abi.encodeWithSelector(LayerZeroV2GlyphMessengerAdapter.WrongPolicy.selector, wrongPolicy));
+        monadEndpoint.deliverCorrupt(address(monadAdapter), outbound, abi.encode(decoded));
+    }
+
+    function test_failedDestinationSendsFailureAckAndAllowsRefundNoConsumeBypass() public {
+        SourceDeltaRouter.Terms memory t = _terms(0, router.PULL());
+        t.destinationAmount = 9_999 ether;
+        t.maximumInput = 10_010 ether;
+        vm.prank(payer);
+        bytes32 op = router.escrow(t);
+        GlyphLayerZeroApplication.RoutePayload memory r = _route(t, bytes32(0));
+        uint256 q =
+            baseApp.quoteRoute(IGlyphMessengerAdapter.MessageType.ROUTE_PULL, op, router.hashTerms(t), r, 200_000);
+        bytes32 outbound = baseApp.sendRoute{value: q}(
+            IGlyphMessengerAdapter.MessageType.ROUTE_PULL, op, router.hashTerms(t), r, payable(payer), 200_000
+        );
+        monadEndpoint.deliver(address(monadAdapter), outbound);
+        assertEq(
+            uint8(monadAdapter.messageStatus(outbound)), uint8(LayerZeroV2GlyphMessengerAdapter.MessageStatus.PROCESSED)
+        );
+        bytes32 failAck = monadEndpoint.lastGuid();
+        baseEndpoint.deliver(address(baseAdapter), failAck);
+        assertFalse(router.ackDelivered(op));
+        vm.expectRevert(LayerZeroV2GlyphMessengerAdapter.Unauthorized.selector);
+        monadAdapter.consume(outbound);
+        router.refund(op);
+        assertEq(token.balanceOf(recovery), 10_010 ether);
+    }
+
+    function test_revertingRefundRecipientRevertsWithoutTrappingExcess() public {
+        SourceDeltaRouter.Terms memory t = _terms(0, router.PULL());
+        vm.prank(payer);
+        bytes32 op = router.escrow(t);
+        GlyphLayerZeroApplication.RoutePayload memory r = _route(t, bytes32(0));
+        bytes32 th = router.hashTerms(t);
+        uint256 q = baseApp.quoteRoute(IGlyphMessengerAdapter.MessageType.ROUTE_PULL, op, th, r, 200_000);
+        RevertingRefundReceiver bad = new RevertingRefundReceiver();
+        vm.expectRevert(LayerZeroV2GlyphMessengerAdapter.RefundFailed.selector);
+        baseApp.sendRoute{value: q + 1}(
+            IGlyphMessengerAdapter.MessageType.ROUTE_PULL, op, th, r, payable(address(bad)), 200_000
+        );
     }
 }
