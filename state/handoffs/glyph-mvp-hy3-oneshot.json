@@ -1,67 +1,78 @@
 {
   "commands": [
     {
-      "command": "sha256sum docs/architecture/GLYPH_MVP_EXECUTION_CONTRACT.md",
+      "command": "sha256sum docs/architecture/GLYPH_MVP_EXECUTION_CONTRACT.md state/manifests/GLYPH_MVP_ONESHOT.md",
       "exitCode": 0,
-      "outputDigest": "74a88f873bc10451629aef536d5c757604607345d7418264faee119357fbe3a1",
-      "purpose": "execution-contract hash gate"
+      "result": "74a88f... matched; f10006... matched"
     },
     {
-      "command": "forge build --force",
-      "exitCode": 0,
-      "purpose": "compile all contracts with Solc 0.8.24 / Cancun"
+      "command": "forge test --match-path test/LayerZeroV2GlyphMessengerAdapter.t.sol -vvv (RED before implementation)",
+      "exitCode": 1,
+      "result": "compile failed: missing LayerZeroV2GlyphMessengerAdapter.sol and LocalLayerZeroEndpointV2Mock.sol"
     },
     {
-      "command": "forge test --match-contract Adversarial -vv",
+      "command": "forge test --match-path test/LayerZeroV2GlyphMessengerAdapter.t.sol -vv",
       "exitCode": 0,
-      "purpose": "Gate 1 focused P1 review3 adversarial closure",
-      "result": "15 passed, 0 failed, 0 skipped"
-    },
-    {
-      "command": "forge test --match-path test/GlyphMvpValueFlows.t.sol -vv",
-      "exitCode": 0,
-      "purpose": "Gates 2-7 value/gasless/cross-chain/program flows",
-      "result": "6 passed, 0 failed, 0 skipped"
-    },
-    {
-      "command": "forge test --match-path test/GlyphMvpFuzzInvariant.t.sol -vv",
-      "exitCode": 0,
-      "purpose": "fuzz and stateful invariant",
-      "result": "2 passed; fuzz runs 256; invariant runs 256, calls 128000, reverts 0"
+      "result": "4 passed, 0 failed, 0 skipped"
     },
     {
       "command": "forge fmt --check",
       "exitCode": 0,
-      "purpose": "format gate"
+      "result": "no diff after forge fmt"
+    },
+    {
+      "command": "forge build --force",
+      "exitCode": 0,
+      "result": "compiler run successful; Solc 0.8.24/Cancun/optimizer 200; warnings are pre-existing timestamp/lint style plus test casts"
     },
     {
       "command": "forge test -vv",
       "exitCode": 0,
-      "purpose": "full regression",
-      "result": "58 passed, 0 failed, 0 skipped"
+      "result": "Ran 9 test suites: 62 passed, 0 failed, 0 skipped"
     },
     {
-      "command": "for f in state/receipts/*.receipt.json; do scripts/receipt_tool.py verify \"$f\"; done",
+      "command": "forge test --match-path test/GlyphMvpFuzzInvariant.t.sol -vv",
       "exitCode": 0,
-      "purpose": "receipt fixture verification",
-      "result": "5 canonical receipt JSON fixtures verified individually"
+      "result": "2 passed; fuzz runs 256; invariant runs 256, calls 128000, reverts 0"
+    },
+    {
+      "command": "receipt JSON verify loop + deterministic SVG regeneration/cmp",
+      "exitCode": 0,
+      "result": "all receipt JSON fixtures verified; regenerated SVG cards byte-matched"
+    },
+    {
+      "command": "JSON parse/schema-basic validation for receipts/adapter/handoff schema",
+      "exitCode": 0,
+      "result": "json-schema-basic-ok"
     },
     {
       "command": "git diff --check",
       "exitCode": 0,
-      "purpose": "whitespace/diff integrity"
+      "result": "no whitespace errors"
     },
     {
-      "command": "dangerous-pattern search",
+      "command": "dangerous-pattern and secret scan",
       "exitCode": 0,
-      "purpose": "manual inspection of encodePacked/delegatecall/selfdestruct/tx.origin/call/send/sweep/legacy proxy hits",
-      "result": "new MVP core has no delegatecall/selfdestruct/tx.origin/sweep/raw transfer/send; legacy/test/forge-std hits recorded as inspected"
+      "result": "no new production adapter/router hits for delegatecall/selfdestruct/tx.origin/private keys; legacy/forge-std/spec/script placeholder hits inspected"
+    },
+    {
+      "command": "dependency/license inspection",
+      "exitCode": 0,
+      "result": "no new package dependency; local minimal LayerZero V2-compatible interfaces only; forge-std MIT license hash 6d185dfe089d4de346d391fc5997fbd4739bad1d6556010413c10f420d704ecc"
+    },
+    {
+      "command": "git commit -m \"feat(contracts): add LayerZero V2 glyph adapter gate\"",
+      "exitCode": 0,
+      "result": "44f978718f5d3bdec98ac66e2b605202a3ec55e1"
     }
   ],
-  "completionBoundary": {
-    "claimedDeployed": false,
-    "claimedLive": false,
-    "finalStatus": "BLOCKED"
+  "dependencyFingerprint": {
+    "addedExternalPackages": [],
+    "forgeStdLicenseSha256": "6d185dfe089d4de346d391fc5997fbd4739bad1d6556010413c10f420d704ecc",
+    "forgeVersion": "forge Version: 1.7.1",
+    "localInterfaces": [
+      "contracts/src/interfaces/ILayerZeroV2Endpoint.sol"
+    ]
   },
   "executionContract": {
     "expectedSha256": "74a88f873bc10451629aef536d5c757604607345d7418264faee119357fbe3a1",
@@ -70,221 +81,60 @@
     "sha256": "74a88f873bc10451629aef536d5c757604607345d7418264faee119357fbe3a1"
   },
   "filesChanged": [
-    {
-      "path": "README.md",
-      "status": "M"
-    },
-    {
-      "path": "contracts/foundry.toml",
-      "status": "M"
-    },
-    {
-      "path": "contracts/src/GlyphRegistry.sol",
-      "status": "M"
-    },
-    {
-      "path": "contracts/src/GlyphSessionProxy.sol",
-      "status": "M"
-    },
-    {
-      "path": "contracts/src/IGlyphRegistry.sol",
-      "status": "M"
-    },
-    {
-      "path": "contracts/test/GlyphRegistry.t.sol",
-      "status": "M"
-    },
-    {
-      "path": "docs/glyph-core-arch.md",
-      "status": "M"
-    },
-    {
-      "path": "AGENTS.md",
-      "status": "??"
-    },
-    {
-      "path": "contracts/script/",
-      "status": "??"
-    },
-    {
-      "path": "contracts/src/ContributionCampaign.sol",
-      "status": "??"
-    },
-    {
-      "path": "contracts/src/DestinationGlyphVault.sol",
-      "status": "??"
-    },
-    {
-      "path": "contracts/src/GiftPool.sol",
-      "status": "??"
-    },
-    {
-      "path": "contracts/src/GlyphAttestationRegistry.sol",
-      "status": "??"
-    },
-    {
-      "path": "contracts/src/GlyphReceiptLedger.sol",
-      "status": "??"
-    },
-    {
-      "path": "contracts/src/MockGlyphMessengerAdapter.sol",
-      "status": "??"
-    },
-    {
-      "path": "contracts/src/SourceDeltaRouter.sol",
-      "status": "??"
-    },
-    {
-      "path": "contracts/src/interfaces/",
-      "status": "??"
-    },
-    {
-      "path": "contracts/src/libraries/",
-      "status": "??"
-    },
-    {
-      "path": "contracts/test/GlyphAttestationRegistry.t.sol",
-      "status": "??"
-    },
-    {
-      "path": "contracts/test/GlyphAttestationRegistryAdversarial.t.sol",
-      "status": "??"
-    },
-    {
-      "path": "contracts/test/GlyphMvpFuzzInvariant.t.sol",
-      "status": "??"
-    },
-    {
-      "path": "contracts/test/GlyphMvpValueFlows.t.sol",
-      "status": "??"
-    },
-    {
-      "path": "contracts/test/GlyphReceiptLedger.t.sol",
-      "status": "??"
-    },
-    {
-      "path": "contracts/test/GlyphReceiptLedgerAdversarial.t.sol",
-      "status": "??"
-    },
-    {
-      "path": "contracts/test/mocks/",
-      "status": "??"
-    },
-    {
-      "path": "docs/PRODUCT_DOCTRINE.md",
-      "status": "??"
-    },
-    {
-      "path": "docs/architecture/",
-      "status": "??"
-    },
-    {
-      "path": "scripts/",
-      "status": "??"
-    },
-    {
-      "path": "state/",
-      "status": "??"
-    },
-    {
-      "path": "workers/",
-      "status": "??"
-    }
+    " M contracts/src/SourceDeltaRouter.sol",
+    "?? contracts/script/LayerZeroV2GlyphAdapterDryRun.s.sol",
+    "?? contracts/src/LayerZeroV2GlyphMessengerAdapter.sol",
+    "?? contracts/src/interfaces/ILayerZeroV2Endpoint.sol",
+    "?? contracts/src/mocks/",
+    "?? contracts/test/LayerZeroV2GlyphMessengerAdapter.t.sol",
+    "?? state/adapter/layerzero-v2-base-sepolia-monad-testnet.adapter.template.json"
   ],
   "fuzzInvariant": {
+    "covered": "fee conservation/stateful handler; adapter-focused replay/ordering covered by adversarial deterministic tests",
     "fuzzRuns": 256,
-    "handler": "GlyphMvpInvariantHandler.setLegs",
     "invariantCalls": 128000,
     "invariantReverts": 0,
     "invariantRuns": 256
   },
   "git": {
     "dirty": true,
-    "head": "bedfc33ce6d4c0c8fef40741019421663490afc2",
+    "headBeforeCommits": "e6c28e4e7f72e3f97163e440712035c31cadbf73",
+    "headBeforeEvidenceCommit": "44f978718f5d3bdec98ac66e2b605202a3ec55e1",
+    "implementationCommit": "44f978718f5d3bdec98ac66e2b605202a3ec55e1",
     "statusPorcelain": [
-      "M README.md",
-      " M contracts/foundry.toml",
-      " M contracts/src/GlyphRegistry.sol",
-      " M contracts/src/GlyphSessionProxy.sol",
-      " M contracts/src/IGlyphRegistry.sol",
-      " M contracts/test/GlyphRegistry.t.sol",
-      " M docs/glyph-core-arch.md",
-      "?? AGENTS.md",
-      "?? contracts/script/",
-      "?? contracts/src/ContributionCampaign.sol",
-      "?? contracts/src/DestinationGlyphVault.sol",
-      "?? contracts/src/GiftPool.sol",
-      "?? contracts/src/GlyphAttestationRegistry.sol",
-      "?? contracts/src/GlyphReceiptLedger.sol",
-      "?? contracts/src/MockGlyphMessengerAdapter.sol",
-      "?? contracts/src/SourceDeltaRouter.sol",
-      "?? contracts/src/interfaces/",
-      "?? contracts/src/libraries/",
-      "?? contracts/test/GlyphAttestationRegistry.t.sol",
-      "?? contracts/test/GlyphAttestationRegistryAdversarial.t.sol",
-      "?? contracts/test/GlyphMvpFuzzInvariant.t.sol",
-      "?? contracts/test/GlyphMvpValueFlows.t.sol",
-      "?? contracts/test/GlyphReceiptLedger.t.sol",
-      "?? contracts/test/GlyphReceiptLedgerAdversarial.t.sol",
-      "?? contracts/test/mocks/",
-      "?? docs/PRODUCT_DOCTRINE.md",
-      "?? docs/architecture/",
-      "?? scripts/",
-      "?? state/",
-      "?? workers/"
+      " M contracts/src/SourceDeltaRouter.sol",
+      "?? contracts/script/LayerZeroV2GlyphAdapterDryRun.s.sol",
+      "?? contracts/src/LayerZeroV2GlyphMessengerAdapter.sol",
+      "?? contracts/src/interfaces/ILayerZeroV2Endpoint.sol",
+      "?? contracts/src/mocks/",
+      "?? contracts/test/LayerZeroV2GlyphMessengerAdapter.t.sol",
+      "?? state/adapter/layerzero-v2-base-sepolia-monad-testnet.adapter.template.json"
     ]
   },
-  "importedSourceFingerprints": [
-    {
-      "path": "contracts/src/GlyphReceiptLedger.sol",
-      "sha256AtImport": "7bbd86cb7ed67edb304d03af20e19bc20c06d2676076ec2c386ea08154370a25"
-    },
-    {
-      "path": "contracts/src/GlyphAttestationRegistry.sol",
-      "sha256AtImport": "0bde14f3d0404926fedab5cd7eec2cbcfc1f41575ade3f4b185206f9eac7d39e"
-    },
-    {
-      "path": "contracts/src/interfaces/IGlyphReceiptLedger.sol",
-      "sha256AtImport": "3cb32d418340a51491b6b8cd41fdb39b3437e80bf11e1a334a7c0060bddf8c7c"
-    },
-    {
-      "path": "contracts/src/libraries/GlyphSignatureChecker.sol",
-      "sha256AtImport": "f07ae1195380209dfa9484581ee4f65ed922ec704fa7edff567c1a45a7b5b508"
-    },
-    {
-      "path": "contracts/test/GlyphReceiptLedger.t.sol",
-      "sha256AtImport": "d5c14c4fd566b3d342f69f06793c17ad838d76bab7e97a05df70a1849cba1ecc"
-    },
-    {
-      "path": "contracts/test/GlyphAttestationRegistry.t.sol",
-      "sha256AtImport": "9f7a4a01ed4cbf18ba69688cfd45a513aa91cbcc0887532e54b0af62670e46dc"
-    },
-    {
-      "path": "contracts/test/mocks/MockERC1271Wallet.sol",
-      "sha256AtImport": "e598de7bcb705fef6565cb6c39e860cde5a48cb43f3f2e1db352603de0f3d210"
-    }
-  ],
-  "inputWorkspace": {
-    "gitHead": "bedfc33ce6d4c0c8fef40741019421663490afc2",
-    "initialP1Candidate": "/root/monadglyph-p1-engineer",
-    "p1FrozenHash": "fc36f0b30632fd8f0084eac05cc372b0c92d1bb049624abef54a7c46680592ab",
-    "path": "/root/monadglyph-hy3-oneshot"
-  },
   "laneEvidence": {
-    "adapterCandidateImplemented": false,
-    "authoritativeChecks": [
-      "https://docs.layerzero.network/v2/deployments/deployed-contracts fetched via curl; Monad Mainnet and Base Sepolia pages present, no clear Monad Testnet pathway proof extracted",
-      "https://docs.layerzero.network/v2/deployments/chains/monad fetched; page appears Monad Mainnet-focused; sidebar contains testnet strings but no verified Base Sepolia -> Monad Testnet lane configuration",
-      "web_search/web_extract API attempts failed with HTTP 432; direct docs fetch used as fallback"
+    "adapterCandidateImplemented": true,
+    "configTemplate": "state/adapter/layerzero-v2-base-sepolia-monad-testnet.adapter.template.json",
+    "destination": {
+      "chainId": 10143,
+      "eid": 40204,
+      "endpointV2": "0x6C7Ab2202C98C4227C5c46f1417D81144DA716Ff"
+    },
+    "notes": "LayerZero transports messages only; destination liquidity remains Glyph vault/provider accounting. Proof label is AUTHENTICATED_ADAPTER, never LIGHT_CLIENT_VERIFIED.",
+    "provider": "LayerZero V2",
+    "publicTransactionProof": false,
+    "researchArtifacts": [
+      "docs/research/BASE_SEPOLIA_MONAD_TESTNET_LANE_RESEARCH.md",
+      "state/research/base-sepolia-monad-testnet-lane.json"
     ],
-    "configTemplate": "state/adapter/base-sepolia-monad-testnet.adapter.template.json",
-    "mockMessengerImplementedAndTested": true,
-    "status": "BLOCKED_LANE_SUPPORT"
+    "source": {
+      "chainId": 84532,
+      "eid": 40245,
+      "endpointV2": "0x6EDCE65403992e310A62460808c4b910D972f10f"
+    },
+    "status": "VERIFIED_SUPPORTED_FOR_DEPLOY_READY_CANDIDATE"
   },
   "modelTransition": {
-    "continuedAs": "gpt-5.5",
-    "note": "User explicitly superseded only executor model selection; all product scope/gates/boundaries preserved. Partial hy3 changes inspected and repaired in-place.",
-    "supersededInitialRoute": "tencent/hy3:free interrupted mid-run"
+    "note": "User directly assigned this session as sole sequential implementation executor. No delegate_task, subagent, MoA, other model, other Hermes process, Hermes config, MCP, gateway, infra, deploy, signing, broadcast, funding, secrets, service exposure, or push used."
   },
   "receiptFixtures": [
     {
@@ -329,26 +179,31 @@
     }
   ],
   "redGreenEvidence": {
-    "green": "After repairing test-authoring issues and implementing gates 2-7, full forge test -vv returned 58 passed, 0 failed, 0 skipped.",
-    "red": "Interrupted hy3 Gate 1 adversarial run produced failing tests before repair: 5/16 passed then 14/15 passed with one expected prank-consumption failure; these failures were preserved in command outputs during session."
+    "green": "After implementation/repair: focused adapter suite 4/4 passed; full forge suite 62/62 passed; receipt/card/evidence gates passed.",
+    "red": "Focused adapter test added first and failed before implementation with missing LayerZeroV2GlyphMessengerAdapter.sol and LocalLayerZeroEndpointV2Mock.sol imports (exit 1)."
   },
   "risks": [
     {
-      "description": "Real Base Sepolia -> Monad Testnet adapter support/configuration not verified from authoritative current docs, so DEPLOY_READY is prohibited.",
-      "mitigation": "Keep messenger-neutral mock; verify official support/endpoints/default configs before implementing real adapter.",
-      "severity": "blocker"
+      "description": "No public Base Sepolia/Monad Testnet OApp message was sent; DEPLOY_READY does not mean deployed/live/configured onchain.",
+      "mitigation": "After explicit approval, deploy both adapters, configure reciprocal peers/DVNs/executor/enforced options, then prove send -> destination execution -> authenticated return acknowledgement with receipts.",
+      "severity": "medium"
     },
     {
-      "description": "MVP value core is local/test harness grade and not deployed/audited; legacy GlyphRegistry/GlyphSessionProxy remain in tree but are not integrated.",
-      "mitigation": "Independent security review and adapter-specific implementation before deployment.",
+      "description": "LayerZero DVN/executor/enforced-options policy remains a placeholder in template until governance selects exact production settings.",
+      "mitigation": "Bind selected values into messengerPolicyHash before deployment.",
       "severity": "medium"
+    },
+    {
+      "description": "Local EndpointV2 mock is deterministic harness only, not public lane proof.",
+      "mitigation": "Final report labels it local only.",
+      "severity": "low"
     }
   ],
   "runtime": {
     "currentModel": "gpt-5.5",
     "currentProvider": "openai-codex",
-    "currentSessionId": "20260718_113408_01c2db",
-    "independentSession": false,
+    "delegationUsed": false,
+    "sessionId": "20260718_130017_fdc28e",
     "source": "Hermes Agent CLI direct sequential executor"
   },
   "schemaVersion": "glyph.mvp.handoff.v1",
@@ -357,11 +212,45 @@
     "deployed": false,
     "externalWrites": [],
     "funded": false,
+    "hermesConfigChanged": false,
+    "infrastructureChanged": false,
     "privateKeysAccessed": false,
+    "pushed": false,
+    "servicesExposed": false,
     "signed": false
   },
-  "status": "BLOCKED",
-  "statusReason": "BLOCKED_LANE_SUPPORT: mandatory local gates are GREEN, but current authoritative public Base Sepolia -> Monad Testnet adapter lane support/configuration was not verified; no DEPLOY_READY claim made.",
+  "sourceFingerprints": [
+    {
+      "path": "contracts/src/LayerZeroV2GlyphMessengerAdapter.sol",
+      "sha256": "4acf44eaf70eadc630a1d00adf51efd9a6a6868ab8590105fbe964b53dfc54e1"
+    },
+    {
+      "path": "contracts/src/interfaces/ILayerZeroV2Endpoint.sol",
+      "sha256": "8f72369e5136d2994071a65cc9d6eb435877b9d59490696d2dfcad3680176a7d"
+    },
+    {
+      "path": "contracts/src/mocks/LocalLayerZeroEndpointV2Mock.sol",
+      "sha256": "6a194ce8834f79d214dc4e443421bddd60852e23e668e67c5048bcfa30391125"
+    },
+    {
+      "path": "contracts/src/SourceDeltaRouter.sol",
+      "sha256": "3431b1a24d3ba4baf8b4c00b7b0314d38979707dec13bcc15d40a4792b9fc31e"
+    },
+    {
+      "path": "contracts/test/LayerZeroV2GlyphMessengerAdapter.t.sol",
+      "sha256": "5af0abbe0bbdc80531d24e321e900145e91c23c9b1aa32559acaf181cd176e20"
+    },
+    {
+      "path": "contracts/script/LayerZeroV2GlyphAdapterDryRun.s.sol",
+      "sha256": "6fcd2bb0718727b620c275a2ad1f16a6d686a0ccefc3cb84c91f89b403f59e88"
+    },
+    {
+      "path": "state/adapter/layerzero-v2-base-sepolia-monad-testnet.adapter.template.json",
+      "sha256": "6969b01b7e606d40e5520144d936680531677150b23808358c9ecdbb4b77963a"
+    }
+  ],
+  "status": "DEPLOY_READY",
+  "statusReason": "DEPLOY_READY_LOCAL_ONLY: LayerZero V2 Glyph adapter candidate, deterministic local EndpointV2 harness, reciprocal Base Sepolia/Monad Testnet config template, router acknowledgement/failure hooks, focused adversarial tests, full Foundry regression, receipt/card verification, hash gates, and workspace scans are GREEN. This is deploy-ready only; no deployment/live/public lane transaction occurred.",
   "taskId": "glyph-mvp-hy3-oneshot",
   "testsBySuite": {
     "GlyphAttestationRegistryAdversarialTest": {
@@ -401,14 +290,18 @@
     },
     "GlyphSessionProxyTest_legacy_only": {
       "failed": 0,
-      "note": "legacy tests retained; deprecated proxy not integrated into MVP core",
+      "passed": 4,
+      "skipped": 0
+    },
+    "LayerZeroV2GlyphMessengerAdapterTest": {
+      "failed": 0,
       "passed": 4,
       "skipped": 0
     }
   },
   "treeFingerprint": {
-    "algorithm": "sha256(path + sha256(file), sorted, excludes .git/contracts/out/contracts/cache/self-referential handoff)",
-    "fileCount": 155,
-    "sha256": "ee5f2e1eb7c5006d71a4bf34d3f9833c38fa261bf02421a49334da08b9e5068b"
+    "algorithm": "sha256 over sorted path + NUL + fileSha256, excluding .git, contracts/out, contracts/cache, node_modules, and self-referential state/handoffs/glyph-mvp-hy3-oneshot.json",
+    "fileCount": 162,
+    "sha256": "9c35a8d791d5235bdc7a67871c69060f75bd2ccbd9b0ec8d354644bffd7f2b2a"
   }
 }
