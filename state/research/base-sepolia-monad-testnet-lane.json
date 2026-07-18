@@ -331,12 +331,29 @@
       "satisfiesLockedAdapterAuthenticationRequirements": false
     }
   ],
+  "rpcReadback": {
+    "retrievalTimeUtc": "2026-07-18T10:52:52Z",
+    "readOnly": true,
+    "source": {
+      "rpc": "https://sepolia.base.org",
+      "chainId": 84532,
+      "endpointV2": "0x6EDCE65403992e310A62460808c4b910D972f10f",
+      "runtimeCodeBytes": 24005
+    },
+    "destination": {
+      "rpc": "https://testnet-rpc.monad.xyz",
+      "chainId": 10143,
+      "endpointV2": "0x6C7Ab2202C98C4227C5c46f1417D81144DA716Ff",
+      "runtimeCodeBytes": 2632
+    },
+    "proves": "Both official EndpointV2 addresses currently have runtime bytecode on the expected chains.",
+    "doesNotProve": "Configured OApp peers, compatible DVN/executor policy, fee quoting, or a successful bidirectional application message."
+  },
   "explicitUnknowns": [
-    "No live public send/receive transaction was performed in this research-only phase.",
     "LayerZero DVN confirmation policy, executor gas options, OApp peers, enforced options, and fee quoting still require implementation-phase verification.",
     "Chainlink CCIP reverse Monad Testnet -> Base Sepolia acknowledgement lane was not found in visible directory data.",
     "No private support channels or non-public registries were queried.",
-    "No RPC bytecode readback was performed; official registries/APIs/docs were used as authority."
+    "No live public OApp send, destination execution, or authenticated return acknowledgement has been performed."
   ],
   "sideEffects": {
     "deployed": false,

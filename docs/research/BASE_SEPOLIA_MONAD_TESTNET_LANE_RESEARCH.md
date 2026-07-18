@@ -318,10 +318,30 @@ Minimum next implementation gate:
 
 If LayerZero public testnet send/receive cannot be executed later due endpoint, DVN, executor, fee, or peer-configuration failure, fall back to `BLOCKED_LANE_SUPPORT` with the exact runtime receipt/error, not to a mock-labeled-public proof.
 
+## Independent RPC endpoint readback
+
+Read-only verification performed at `2026-07-18T10:52:52Z` after the research commit:
+
+| Chain | Public RPC chain ID | EndpointV2 | Runtime bytecode |
+|---|---:|---|---:|
+| Base Sepolia | 84532 | `0x6EDCE65403992e310A62460808c4b910D972f10f` | 24,005 bytes |
+| Monad Testnet | 10143 | `0x6C7Ab2202C98C4227C5c46f1417D81144DA716Ff` | 2,632 bytes |
+
+Commands used:
+
+```text
+cast chain-id --rpc-url https://sepolia.base.org
+cast code 0x6EDCE65403992e310A62460808c4b910D972f10f --rpc-url https://sepolia.base.org
+cast chain-id --rpc-url https://testnet-rpc.monad.xyz
+cast code 0x6C7Ab2202C98C4227C5c46f1417D81144DA716Ff --rpc-url https://testnet-rpc.monad.xyz
+```
+
+This confirms that both official EndpointV2 addresses currently have runtime bytecode on the expected chains. It does **not** prove configured OApp peers, compatible DVN/executor policy, fee quoting, or a successful bidirectional application message.
+
 ## Explicit unknowns
 
 - LayerZero V2 current endpoint support is verified from official metadata, but no live public send/receive transaction was performed in this research-only phase.
 - LayerZero OApp-specific DVN confirmation counts, executor gas limits, enforced options, and peer wiring must be selected and tested during implementation.
 - Chainlink CCIP exact outbound lane is verified, but reverse Monad Testnet -> Base Sepolia acknowledgement support was not found in the visible directory evidence.
 - No private/provider-specific support channels were queried.
-- No chain readback through RPC was used for deployment-code verification; official registries/APIs/docs were the authority for this research artifact.
+- No live public OApp send, destination execution, or authenticated return acknowledgement has been performed.
