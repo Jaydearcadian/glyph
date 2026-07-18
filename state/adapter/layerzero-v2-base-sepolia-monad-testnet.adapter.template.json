@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "glyph.layerzeroV2.adapter.config.template.v1",
+  "status": "LOCAL_DEPLOY_READY_TEMPLATE_NO_SECRETS_NO_BROADCAST",
+  "proofKind": "AUTHENTICATED_ADAPTER",
+  "messageVersion": 1,
+  "messengerPolicyHashPlaceholder": "0x<keccak256-of-reviewed-dvn-executor-confirmations-enforced-options-peer-policy>",
+  "ownerAdminPlaceholder": "0x<owner-or-multisig-admin-address>",
+  "lane": {
+    "baseSepolia": {
+      "chainId": 84532,
+      "eid": 40245,
+      "endpointV2": "0x6EDCE65403992e310A62460808c4b910D972f10f",
+      "adapterPlaceholder": "0x<base-sepolia-layerzero-v2-glyph-adapter>",
+      "sourceApplicationPlaceholder": "0x<base-source-router-or-app-handler>",
+      "trustedRemotePeerPlaceholder": "0x<monad-testnet-layerzero-v2-glyph-adapter>",
+      "remoteApplicationPlaceholder": "0x<monad-destination-vault-or-app-handler>",
+      "dvnConfigPlaceholder": "<required+optional DVNs, confirmations, receive/send libraries>",
+      "executorPlaceholder": "0x<LayerZero executor from official metadata or selected executor>",
+      "enforcedReceiveOptionsPlaceholder": "<lzReceive gas/value bytes; minimum local test gas 200000>"
+    },
+    "monadTestnet": {
+      "chainId": 10143,
+      "eid": 40204,
+      "endpointV2": "0x6C7Ab2202C98C4227C5c46f1417D81144DA716Ff",
+      "adapterPlaceholder": "0x<monad-testnet-layerzero-v2-glyph-adapter>",
+      "sourceApplicationPlaceholder": "0x<monad-destination-vault-or-app-handler>",
+      "trustedRemotePeerPlaceholder": "0x<base-sepolia-layerzero-v2-glyph-adapter>",
+      "remoteApplicationPlaceholder": "0x<base-source-router-or-app-handler>",
+      "dvnConfigPlaceholder": "<required+optional DVNs, confirmations, receive/send libraries>",
+      "executorPlaceholder": "0x<LayerZero executor from official metadata or selected executor>",
+      "enforcedReceiveOptionsPlaceholder": "<lzReceive gas/value bytes; minimum local test gas 200000>"
+    }
+  },
+  "validationChecklist": [
+    "owner/admin is nonzero and controlled by approved governance",
+    "endpointV2 equals the exact chain endpoint and has runtime bytecode",
+    "local chainId/EID and remote chainId/EID match official metadata",
+    "trusted peers are the reciprocal deployed adapters, not application contracts or EOAs",
+    "local/remote applications are the reviewed Glyph app handlers/router/vault for that chain",
+    "messengerPolicyHash binds DVN set, executor, confirmations, receive libraries, enforced options, peers, endpoints, message version, and proof kind",
+    "LayerZero adapter proof is labeled AUTHENTICATED_ADAPTER, never LIGHT_CLIENT_VERIFIED",
+    "no private keys, RPC secrets, broadcast flags, or funded accounts are included in this template"
+  ],
+  "sideEffects": {"deploy": false, "sign": false, "broadcast": false, "fund": false, "privateKeys": false}
+}

@@ -64,6 +64,9 @@ contract SourceDeltaRouter {
     mapping(bytes32 => Operation) public operations;
     mapping(address => uint256) public actorNonce;
     mapping(bytes32 => bool) public ackDelivered;
+    mapping(address => bool) public authorizedMessengerAdapter;
+    mapping(address => bool) public authorizedMessengerProcessor;
+    address public owner;
     bool internal locked;
 
     event OperationEscrowed(
@@ -72,6 +75,17 @@ contract SourceDeltaRouter {
     event DestinationAcknowledged(bytes32 indexed operationId, bytes32 messageId);
     event SourceFinalized(bytes32 indexed operationId, uint256 principal, uint256 fees, uint256 residual);
     event Refunded(bytes32 indexed operationId, uint256 amount);
+    event MessengerAdapterSet(address indexed adapter, bool authorized);
+    event MessengerProcessorSet(address indexed processor, bool authorized);
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    modifier onlyOwner() {
+        if (msg.sender != owner) revert UnauthorizedActor();
+        _;
+    }
 
     modifier nonReentrant() {
         require(!locked, "reentrant");
@@ -120,7 +134,32 @@ contract SourceDeltaRouter {
         emit OperationEscrowed(op, t.mode, t.payer, t.maximumInput);
     }
 
+    function setMessengerAdapter(address adapter, bool authorized) external onlyOwner {
+        if (adapter == address(0)) revert InvalidTerms();
+        authorizedMessengerAdapter[adapter] = authorized;
+        emit MessengerAdapterSet(adapter, authorized);
+    }
+
+    function setMessengerProcessor(address processor, bool authorized) external onlyOwner {
+        if (processor == address(0)) revert InvalidTerms();
+        authorizedMessengerProcessor[processor] = authorized;
+        emit MessengerProcessorSet(processor, authorized);
+    }
+
     function acknowledgeDelivery(bytes32 op, bytes32 messageId) external {
+        _acknowledgeDelivery(op, messageId);
+    }
+
+    function acknowledgeDeliveryFromAdapter(bytes32 op, bytes32 messageId, address adapter) external {
+        if (
+            !authorizedMessengerAdapter[adapter] || (msg.sender != adapter && !authorizedMessengerProcessor[msg.sender])
+        ) {
+            revert UnauthorizedActor();
+        }
+        _acknowledgeDelivery(op, messageId);
+    }
+
+    function _acknowledgeDelivery(bytes32 op, bytes32 messageId) internal {
         Operation storage o = operations[op];
         if (o.status != Status.ESCROWED && o.status != Status.ACK_DELIVERED) revert NotEscrowed();
         o.status = Status.ACK_DELIVERED;
@@ -163,6 +202,19 @@ contract SourceDeltaRouter {
     }
 
     function markRefundPending(bytes32 op) external {
+        _markRefundPending(op);
+    }
+
+    function markRefundPendingFromAdapter(bytes32 op, address adapter) external {
+        if (
+            !authorizedMessengerAdapter[adapter] || (msg.sender != adapter && !authorizedMessengerProcessor[msg.sender])
+        ) {
+            revert UnauthorizedActor();
+        }
+        _markRefundPending(op);
+    }
+
+    function _markRefundPending(bytes32 op) internal {
         Operation storage o = operations[op];
         if (ackDelivered[op]) revert RefundUnsafe();
         o.status = Status.REFUND_PENDING;
