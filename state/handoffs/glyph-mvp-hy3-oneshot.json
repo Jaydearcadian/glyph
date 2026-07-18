@@ -64,6 +64,11 @@
       "command": "git commit -m \"feat(contracts): add LayerZero V2 glyph adapter gate\"",
       "exitCode": 0,
       "result": "44f978718f5d3bdec98ac66e2b605202a3ec55e1"
+    },
+    {
+      "command": "python3 update handoff status to FAILED_REVIEW before repair",
+      "exitCode": 0,
+      "result": "DEPLOY_READY label removed before any source repair"
     }
   ],
   "dependencyFingerprint": {
@@ -182,6 +187,12 @@
     "green": "After implementation/repair: focused adapter suite 4/4 passed; full forge suite 62/62 passed; receipt/card/evidence gates passed.",
     "red": "Focused adapter test added first and failed before implementation with missing LayerZeroV2GlyphMessengerAdapter.sol and LocalLayerZeroEndpointV2Mock.sol imports (exit 1)."
   },
+  "reviewInvalidation": {
+    "invalidatedPreviousStatus": "DEPLOY_READY",
+    "newStatus": "FAILED_REVIEW",
+    "reason": "Independent orchestrator review found official EndpointV2 ABI mismatch, send/consume/router auth bugs, missing production app boundary, policy/nonce/refund/mock/evidence gaps.",
+    "repairInProgress": true
+  },
   "risks": [
     {
       "description": "No public Base Sepolia/Monad Testnet OApp message was sent; DEPLOY_READY does not mean deployed/live/configured onchain.",
@@ -249,8 +260,8 @@
       "sha256": "6969b01b7e606d40e5520144d936680531677150b23808358c9ecdbb4b77963a"
     }
   ],
-  "status": "DEPLOY_READY",
-  "statusReason": "DEPLOY_READY_LOCAL_ONLY: LayerZero V2 Glyph adapter candidate, deterministic local EndpointV2 harness, reciprocal Base Sepolia/Monad Testnet config template, router acknowledgement/failure hooks, focused adversarial tests, full Foundry regression, receipt/card verification, hash gates, and workspace scans are GREEN. This is deploy-ready only; no deployment/live/public lane transaction occurred.",
+  "status": "FAILED_REVIEW",
+  "statusReason": "FAILED_REVIEW_IN_PROGRESS: independent orchestrator review invalidated prior DEPLOY_READY label. Blocking findings CRITICAL 1-5, HIGH 6-9, MEDIUM 10, MOCK QUALITY, and EVIDENCE are pending test-first repair. Prior commits 44f9787 and 4cb5f8f remain historical evidence; this handoff is intentionally demoted before repairs.",
   "taskId": "glyph-mvp-hy3-oneshot",
   "testsBySuite": {
     "GlyphAttestationRegistryAdversarialTest": {
