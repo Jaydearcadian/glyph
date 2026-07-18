@@ -79,6 +79,11 @@
       "command": "git status --short after final handoff commit",
       "exitCode": 0,
       "result": "clean; verified after evidence commit in final readback"
+    },
+    {
+      "command": "second independent review invalidation handoff update",
+      "exitCode": 0,
+      "result": "status set to FAILED before repair; prior deploy-ready evidence preserved as historical only"
     }
   ],
   "dependencyFingerprint": {
@@ -264,6 +269,26 @@
     "previousHistoricalEvidencePreserved": true,
     "repairCommit": "31e81eade108a78795f868e6985f7a8c318ddbcc"
   },
+  "reviewInvalidation2": {
+    "findings": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F",
+      "G",
+      "H",
+      "I",
+      "J",
+      "K",
+      "L"
+    ],
+    "invalidatedAtUtc": "2026-07-18T12:05:48Z",
+    "invalidatedHead": "fa5a4585426d7f6d8290b682ecfab36baf82244f",
+    "note": "Truthful invalidation committed before repair. Frozen authority files are not edited.",
+    "status": "FAILED_SECOND_REVIEW"
+  },
   "risks": [
     {
       "description": "No public Base Sepolia/Monad Testnet OApp message was sent; DEPLOY_READY is local-only and not deployed/live/configured onchain.",
@@ -347,8 +372,8 @@
       "sha256": "85bbeb50275adbfe62eaf572b62175a39ef5219dd38feafb4907c5104f14f752"
     }
   ],
-  "status": "DEPLOY_READY",
-  "statusReason": "DEPLOY_READY_LOCAL_ONLY_AFTER_REVIEW_REPAIR: official LayerZero EndpointV2 ABI subset and selector checks are pinned; send/quote/consume/router transitions are authenticated; production GlyphLayerZeroApplication boundaries cover Pull/Push and acknowledgements; policy/proof/ordered nonce context is bound in wire messages; refund and local endpoint harness were hardened; focused, fuzz, invariant, receipt/card, scan, hash, and full regression gates are GREEN. This does not mean deployed/live/public lane proven.",
+  "status": "FAILED",
+  "statusReason": "FAILED_SECOND_INTEGRATION_ECONOMIC_REVIEW: DEPLOY_READY invalidated by findings A-L covering Push reserved-vs-delivered source lifecycle, immutable operation-fact validation, public destination-vault drainability, caller-directed source finalization payouts, aggregate instead of provider-specific liquidity accounting, unenforced Push claimantRule, ad-hoc payload schema, missing source terminal receipt flows, mutable adapter config/policy divergence, deceptive send(Envelope), inadequate exact/invariant tests, and unaccounted native-value handling. Repair must proceed RED->GREEN in later commits before any DEPLOY_READY restoration.",
   "taskId": "glyph-mvp-hy3-oneshot",
   "testsBySuite": {
     "GlyphAttestationRegistryAdversarialTest": {
