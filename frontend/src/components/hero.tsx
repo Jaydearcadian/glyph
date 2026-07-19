@@ -42,10 +42,6 @@ export function Hero() {
             <div className="proof-ring" /><div><Check size={25} color="var(--proof-mint)" /><br /><strong>RECEIPT VERIFIED</strong><br /><span>checksum / block / route</span></div>
           </motion.article>
         </motion.div>
-        <motion.div className="trust-strip" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.1, duration: .6 }}>
-          <p>Built for teams that need every payment to end in proof.</p>
-          <div className="logo-row" aria-label="Example ecosystem integrations">{["Meridian","Relay","Atlas","Northstar","Common","Vector"].map(name => <span key={name}>{name}</span>)}</div>
-        </motion.div>
       </section>
     </main>
   );

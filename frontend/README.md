@@ -8,8 +8,8 @@ Interactive, static-exportable judge demo for Glyph’s Monad payment-link proto
 |---|---|
 | `/` | Product landing and receipt-led lifecycle overview |
 | `/links` | Live gTST faucet, exact approval, Pull/Push escrow, transaction readback |
-| `/campaign` | Campaign creation and completed aggregate proof |
-| `/distribution` | Live distribution conservation, eligibility, and claim control |
+| `/campaign` | Campaign creation plus shareable contribution links that bind `programId`, recipient, and suggested amount |
+| `/distribution` | Full recipient wallets, live conservation, explicit 70/20/10 creation, share links, and claims |
 | `/receipts` | Receipt JSON/card/link/QR gallery |
 | `/proofs` | Proof bundle dashboard and explicit cross-chain blocker boundary |
 

@@ -1,5 +1,5 @@
 import type { Abi, Address, Hash } from "viem";
-import { defineChain, formatUnits } from "viem";
+import { defineChain, formatUnits, keccak256, stringToHex } from "viem";
 import testTokenArtifact from "@/data/abi/TestToken.json";
 import routerArtifact from "@/data/abi/SourceDeltaRouter.json";
 import campaignArtifact from "@/data/abi/ContributionCampaign.json";
@@ -31,8 +31,8 @@ export const splitterAbi = splitterArtifact as Abi;
 
 export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000" as Address;
 export const ZERO_HASH = `0x${"0".repeat(64)}` as Hash;
-export const PULL_MODE = "0x50554c4c00000000000000000000000000000000000000000000000000000000" as Hash;
-export const PUSH_MODE = "0x5055534800000000000000000000000000000000000000000000000000000000" as Hash;
+export const PULL_MODE = keccak256(stringToHex("PULL"));
+export const PUSH_MODE = keccak256(stringToHex("PUSH"));
 
 export type Terms = {
   mode: Hash;
