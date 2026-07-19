@@ -96,6 +96,11 @@ export function JudgeConsole() {
   async function createEscrow() {
     if (!walletReady || !address || !publicClient || !recipientAddress || !value) return;
     await run("escrow", async () => {
+      if ((allowanceValue ?? BigInt(0)) < value) {
+        const approveGas = await publicClient.estimateContractGas({ account: address, address: contracts.token, abi: testTokenAbi, functionName: "approve", args: [contracts.router, value] });
+        const approveHash = await writeContractAsync({ address: contracts.token, abi: testTokenAbi, functionName: "approve", args: [contracts.router, value], gas: approveGas + approveGas / BigInt(5), chainId: monadTestnet.id });
+        await publicClient.waitForTransactionReceipt({ hash: approveHash });
+      }
       const nonce = await publicClient.readContract({ address: contracts.router, abi: routerAbi, functionName: "actorNonce", args: [address] }) as bigint;
       const terms: Terms = {
         mode: mode === "pull" ? PULL_MODE : PUSH_MODE,
@@ -141,6 +146,7 @@ export function JudgeConsole() {
   const hasGas = nativeValue !== undefined && nativeValue > BigInt(0);
   const enoughBalance = value !== undefined && balanceValue !== undefined && balanceValue >= value;
   const enoughAllowance = value !== undefined && allowanceValue !== undefined && allowanceValue >= value;
+  const recipientPayment = mode === "pull" && (isPaymentRequest || programId !== ZERO_HASH);
   const openedData = Array.isArray(openedFacts.data) ? openedFacts.data : [];
   const openedStatus = typeof openedData[4] === "number" ? openedData[4] : Number(openedData[4] ?? 0);
   const statusLabel = ["Unknown", "Escrowed", "Reserved", "Acknowledged", "Reconciled", "Refund pending", "Refunded"][openedStatus] ?? "Unknown";
@@ -165,9 +171,9 @@ export function JudgeConsole() {
       {programId !== ZERO_HASH && <p className="notice success-notice" style={{marginTop:18}}>Campaign contribution link loaded · program <span className="mono">{shortHash(programId,12,10)}</span></p>}
       <div style={{marginTop:28}} className="mode-tabs" role="tablist" aria-label="Link mode"><button role="tab" aria-selected={mode === "pull"} className={`mode-tab ${mode === "pull" ? "active" : ""}`} onClick={()=>setMode("pull")}>Pull · pay request</button><button role="tab" aria-selected={mode === "push"} className={`mode-tab ${mode === "push" ? "active" : ""}`} onClick={()=>setMode("push")}>Push · claim link</button></div>
       <div className="form-grid"><div className="field"><label htmlFor="amount">Amount in gTST</label><input id="amount" inputMode="decimal" value={amount} onChange={event=>setAmount(event.target.value)}/></div><div className="field"><label htmlFor="recipient">{mode === "pull" ? "Recipient wallet" : "Funded by / recovery wallet"}</label><input id="recipient" placeholder={address ?? "0x…"} value={recipient} onChange={event=>setRecipient(event.target.value)}/></div></div>
-      <div className="form-actions"><button className="button button-outline" onClick={approve} disabled={!walletReady || !hasGas || !!busy || !value || !enoughBalance}>{busy === "approve" ? "Simulating + approving…" : `Approve ${amount || "0"} gTST`}</button><button className="button button-light" onClick={createEscrow} disabled={!walletReady || !hasGas || !!busy || !value || !enoughBalance || !enoughAllowance}>{busy === "escrow" ? "Preflighting + creating…" : mode === "push" ? "Fund Push link" : programId !== ZERO_HASH ? "Deposit / Pay campaign" : isPaymentRequest ? "Deposit / Pay" : "Create Pull link"}</button></div>
+      <div className="form-actions">{!recipientPayment && <button className="button button-outline" onClick={approve} disabled={!walletReady || !hasGas || !!busy || !value || !enoughBalance}>{busy === "approve" ? "Simulating + approving…" : `Approve ${amount || "0"} gTST`}</button>}<button className="button button-light" onClick={createEscrow} disabled={!walletReady || !hasGas || !!busy || !value || !enoughBalance}>{busy === "escrow" ? recipientPayment ? "Approving + paying…" : "Preflighting + creating…" : mode === "push" ? "Fund Push link" : programId !== ZERO_HASH ? "Deposit / Pay campaign" : isPaymentRequest ? "Deposit / Pay" : "Create Pull link"}</button></div>
       {!enoughBalance && walletReady && <p className="notice" style={{marginTop:18}}>Mint enough demo gTST first.</p>}
-      {enoughBalance && !enoughAllowance && walletReady && <p className="notice" style={{marginTop:18}}>Approve the exact gTST amount before creating the link.</p>}
+      {enoughBalance && !enoughAllowance && walletReady && !recipientPayment && <p className="notice" style={{marginTop:18}}>Approve the exact gTST amount before creating the link.</p>}
       {error && <p className="notice error-notice" style={{marginTop:18}}>{error}</p>}
     </section>
     <section className="panel"><div className="panel-header"><div><h2>Transaction proof</h2><p className="panel-copy">Success appears only after wallet receipt and direct contract readback.</p></div>{result ? <StatusBadge tone="pending">Escrowed live</StatusBadge> : <StatusBadge>Waiting</StatusBadge>}</div>
