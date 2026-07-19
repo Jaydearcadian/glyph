@@ -21,6 +21,7 @@ TERMS_DOMAIN = "GLYPH_LINK_TERMS_V1"
 OPERATION_DOMAIN = "GLYPH_LINK_OPERATION_V1"
 NULLIFIER_DOMAIN = "GLYPH_PUSH_CLAIM_NULLIFIER_V1"
 RECEIPT_DOMAIN = "GLYPH_FINAL_RECEIPT_V1"
+ROUTE_DOMAIN = "GLYPH_LINK_ROUTE_V1"
 FRAGMENT_PREFIX = "/glyph/"
 
 
@@ -59,10 +60,33 @@ def uint_string(value: str | int, field: str) -> str:
     return str(int(value))
 
 
+def normalize_route(route: dict[str, Any] | None, *, source_chain_id: int, destination_chain_id: int) -> dict[str, Any] | None:
+    if route is None:
+        return None
+    if source_chain_id == destination_chain_id:
+        raise ValueError("route is only valid for CROSS_CHAIN links")
+    normalized = {
+        "sourceApplication": normalize_address(route["sourceApplication"], "sourceApplication"),
+        "destinationApplication": normalize_address(route["destinationApplication"], "destinationApplication"),
+        "adapter": normalize_address(route["adapter"], "adapter"),
+        "destinationEid": int(route["destinationEid"]),
+        "gasLimit": int(route["gasLimit"]),
+        "proof": str(route.get("proof", "AUTHENTICATED_ADAPTER")),
+    }
+    if normalized["destinationEid"] <= 0:
+        raise ValueError("destinationEid must be nonzero")
+    if normalized["gasLimit"] <= 0:
+        raise ValueError("gasLimit must be nonzero")
+    normalized["routeHash"] = sha256_hex(ROUTE_DOMAIN, {k: v for k, v in normalized.items() if k != "routeHash"})
+    return normalized
+
+
 def make_terms(
     *,
     mode: str,
-    chain_id: int,
+    chain_id: int | None = None,
+    source_chain_id: int | None = None,
+    destination_chain_id: int | None = None,
     router: str,
     vault: str,
     source_asset: str,
@@ -80,13 +104,22 @@ def make_terms(
 ) -> dict[str, Any]:
     if mode not in ("PULL", "PUSH"):
         raise ValueError("mode must be PULL or PUSH")
-    if int(chain_id) <= 0:
-        raise ValueError("chain_id must be nonzero")
+    if chain_id is not None:
+        if source_chain_id is not None or destination_chain_id is not None:
+            raise ValueError("use either chain_id or source_chain_id/destination_chain_id")
+        source_chain_id = destination_chain_id = int(chain_id)
+    if source_chain_id is None or destination_chain_id is None:
+        raise ValueError("source and destination chain ids are required")
+    source_chain_id = int(source_chain_id)
+    destination_chain_id = int(destination_chain_id)
+    if source_chain_id <= 0 or destination_chain_id <= 0:
+        raise ValueError("chain ids must be nonzero")
+    topology = "LOCAL" if source_chain_id == destination_chain_id else "CROSS_CHAIN"
     terms = {
         "mode": mode,
-        "topology": "LOCAL",
-        "sourceChainId": int(chain_id),
-        "destinationChainId": int(chain_id),
+        "topology": topology,
+        "sourceChainId": source_chain_id,
+        "destinationChainId": destination_chain_id,
         "router": normalize_address(router, "router"),
         "destinationVault": normalize_address(vault, "vault"),
         "sourceAsset": normalize_address(source_asset, "source_asset"),
@@ -153,8 +186,20 @@ def validate_payload(payload: dict[str, Any]) -> None:
         terms = payload.get("terms")
         if not isinstance(terms, dict):
             raise ValueError("terms required")
-        if terms.get("sourceChainId") != terms.get("destinationChainId"):
-            raise ValueError("current glyph.link.v1 helpers only create LOCAL same-chain links")
+        topology = "LOCAL" if terms.get("sourceChainId") == terms.get("destinationChainId") else "CROSS_CHAIN"
+        if payload.get("topology") != topology or terms.get("topology") != topology:
+            raise ValueError("topology mismatch")
+        if topology == "CROSS_CHAIN":
+            route = payload.get("route")
+            if not isinstance(route, dict):
+                raise ValueError("cross-chain links require route facts")
+            expected_route = normalize_route(route, source_chain_id=terms["sourceChainId"], destination_chain_id=terms["destinationChainId"])
+            if expected_route is None:
+                raise ValueError("cross-chain links require route facts")
+            if route.get("routeHash") != expected_route["routeHash"]:
+                raise ValueError("routeHash mismatch")
+        elif "route" in payload:
+            raise ValueError("local links must not include route facts")
         if payload.get("termsHash") != terms_hash(terms):
             raise ValueError("termsHash mismatch")
         if payload.get("operationId") != operation_id(terms):
@@ -173,16 +218,18 @@ def validate_payload(payload: dict[str, Any]) -> None:
             raise ValueError("receipt link requires receipt finalReceiptHash")
 
 
-def base_payload(kind: str, terms: dict[str, Any], secrets: dict[str, str] | None = None) -> dict[str, Any]:
+def base_payload(kind: str, terms: dict[str, Any], secrets: dict[str, str] | None = None, route: dict[str, Any] | None = None) -> dict[str, Any]:
     op = operation_id(terms)
     payload = {
         "schemaVersion": LINK_SCHEMA_VERSION,
         "kind": kind,
-        "topology": "LOCAL",
+        "topology": terms["topology"],
         "operationId": op,
         "termsHash": terms_hash(terms),
         "terms": terms,
         "display": {
+            "sourceChainId": terms["sourceChainId"],
+            "destinationChainId": terms["destinationChainId"],
             "chainId": terms["sourceChainId"],
             "amount": terms["destinationAmount"],
             "asset": terms["destinationAsset"],
@@ -192,13 +239,19 @@ def base_payload(kind: str, terms: dict[str, Any], secrets: dict[str, str] | Non
         },
         "secrets": secrets or {},
     }
+    if route is not None:
+        payload["route"] = route
     return payload
 
 
 def create_pull_payload(**kwargs: Any) -> dict[str, Any]:
     secret = kwargs.pop("secret", "")
+    route = kwargs.pop("route", None)
     terms = make_terms(mode="PULL", **kwargs)
-    payload = base_payload("PULL", terms, {"secret": secret} if secret else {})
+    normalized_route = normalize_route(route, source_chain_id=terms["sourceChainId"], destination_chain_id=terms["destinationChainId"]) if route else None
+    if terms["topology"] == "CROSS_CHAIN" and normalized_route is None:
+        raise ValueError("cross-chain pull links require route")
+    payload = base_payload("PULL", terms, {"secret": secret} if secret else {}, normalized_route)
     validate_payload(payload)
     return payload
 
@@ -206,8 +259,12 @@ def create_pull_payload(**kwargs: Any) -> dict[str, Any]:
 def create_push_payload(**kwargs: Any) -> dict[str, Any]:
     claim_secret = kwargs.pop("claim_secret")
     gatekeeper = kwargs.pop("gatekeeper")
+    route = kwargs.pop("route", None)
     terms = make_terms(mode="PUSH", gatekeeper=gatekeeper, **kwargs)
-    payload = base_payload("PUSH", terms, {"claimSecret": claim_secret})
+    normalized_route = normalize_route(route, source_chain_id=terms["sourceChainId"], destination_chain_id=terms["destinationChainId"]) if route else None
+    if terms["topology"] == "CROSS_CHAIN" and normalized_route is None:
+        raise ValueError("cross-chain push links require route")
+    payload = base_payload("PUSH", terms, {"claimSecret": claim_secret}, normalized_route)
     payload["claim"] = {
         "claimSecretTransport": "fragment-only",
         "nullifierHash": nullifier_hash(payload["operationId"], claim_secret),
@@ -222,6 +279,18 @@ def create_pull_link(base_url: str, **kwargs: Any) -> str:
 
 
 def create_push_link(base_url: str, **kwargs: Any) -> str:
+    return compose_link(base_url, create_push_payload(**kwargs))
+
+
+def create_crosschain_pull_link(base_url: str, **kwargs: Any) -> str:
+    if "source_chain_id" not in kwargs or "destination_chain_id" not in kwargs:
+        raise ValueError("cross-chain pull requires source_chain_id and destination_chain_id")
+    return compose_link(base_url, create_pull_payload(**kwargs))
+
+
+def create_crosschain_push_link(base_url: str, **kwargs: Any) -> str:
+    if "source_chain_id" not in kwargs or "destination_chain_id" not in kwargs:
+        raise ValueError("cross-chain push requires source_chain_id and destination_chain_id")
     return compose_link(base_url, create_push_payload(**kwargs))
 
 
@@ -276,14 +345,26 @@ def public_index_record(payload: dict[str, Any]) -> dict[str, Any]:
         "operationId": payload.get("operationId"),
     }
     if payload["kind"] in ("PULL", "PUSH"):
+        terms = payload["terms"]
         record.update({
             "termsHash": payload["termsHash"],
-            "chainId": payload["terms"]["sourceChainId"],
-            "mode": payload["terms"]["mode"],
-            "asset": payload["terms"]["destinationAsset"],
-            "amount": payload["terms"]["destinationAmount"],
-            "expiry": payload["terms"]["expiry"],
+            "chainId": terms["sourceChainId"],
+            "sourceChainId": terms["sourceChainId"],
+            "destinationChainId": terms["destinationChainId"],
+            "mode": terms["mode"],
+            "asset": terms["destinationAsset"],
+            "amount": terms["destinationAmount"],
+            "expiry": terms["expiry"],
         })
+        if payload.get("route"):
+            record.update({
+                "sourceApplication": payload["route"]["sourceApplication"],
+                "destinationApplication": payload["route"]["destinationApplication"],
+                "adapter": payload["route"]["adapter"],
+                "destinationEid": payload["route"]["destinationEid"],
+                "gasLimit": payload["route"]["gasLimit"],
+                "routeHash": payload["route"]["routeHash"],
+            })
         if payload["kind"] == "PUSH":
             record["nullifierHash"] = payload["claim"]["nullifierHash"]
     elif payload["kind"] == "RECEIPT":
@@ -302,9 +383,19 @@ def write_json(path: str | None, obj: Any) -> None:
         print(text, end="")
 
 
-def add_common_terms_args(p: argparse.ArgumentParser) -> None:
+def add_common_terms_args(p: argparse.ArgumentParser, *, crosschain: bool = False) -> None:
     p.add_argument("--base-url", required=True)
-    p.add_argument("--chain-id", required=True, type=int)
+    if crosschain:
+        p.add_argument("--source-chain-id", required=True, type=int)
+        p.add_argument("--destination-chain-id", required=True, type=int)
+        p.add_argument("--source-application", required=True)
+        p.add_argument("--destination-application", required=True)
+        p.add_argument("--adapter", required=True)
+        p.add_argument("--destination-eid", required=True, type=int)
+        p.add_argument("--gas-limit", required=True, type=int)
+        p.add_argument("--proof", default="AUTHENTICATED_ADAPTER")
+    else:
+        p.add_argument("--chain-id", required=True, type=int)
     p.add_argument("--router", required=True)
     p.add_argument("--vault", required=True)
     p.add_argument("--source-asset", required=True)
@@ -325,8 +416,7 @@ def add_common_terms_args(p: argparse.ArgumentParser) -> None:
 
 
 def kwargs_from_args(a: argparse.Namespace) -> dict[str, Any]:
-    return {
-        "chain_id": a.chain_id,
+    kwargs = {
         "router": a.router,
         "vault": a.vault,
         "source_asset": a.source_asset,
@@ -341,6 +431,24 @@ def kwargs_from_args(a: argparse.Namespace) -> dict[str, Any]:
         "expiry": a.expiry,
         "nonce": a.nonce,
     }
+    if hasattr(a, "source_chain_id"):
+        kwargs["source_chain_id"] = a.source_chain_id
+        kwargs["destination_chain_id"] = a.destination_chain_id
+        kwargs["route"] = {
+            "sourceApplication": a.source_application,
+            "destinationApplication": a.destination_application,
+            "adapter": a.adapter,
+            "destinationEid": a.destination_eid,
+            "gasLimit": a.gas_limit,
+            "proof": a.proof,
+        }
+    else:
+        kwargs["chain_id"] = a.chain_id
+    return kwargs
+
+
+def emit_link(out: str | None, base_url: str, payload: dict[str, Any]) -> None:
+    write_json(out, {"link": compose_link(base_url, payload), "payload": payload, "publicIndex": public_index_record(payload)})
 
 
 def main() -> None:
@@ -359,6 +467,20 @@ def main() -> None:
     add_common_terms_args(push_create)
     push_create.add_argument("--gatekeeper", required=True)
     push_create.add_argument("--claim-secret", required=True)
+
+    cross = sub.add_parser("crosschain")
+    cross_sub = cross.add_subparsers(dest="crosscmd", required=True)
+    cross_pull = cross_sub.add_parser("pull")
+    cross_pull_sub = cross_pull.add_subparsers(dest="subcmd", required=True)
+    cross_pull_create = cross_pull_sub.add_parser("create")
+    add_common_terms_args(cross_pull_create, crosschain=True)
+    cross_pull_create.add_argument("--secret", default="")
+    cross_push = cross_sub.add_parser("push")
+    cross_push_sub = cross_push.add_subparsers(dest="subcmd", required=True)
+    cross_push_create = cross_push_sub.add_parser("create")
+    add_common_terms_args(cross_push_create, crosschain=True)
+    cross_push_create.add_argument("--gatekeeper", required=True)
+    cross_push_create.add_argument("--claim-secret", required=True)
 
     rec = sub.add_parser("receipt")
     rec_sub = rec.add_subparsers(dest="subcmd", required=True)
@@ -382,14 +504,16 @@ def main() -> None:
 
     a = ap.parse_args()
     if a.cmd == "pull" and a.subcmd == "create":
-        payload = create_pull_payload(**kwargs_from_args(a), secret=a.secret)
-        write_json(a.out, {"link": compose_link(a.base_url, payload), "payload": payload, "publicIndex": public_index_record(payload)})
+        emit_link(a.out, a.base_url, create_pull_payload(**kwargs_from_args(a), secret=a.secret))
     elif a.cmd == "push" and a.subcmd == "create":
-        payload = create_push_payload(**kwargs_from_args(a), gatekeeper=a.gatekeeper, claim_secret=a.claim_secret)
-        write_json(a.out, {"link": compose_link(a.base_url, payload), "payload": payload, "publicIndex": public_index_record(payload)})
+        emit_link(a.out, a.base_url, create_push_payload(**kwargs_from_args(a), gatekeeper=a.gatekeeper, claim_secret=a.claim_secret))
+    elif a.cmd == "crosschain" and a.crosscmd == "pull" and a.subcmd == "create":
+        emit_link(a.out, a.base_url, create_pull_payload(**kwargs_from_args(a), secret=a.secret))
+    elif a.cmd == "crosschain" and a.crosscmd == "push" and a.subcmd == "create":
+        emit_link(a.out, a.base_url, create_push_payload(**kwargs_from_args(a), gatekeeper=a.gatekeeper, claim_secret=a.claim_secret))
     elif a.cmd == "receipt" and a.subcmd == "create":
         payload = create_receipt_payload(pathlib.Path(a.receipt))
-        write_json(a.out, {"link": compose_link(a.base_url, payload), "payload": payload, "publicIndex": public_index_record(payload)})
+        emit_link(a.out, a.base_url, payload)
     elif a.cmd == "inspect":
         write_json(a.out, decode_link(a.link))
     elif a.cmd == "index":

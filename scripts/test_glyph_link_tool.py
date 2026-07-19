@@ -79,15 +79,96 @@ class GlyphLinkToolTest(unittest.TestCase):
         self.assertNotIn("secrets", public_index)
         self.assertEqual(public_index["operationId"], decoded["operationId"])
 
+    def test_crosschain_pull_roundtrip_includes_route_facts_and_public_index(self):
+        tool = load_tool()
+        link = tool.create_crosschain_pull_link(
+            base_url="https://glyph.local/app",
+            source_chain_id=84532,
+            destination_chain_id=10143,
+            router="0x0000000000000000000000000000000000001005",
+            vault="0x0000000000000000000000000000000000001006",
+            source_asset="0x0000000000000000000000000000000000002001",
+            destination_asset="0x0000000000000000000000000000000000002002",
+            payer="0x0000000000000000000000000000000000001002",
+            recipient="0x0000000000000000000000000000000000001003",
+            recovery="0x0000000000000000000000000000000000001004",
+            provider="0x0000000000000000000000000000000000009001",
+            maximum_input="110000000000000000000",
+            destination_amount="100000000000000000000",
+            fees={"protocol":"1","provider":"2","referrer":"3","gasSponsor":"4"},
+            expiry=1784543060,
+            nonce=17,
+            route={
+                "sourceApplication":"0x0000000000000000000000000000000000003001",
+                "destinationApplication":"0x0000000000000000000000000000000000003002",
+                "adapter":"0x0000000000000000000000000000000000004001",
+                "destinationEid":40267,
+                "gasLimit":300000,
+                "proof":"AUTHENTICATED_ADAPTER"
+            },
+            secret="crosschain-pull-secret",
+        )
+        decoded = tool.decode_link(link)
+        public_index = tool.public_index_record(decoded)
+        self.assertEqual(decoded["topology"], "CROSS_CHAIN")
+        self.assertEqual(decoded["terms"]["sourceChainId"], 84532)
+        self.assertEqual(decoded["terms"]["destinationChainId"], 10143)
+        self.assertEqual(decoded["route"]["destinationEid"], 40267)
+        self.assertEqual(public_index["sourceChainId"], 84532)
+        self.assertEqual(public_index["destinationChainId"], 10143)
+        self.assertEqual(public_index["destinationEid"], 40267)
+        self.assertNotIn("crosschain-pull-secret", json.dumps(public_index))
+
+    def test_crosschain_push_claim_link_keeps_secret_private_and_route_public(self):
+        tool = load_tool()
+        link = tool.create_crosschain_push_link(
+            base_url="https://glyph.local/app",
+            source_chain_id=84532,
+            destination_chain_id=10143,
+            router="0x0000000000000000000000000000000000001005",
+            vault="0x0000000000000000000000000000000000001006",
+            source_asset="0x0000000000000000000000000000000000002001",
+            destination_asset="0x0000000000000000000000000000000000002002",
+            payer="0x0000000000000000000000000000000000001002",
+            recipient="0x0000000000000000000000000000000000001003",
+            recovery="0x0000000000000000000000000000000000001004",
+            provider="0x0000000000000000000000000000000000009001",
+            gatekeeper="0x0000000000000000000000000000000000009002",
+            maximum_input="110000000000000000000",
+            destination_amount="100000000000000000000",
+            fees={"protocol":"1","provider":"2","referrer":"3","gasSponsor":"4"},
+            expiry=1784543060,
+            nonce=18,
+            route={
+                "sourceApplication":"0x0000000000000000000000000000000000003001",
+                "destinationApplication":"0x0000000000000000000000000000000000003002",
+                "adapter":"0x0000000000000000000000000000000000004001",
+                "destinationEid":40267,
+                "gasLimit":350000,
+                "proof":"AUTHENTICATED_ADAPTER"
+            },
+            claim_secret="crosschain-claim-secret",
+        )
+        decoded = tool.decode_link(link)
+        public_index = tool.public_index_record(decoded)
+        self.assertEqual(decoded["kind"], "PUSH")
+        self.assertEqual(decoded["topology"], "CROSS_CHAIN")
+        self.assertIn("nullifierHash", decoded["claim"])
+        self.assertEqual(public_index["destinationEid"], 40267)
+        self.assertIn("nullifierHash", public_index)
+        self.assertNotIn("crosschain-claim-secret", json.dumps(public_index))
+        self.assertNotIn("secrets", public_index)
+
     def test_receipt_link_verifies_existing_canonical_receipt(self):
         tool = load_tool()
-        receipt_path = ROOT / "state" / "receipts" / "LOCAL_PULL.receipt.json"
-        link = tool.create_receipt_link("https://glyph.local/app", receipt_path)
-        decoded = tool.decode_link(link)
-        self.assertEqual(decoded["kind"], "RECEIPT")
-        verification = tool.verify_receipt_link(decoded, ROOT)
-        self.assertTrue(verification["ok"])
-        self.assertEqual(verification["finalReceiptHash"], decoded["receipt"]["finalReceiptHash"])
+        for name in ["LOCAL_PULL.receipt.json", "PULL.receipt.json"]:
+            receipt_path = ROOT / "state" / "receipts" / name
+            link = tool.create_receipt_link("https://glyph.local/app", receipt_path)
+            decoded = tool.decode_link(link)
+            self.assertEqual(decoded["kind"], "RECEIPT")
+            verification = tool.verify_receipt_link(decoded, ROOT)
+            self.assertTrue(verification["ok"])
+            self.assertEqual(verification["finalReceiptHash"], decoded["receipt"]["finalReceiptHash"])
 
     def test_cli_create_inspect_and_index(self):
         with tempfile.TemporaryDirectory() as td:

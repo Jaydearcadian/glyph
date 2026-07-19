@@ -1,0 +1,26 @@
+{
+  "link": "https://glyph.local/app#/glyph/eyJraW5kIjoiUkVDRUlQVCIsIm9wZXJhdGlvbklkIjoiMHgzYjI4YmFjM2Y4OTdmYzljYzMxMmQ4NmEwYjZmNzY5MDM2NGM2ZjUyYWZmZTUyZjA5ZDE3NzFlZmM3MWEwMDhmIiwicmVjZWlwdCI6eyJmaW5hbFJlY2VpcHRIYXNoIjoiMHg5OTRjOTUwZWUwOWUyYzQ2ODM5MzA0NDY5NjM4NjhmMTA2YzIyYTk2ZDJjOTI1NTY1OTFiMjNkZDRhOGExMjdlIiwibW9kZSI6IlBVU0giLCJwYXRoIjoic3RhdGUvcmVjZWlwdHMvUFVTSC5yZWNlaXB0Lmpzb24iLCJzY2hlbWFWZXJzaW9uIjoiZ2x5cGgucmVjZWlwdC52MSIsInN0YXR1cyI6IlJFQ09OQ0lMRUQiLCJ0ZXJtc0hhc2giOiIweGRkNTM4MzMxMTIwYTE0NzMxOGZhMzQ2OTUyMjQwYjUxZGMzNDllZTQ1OGE3ZGE3NjYxODIwZGZjYmEwMGQxMjciLCJ0b3BvbG9neSI6IkNST1NTX0NIQUlOIn0sInNjaGVtYVZlcnNpb24iOiJnbHlwaC5saW5rLnYxIiwidG9wb2xvZ3kiOiJDUk9TU19DSEFJTiJ9",
+  "payload": {
+    "kind": "RECEIPT",
+    "operationId": "0x3b28bac3f897fc9cc312d86a0b6f7690364c6f52affe52f09d1771efc71a008f",
+    "receipt": {
+      "finalReceiptHash": "0x994c950ee09e2c4683930446963868f106c22a96d2c92556591b23dd4a8a127e",
+      "mode": "PUSH",
+      "path": "state/receipts/PUSH.receipt.json",
+      "schemaVersion": "glyph.receipt.v1",
+      "status": "RECONCILED",
+      "termsHash": "0xdd538331120a147318fa346952240b51dc349ee458a7da7661820dfcba00d127",
+      "topology": "CROSS_CHAIN"
+    },
+    "schemaVersion": "glyph.link.v1",
+    "topology": "CROSS_CHAIN"
+  },
+  "publicIndex": {
+    "finalReceiptHash": "0x994c950ee09e2c4683930446963868f106c22a96d2c92556591b23dd4a8a127e",
+    "kind": "RECEIPT",
+    "operationId": "0x3b28bac3f897fc9cc312d86a0b6f7690364c6f52affe52f09d1771efc71a008f",
+    "schemaVersion": "glyph.link.v1",
+    "status": "RECONCILED",
+    "topology": "CROSS_CHAIN"
+  }
+}

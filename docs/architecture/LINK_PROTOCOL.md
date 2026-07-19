@@ -1,6 +1,6 @@
 # Glyph Link Protocol v1
 
-Status: MVP-local link layer for the proven core/receipt system. This document defines the frontend-independent contract for creating, inspecting, indexing, and verifying Glyph links before UI wiring.
+Status: MVP link layer for the proven core/receipt system. This document defines the frontend-independent contract for creating, inspecting, indexing, and verifying local and cross-chain Glyph links before UI wiring.
 
 ## Scope
 
@@ -12,7 +12,7 @@ Status: MVP-local link layer for the proven core/receipt system. This document d
 | `PUSH` | payer funds a claimable push/gift/payment operation | claim secret in URL fragment only; public record carries nullifier hash only |
 | `RECEIPT` | user opens/verifies a canonical receipt JSON/card | no secret by default |
 
-This version intentionally targets **LOCAL same-chain** MVP flows first. Cross-chain link payloads are reserved by the schema (`topology: CROSS_CHAIN`) but not emitted by `scripts/glyph_link_tool.py` yet.
+This version emits both **LOCAL same-chain** and **CROSS_CHAIN** MVP flows. Cross-chain links are deterministic route descriptions for frontend/preflight use; live onchain proof still requires fresh deployed address readbacks and transaction receipts before any public “live” claim.
 
 ## URL shape
 
@@ -73,6 +73,24 @@ For `PULL`/`PUSH`, `terms` contains the operation facts used by the helper to co
 }
 ```
 
+`CROSS_CHAIN` links also include public route facts:
+
+```json
+{
+  "route": {
+    "sourceApplication": "0x...",
+    "destinationApplication": "0x...",
+    "adapter": "0x...",
+    "destinationEid": 40267,
+    "gasLimit": 300000,
+    "proof": "AUTHENTICATED_ADAPTER",
+    "routeHash": "0x..."
+  }
+}
+```
+
+Route facts are not secrets. They are deliberately safe for public indexing because they define the exact route the wallet/app should inspect before signing or funding.
+
 `PUSH` also includes:
 
 ```json
@@ -124,6 +142,7 @@ The CLI uses explicit hash domains:
 | `termsHash` | `GLYPH_LINK_TERMS_V1` |
 | `operationId` | `GLYPH_LINK_OPERATION_V1` over `{termsHash, terms}` |
 | `claim.nullifierHash` | `GLYPH_PUSH_CLAIM_NULLIFIER_V1` over operation id + claim secret |
+| `route.routeHash` | `GLYPH_LINK_ROUTE_V1` over source/destination application, adapter, destination EID, gas limit, proof |
 | receipt verification | existing `GLYPH_FINAL_RECEIPT_V1` |
 
 The link helper’s operation id is a deterministic link-layer identifier for preflight/frontends. Contract tests remain the authority for onchain operation semantics.
@@ -144,10 +163,13 @@ Allowed public record fields:
 - operationId
 - termsHash
 - chainId
+- sourceChainId
+- destinationChainId
 - mode
 - asset
 - amount
 - expiry
+- `sourceApplication`, `destinationApplication`, `adapter`, `destinationEid`, `gasLimit`, `routeHash` for `CROSS_CHAIN`
 - `nullifierHash` for `PUSH`
 - finalReceiptHash/status for receipt links
 
@@ -204,6 +226,61 @@ python3 scripts/glyph_link_tool.py push create \
   --out state/links/examples/local_push.link.json
 ```
 
+Create a cross-chain Pull link:
+
+```bash
+python3 scripts/glyph_link_tool.py crosschain pull create \
+  --base-url https://glyph.local/app \
+  --source-chain-id 84532 \
+  --destination-chain-id 10143 \
+  --router 0x0000000000000000000000000000000000001005 \
+  --vault 0x0000000000000000000000000000000000001006 \
+  --source-asset 0x0000000000000000000000000000000000002001 \
+  --destination-asset 0x0000000000000000000000000000000000002002 \
+  --payer 0x0000000000000000000000000000000000001002 \
+  --recipient 0x0000000000000000000000000000000000001003 \
+  --recovery 0x0000000000000000000000000000000000001004 \
+  --provider 0x0000000000000000000000000000000000009001 \
+  --source-application 0x0000000000000000000000000000000000003001 \
+  --destination-application 0x0000000000000000000000000000000000003002 \
+  --adapter 0x0000000000000000000000000000000000004001 \
+  --destination-eid 40267 \
+  --gas-limit 300000 \
+  --maximum-input 110000000000000000000 \
+  --destination-amount 100000000000000000000 \
+  --protocol-fee 1 --provider-fee 2 --referrer-fee 3 --gas-sponsor-fee 4 \
+  --expiry 1784543060 --nonce 17 --secret fragment-only-crosschain \
+  --out state/links/examples/crosschain_pull.link.json
+```
+
+Create a cross-chain Push link:
+
+```bash
+python3 scripts/glyph_link_tool.py crosschain push create \
+  --base-url https://glyph.local/app \
+  --source-chain-id 84532 \
+  --destination-chain-id 10143 \
+  --router 0x0000000000000000000000000000000000001005 \
+  --vault 0x0000000000000000000000000000000000001006 \
+  --source-asset 0x0000000000000000000000000000000000002001 \
+  --destination-asset 0x0000000000000000000000000000000000002002 \
+  --payer 0x0000000000000000000000000000000000001002 \
+  --recipient 0x0000000000000000000000000000000000001003 \
+  --recovery 0x0000000000000000000000000000000000001004 \
+  --provider 0x0000000000000000000000000000000000009001 \
+  --gatekeeper 0x0000000000000000000000000000000000009002 \
+  --source-application 0x0000000000000000000000000000000000003001 \
+  --destination-application 0x0000000000000000000000000000000000003002 \
+  --adapter 0x0000000000000000000000000000000000004001 \
+  --destination-eid 40267 \
+  --gas-limit 350000 \
+  --maximum-input 110000000000000000000 \
+  --destination-amount 100000000000000000000 \
+  --protocol-fee 1 --provider-fee 2 --referrer-fee 3 --gas-sponsor-fee 4 \
+  --expiry 1784543060 --nonce 18 --claim-secret fragment-only-crosschain-claim \
+  --out state/links/examples/crosschain_push.link.json
+```
+
 Create and verify a receipt link:
 
 ```bash
@@ -238,4 +315,6 @@ python3 scripts/test_glyph_link_tool.py
 python3 -m py_compile scripts/glyph_link_tool.py scripts/test_glyph_link_tool.py scripts/receipt_tool.py
 python3 scripts/receipt_tool.py verify state/receipts/LOCAL_PULL.receipt.json
 python3 scripts/receipt_tool.py verify state/receipts/LOCAL_PUSH.receipt.json
+python3 scripts/receipt_tool.py verify state/receipts/PULL.receipt.json
+python3 scripts/receipt_tool.py verify state/receipts/PUSH.receipt.json
 ```
