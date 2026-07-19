@@ -1,0 +1,68 @@
+{
+  "link": "https://glyph.local/app#/glyph/eyJjbGFpbSI6eyJjbGFpbVNlY3JldFRyYW5zcG9ydCI6ImZyYWdtZW50LW9ubHkiLCJnYXRla2VlcGVyIjoiMHgwMTRlYjIyYWI3ZGZhOWE4NDNiYWJjMWM2ZTJkYTViNTk2YTYyZjM2IiwibnVsbGlmaWVySGFzaCI6IjB4Mjc4ZGFiZTU5NThlMTI1MjNmMThhOWVjZWFiNTc2YjFiOGMxYzIxYTc3NjcwM2UxMjY5NjIyNjg5ODNkZWJlYyJ9LCJkaXNwbGF5Ijp7ImFtb3VudCI6IjEwMDAwMDAwMDAwMDAwMDAwMDAwIiwiYXNzZXQiOiIweDFkNDgyNzgzMzE2ZmRlZjJlNzk1YTFjMTkzYWNlMjgwNjYwYTg4N2EiLCJjaGFpbklkIjoxMDE0MywiZGVzdGluYXRpb25DaGFpbklkIjoxMDE0MywiZXhwaXJ5IjoxNzg0NTUyODI2LCJwYXllciI6IjB4MDE0ZWIyMmFiN2RmYTlhODQzYmFiYzFjNmUyZGE1YjU5NmE2MmYzNiIsInJlY2lwaWVudCI6IjB4MDE0ZWIyMmFiN2RmYTlhODQzYmFiYzFjNmUyZGE1YjU5NmE2MmYzNiIsInNvdXJjZUNoYWluSWQiOjEwMTQzfSwia2luZCI6IlBVU0giLCJvcGVyYXRpb25JZCI6IjB4NmY5YWYxYTBhZGFlNzUxZDBlMzdmYTI1YzEwZTM1YTYwNTExZmEyZjZmNDVjOGIzNzkwNzVmNTFkZGRmYjliMSIsInNjaGVtYVZlcnNpb24iOiJnbHlwaC5saW5rLnYxIiwic2VjcmV0cyI6eyJjbGFpbVNlY3JldCI6ImxpdmUtcHJvb2YtZnJhZ21lbnQtcGxhY2Vob2xkZXIifSwidGVybXMiOnsiY2xhaW1HYXRla2VlcGVyIjoiMHgwMTRlYjIyYWI3ZGZhOWE4NDNiYWJjMWM2ZTJkYTViNTk2YTYyZjM2IiwiZGVzdGluYXRpb25BbW91bnQiOiIxMDAwMDAwMDAwMDAwMDAwMDAwMCIsImRlc3RpbmF0aW9uQXNzZXQiOiIweDFkNDgyNzgzMzE2ZmRlZjJlNzk1YTFjMTkzYWNlMjgwNjYwYTg4N2EiLCJkZXN0aW5hdGlvbkNoYWluSWQiOjEwMTQzLCJkZXN0aW5hdGlvblZhdWx0IjoiMHhmYjJhNDM2Y2Y3MmM2ZmJjYzRjY2QxYTVhNGFkZWYwMTVmMzcwY2E5IiwiZXhwaXJ5IjoxNzg0NTUyODI2LCJmZWVzIjp7Imdhc1Nwb25zb3IiOiIwIiwicHJvdG9jb2wiOiIwIiwicHJvdmlkZXIiOiIxMDAwMDAwMDAwMDAwMDAwMDAwIiwicmVmZXJyZXIiOiIwIn0sIm1heGltdW1JbnB1dCI6IjExMDAwMDAwMDAwMDAwMDAwMDAwIiwibW9kZSI6IlBVU0giLCJub25jZSI6MiwicGF5ZXIiOiIweDAxNGViMjJhYjdkZmE5YTg0M2JhYmMxYzZlMmRhNWI1OTZhNjJmMzYiLCJwcm92aWRlciI6IjB4MDE0ZWIyMmFiN2RmYTlhODQzYmFiYzFjNmUyZGE1YjU5NmE2MmYzNiIsInJlY2lwaWVudCI6IjB4MDE0ZWIyMmFiN2RmYTlhODQzYmFiYzFjNmUyZGE1YjU5NmE2MmYzNiIsInJlY292ZXJ5IjoiMHgwMTRlYjIyYWI3ZGZhOWE4NDNiYWJjMWM2ZTJkYTViNTk2YTYyZjM2Iiwicm91dGVyIjoiMHhjNzFjMTE5YjkxZmExZjE4NjE2MjY4NDNmYTY1M2Y0MWNlZjkxMDFhIiwic291cmNlQXNzZXQiOiIweDFkNDgyNzgzMzE2ZmRlZjJlNzk1YTFjMTkzYWNlMjgwNjYwYTg4N2EiLCJzb3VyY2VDaGFpbklkIjoxMDE0MywidG9wb2xvZ3kiOiJMT0NBTCJ9LCJ0ZXJtc0hhc2giOiIweGI2NWY4OGE4NTgwMzcyYTNiMTUyNTZkZjUwMGFkODlhODE2ZDVlMGE5ZTJkODZiZTgyMzI1MDY3ZDRmNDdlMmIiLCJ0b3BvbG9neSI6IkxPQ0FMIn0",
+  "payload": {
+    "claim": {
+      "claimSecretTransport": "fragment-only",
+      "gatekeeper": "0x014eb22ab7dfa9a843babc1c6e2da5b596a62f36",
+      "nullifierHash": "0x278dabe5958e12523f18a9eceab576b1b8c1c21a776703e126962268983debec"
+    },
+    "display": {
+      "amount": "10000000000000000000",
+      "asset": "0x1d482783316fdef2e795a1c193ace280660a887a",
+      "chainId": 10143,
+      "destinationChainId": 10143,
+      "expiry": 1784552826,
+      "payer": "0x014eb22ab7dfa9a843babc1c6e2da5b596a62f36",
+      "recipient": "0x014eb22ab7dfa9a843babc1c6e2da5b596a62f36",
+      "sourceChainId": 10143
+    },
+    "kind": "PUSH",
+    "operationId": "0x6f9af1a0adae751d0e37fa25c10e35a60511fa2f6f45c8b379075f51dddfb9b1",
+    "schemaVersion": "glyph.link.v1",
+    "secrets": {
+      "claimSecret": "live-proof-fragment-placeholder"
+    },
+    "terms": {
+      "claimGatekeeper": "0x014eb22ab7dfa9a843babc1c6e2da5b596a62f36",
+      "destinationAmount": "10000000000000000000",
+      "destinationAsset": "0x1d482783316fdef2e795a1c193ace280660a887a",
+      "destinationChainId": 10143,
+      "destinationVault": "0xfb2a436cf72c6fbcc4ccd1a5a4adef015f370ca9",
+      "expiry": 1784552826,
+      "fees": {
+        "gasSponsor": "0",
+        "protocol": "0",
+        "provider": "1000000000000000000",
+        "referrer": "0"
+      },
+      "maximumInput": "11000000000000000000",
+      "mode": "PUSH",
+      "nonce": 2,
+      "payer": "0x014eb22ab7dfa9a843babc1c6e2da5b596a62f36",
+      "provider": "0x014eb22ab7dfa9a843babc1c6e2da5b596a62f36",
+      "recipient": "0x014eb22ab7dfa9a843babc1c6e2da5b596a62f36",
+      "recovery": "0x014eb22ab7dfa9a843babc1c6e2da5b596a62f36",
+      "router": "0xc71c119b91fa1f1861626843fa653f41cef9101a",
+      "sourceAsset": "0x1d482783316fdef2e795a1c193ace280660a887a",
+      "sourceChainId": 10143,
+      "topology": "LOCAL"
+    },
+    "termsHash": "0xb65f88a8580372a3b15256df500ad89a816d5e0a9e2d86be82325067d4f47e2b",
+    "topology": "LOCAL"
+  },
+  "publicIndex": {
+    "amount": "10000000000000000000",
+    "asset": "0x1d482783316fdef2e795a1c193ace280660a887a",
+    "chainId": 10143,
+    "destinationChainId": 10143,
+    "expiry": 1784552826,
+    "kind": "PUSH",
+    "mode": "PUSH",
+    "nullifierHash": "0x278dabe5958e12523f18a9eceab576b1b8c1c21a776703e126962268983debec",
+    "operationId": "0x6f9af1a0adae751d0e37fa25c10e35a60511fa2f6f45c8b379075f51dddfb9b1",
+    "schemaVersion": "glyph.link.v1",
+    "sourceChainId": 10143,
+    "termsHash": "0xb65f88a8580372a3b15256df500ad89a816d5e0a9e2d86be82325067d4f47e2b",
+    "topology": "LOCAL"
+  }
+}
