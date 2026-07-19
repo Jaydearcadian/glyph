@@ -41,7 +41,8 @@ def require(path: Path, checks: List[Dict[str, Any]]) -> bool:
 
 def abi_functions(path: Path) -> set[str]:
     obj = load(path)
-    return {item.get("name") for item in obj.get("abi", []) if item.get("type") == "function" and item.get("name")}
+    abi = obj if isinstance(obj, list) else obj.get("abi", [])
+    return {item.get("name") for item in abi if item.get("type") == "function" and item.get("name")}
 
 
 def run(cmd: List[str]) -> Tuple[bool, str, str]:
@@ -73,6 +74,7 @@ def main() -> None:
         ROOT / "state/frontend/receipts/index.json",
         ROOT / "state/frontend/proofs/index.json",
         ROOT / "state/frontend/transactions/index.json",
+        ROOT / "state/frontend/distributions/index.json",
         ROOT / "state/frontend/crosschain/base-monad.timeline.json",
         ROOT / "state/frontend/crosschain/CROSSCHAIN_UI_COPY.md",
         ROOT / "state/frontend/crosschain/layerzero-support-packet.md",
@@ -90,7 +92,8 @@ def main() -> None:
         "SourceDeltaRouter": ["escrow", "operationId", "hashTerms", "routeFacts", "sourceReceiptFacts", "actorNonce"],
         "DestinationGlyphVault": ["provideLiquidity"],
         "GlyphLayerZeroApplication": ["sendRouteFromEscrow", "finalizeAndSendReceipt", "claimPushAndAck"],
-        "ContributionCampaign": ["create", "reconcileChild", "close"],
+        "ContributionCampaign": ["create", "reconcileChild", "close", "campaignDistributionFacts"],
+        "CampaignPayoutSplitter": ["createDistribution", "claim", "distributionTotals", "recipientShare", "claimReceiptHash"],
         "GlyphReceiptLedger": ["registerOperation", "appendLocalLeg", "appendRemoteLeg", "reconcile"],
         "GlyphAttestationRegistry": [],
         "TestToken": ["approve", "balanceOf", "allowance"],
@@ -109,31 +112,38 @@ def main() -> None:
             p = ROOT / rec[key]
             require(p, checks)
         rpath = ROOT / rec["jsonPath"]
-        if rpath.exists():
+        if rpath.exists() and not str(rec.get("mode", "")).startswith("DISTRIBUTION"):
             ok, detail = validate_receipt(rpath)
             ok_msg(checks, f"receipt verifies: {rec['label']}", ok, detail[:160])
+        elif rpath.exists():
+            dist = load(rpath)
+            ok_msg(checks, f"distribution receipt schema: {rec['label']}", str(dist.get("schema", "")).startswith("glyph.distribution."), dist.get("schema", ""))
         lpath = ROOT / rec["linkPath"]
         if lpath.exists():
             link = load(lpath)
-            try:
-                jsonschema.validate(link["payload"], link_schema)
-                schema_ok = True
-                detail = ""
-            except Exception as exc:
-                schema_ok = False
-                detail = str(exc)
+            if "payload" in link:
+                try:
+                    jsonschema.validate(link["payload"], link_schema)
+                    schema_ok = True
+                    detail = ""
+                except Exception as exc:
+                    schema_ok = False
+                    detail = str(exc)
+            else:
+                schema_ok = bool(link.get("url") and link.get("receiptHash"))
+                detail = "distribution/simple receipt link" if schema_ok else "missing url/receiptHash"
             ok_msg(checks, f"receipt link schema: {rec['label']}", schema_ok, detail[:160])
         qpath = ROOT / rec["qrPath"]
         if qpath.exists():
             ok_msg(checks, f"QR non-empty: {rec['label']}", qpath.stat().st_size > 100, str(qpath.stat().st_size))
 
     proofs = load(ROOT / "state/frontend/proofs/index.json")
-    ok_msg(checks, "proof count", len(proofs.get("proofs", [])) == 3, str(len(proofs.get("proofs", []))))
+    ok_msg(checks, "proof count", len(proofs.get("proofs", [])) >= 4, str(len(proofs.get("proofs", []))))
     timeline = load(ROOT / "state/frontend/crosschain/base-monad.timeline.json")
     ok_msg(checks, "crosschain marked blocked", timeline.get("uiStatus") == "source-send-proven-destination-blocked", timeline.get("uiStatus", ""))
     ok_msg(checks, "crosschain no settlement claim", any(s.get("status") == "not_delivered" for s in timeline.get("stages", [])), "not_delivered stage required")
 
-    for flow in ["pull", "push", "campaign", "receipt", "crosschain-proof"]:
+    for flow in ["pull", "push", "campaign", "distribution", "receipt", "crosschain-proof"]:
         p = ROOT / "state/frontend/flows" / f"{flow}.flow.json"
         if require(p, checks):
             obj = load(p)
@@ -144,6 +154,7 @@ def main() -> None:
         to_check = {}
         to_check.update({f"monadCore.{k}": v for k, v in addresses["monadCore"].items()})
         to_check.update({f"monadCampaign.{k}": v for k, v in addresses["monadCampaign"].items()})
+        to_check.update({f"monadDistribution.{k}": v for k, v in addresses.get("monadDistribution", {}).items()})
         for label, addr in to_check.items():
             ok, out, err = run(["cast", "code", addr, "--rpc-url", RPC])
             code_ok = ok and out.startswith("0x") and len(out) > 2

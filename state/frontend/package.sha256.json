@@ -2,19 +2,23 @@
   "files": [
     {
       "path": "state/frontend/CONTRACT_METHODS.md",
-      "sha256": "3469b9557a908fd2065d32aa4ccbd9e0db64827336c787e58199bc98bb4133e5"
+      "sha256": "0dc2057cf82a05edc4064b04d1df9e61b0b8e337071cd220ce60a1f8ddef0d88"
     },
     {
       "path": "state/frontend/FRONTEND_READINESS_REPORT.json",
-      "sha256": "6ecc68e2e268df6cedc773e192f777eaf187f0cd56df23e083f1ac13aa131e5a"
+      "sha256": "86ad6a906553a08df8acfe3eb073fdd3b99cdc235f3a1f1bde17a8cc0a627596"
     },
     {
       "path": "state/frontend/FRONTEND_READINESS_REPORT.md",
-      "sha256": "53c515bf994401941c292c9ad2226dda72559ce77052a9df825635388e57c76a"
+      "sha256": "831cb51251b58d64d2dbf2c3c4a27af1abb5fd3cb621c613aad7b40da9a6d84f"
+    },
+    {
+      "path": "state/frontend/abi/CampaignPayoutSplitter.json",
+      "sha256": "d50f4025f0f54c77ec36eb672c43b1c5b43eee674541c3ba7f0131a3873ca700"
     },
     {
       "path": "state/frontend/abi/ContributionCampaign.json",
-      "sha256": "c9b4448ae8756caed7f19327ba0e1eb7c091cbd71027c84f3423d6066c7a885b"
+      "sha256": "1bcc319a4f504e94f1fb769066f02952362661c0c672ee54112f29d6c14da35d"
     },
     {
       "path": "state/frontend/abi/DestinationGlyphVault.json",
@@ -42,7 +46,7 @@
     },
     {
       "path": "state/frontend/addresses/monad-testnet.json",
-      "sha256": "8d71554acf7a8c43ee58c8e638a961bf17271b450c1c575dbe6fdc724173d77e"
+      "sha256": "05b7f25307d01ae7ef026b00d3efb9cce165645a60108378c6ceae04a626edf3"
     },
     {
       "path": "state/frontend/chains/base-sepolia.json",
@@ -58,7 +62,7 @@
     },
     {
       "path": "state/frontend/contracts/glyphContracts.ts",
-      "sha256": "fe7f08eb09d2b970603ca8ca0903b73961d976b673ad76b35e4e3169aeef00ee"
+      "sha256": "f65a45d97a183dd52a9c0f7d350e503d5738be0997d6f68bc663a7269fbc4243"
     },
     {
       "path": "state/frontend/crosschain/CROSSCHAIN_UI_COPY.md",
@@ -73,12 +77,20 @@
       "sha256": "fe1724bcdacab1518604acaceeb16f90c6d2cd0e6e69a8dbab7ba6d33432fedd"
     },
     {
+      "path": "state/frontend/distributions/index.json",
+      "sha256": "a3b51a725e6bfc48218f199559008a448bc6444c63e055387f44997d3cb9c461"
+    },
+    {
       "path": "state/frontend/flows/campaign.flow.json",
       "sha256": "9b9f503b1d1d3eae57285eb0364121d386cfb8860123b1c7586e9ee02df87131"
     },
     {
       "path": "state/frontend/flows/crosschain-proof.flow.json",
       "sha256": "f44ee7daceda324009a100d0916957854195996eb8e10d67303b5bd651ef8fa2"
+    },
+    {
+      "path": "state/frontend/flows/distribution.flow.json",
+      "sha256": "66cb26c2ce402e2d56002168ccb113d045a1ddc65a08313abf92baac63ec57fb"
     },
     {
       "path": "state/frontend/flows/pull.flow.json",
@@ -94,7 +106,7 @@
     },
     {
       "path": "state/frontend/frontend.manifest.json",
-      "sha256": "566d5cd689baf252e6271ef692c5d69cfb8fbd3e4e3e77054a0664d681e9ec46"
+      "sha256": "2a86d1bf06c7309ae9e5a62858f18393bfcd06351f8c4564d81da34f1aeac7fd"
     },
     {
       "path": "state/frontend/monad-testnet.deployment.json",
@@ -102,7 +114,7 @@
     },
     {
       "path": "state/frontend/proofs/index.json",
-      "sha256": "dffebed3e77af79ed6ebbdb1b1b1c0dbdab5b82d4320728ff0b7f6e74249567d"
+      "sha256": "4bb5a64626f0f819b1503533c2f8ab1b0ce0f1c4ef4e01384afdc1877742237c"
     },
     {
       "path": "state/frontend/readbacks/latest.json",
@@ -110,15 +122,11 @@
     },
     {
       "path": "state/frontend/receipts/index.json",
-      "sha256": "687e083d07c181a1073a0a95e61416ac58c6a5a328e3bc575e301a019f616097"
+      "sha256": "75f2b4d876c5c08d0278d89e0f92b8d50b32d0e4b8740da29abdf5916484b9bb"
     },
     {
       "path": "state/frontend/transactions/index.json",
-      "sha256": "bbadb421f4dd3a625fb38c2951dce465ee1a681cba038493804ad9d323e48a1f"
-    },
-    {
-      "path": "FRONTEND_MANIFEST.md",
-      "sha256": "3c040090bb03310cfdfd6c9a08a870cdc2f749dea6dedf4157b58b4bb521131e"
+      "sha256": "57870d3775bcbd6439fb6a7950d69bdc784594fb67e3909de2846facbe92a616"
     }
   ],
   "schema": "glyph.frontend.packageHashes.v1"

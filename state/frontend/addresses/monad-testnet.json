@@ -31,5 +31,10 @@
     "token": "0x1d482783316FdeF2e795A1C193ACE280660A887a",
     "vault": "0xfb2a436Cf72C6FbCc4cCd1A5A4Adef015F370Ca9"
   },
+  "monadDistribution": {
+    "campaign": "0x34ebCe467EcB6cA5D9f0E9d5bF3C23b9E2B191bb",
+    "splitter": "0x3f90710e945f1BFa07737B97676056DF3F92Db59",
+    "token": "0x1d482783316FdeF2e795A1C193ACE280660A887a"
+  },
   "schema": "glyph.frontend.addresses.v1"
 }

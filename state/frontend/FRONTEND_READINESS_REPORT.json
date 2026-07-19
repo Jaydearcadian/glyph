@@ -62,6 +62,11 @@
     },
     {
       "detail": "",
+      "name": "path exists: state/frontend/distributions/index.json",
+      "ok": true
+    },
+    {
+      "detail": "",
       "name": "path exists: state/frontend/crosschain/base-monad.timeline.json",
       "ok": true
     },
@@ -91,7 +96,7 @@
       "ok": true
     },
     {
-      "detail": "['do not fix Base\u2192Monad / LayerZero delivery in this package', 'do not add generalized Merkle pro-rata or payout splitter in this package', 'do not build an indexer in this package', 'do not add private-key backend signing', 'do not expose fake success-button flows']",
+      "detail": "['do not fix Base\u2192Monad / LayerZero delivery in this package', 'do not add generalized Merkle distribution in this package; explicit-recipient splitter is included', 'do not build an indexer in this package', 'do not add private-key backend signing', 'do not expose fake success-button flows']",
       "name": "do-not list count",
       "ok": true
     },
@@ -133,6 +138,16 @@
     {
       "detail": "missing=",
       "name": "ABI functions: ContributionCampaign",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/frontend/abi/CampaignPayoutSplitter.json",
+      "ok": true
+    },
+    {
+      "detail": "missing=",
+      "name": "ABI functions: CampaignPayoutSplitter",
       "ok": true
     },
     {
@@ -271,7 +286,42 @@
       "ok": true
     },
     {
-      "detail": "3",
+      "detail": "",
+      "name": "path exists: state/live/monad-distribution-proof-20260719T172223Z/aggregate.distribution.receipt.json",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/live/monad-distribution-proof-20260719T172223Z/aggregate.distribution.receipt.card.svg",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/live/monad-distribution-proof-20260719T172223Z/aggregate.distribution.receipt.link.json",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/live/monad-distribution-proof-20260719T172223Z/aggregate.distribution.receipt.qr.png",
+      "ok": true
+    },
+    {
+      "detail": "glyph.distribution.aggregateReceipt.v1",
+      "name": "distribution receipt schema: Aggregate distribution receipt",
+      "ok": true
+    },
+    {
+      "detail": "distribution/simple receipt link",
+      "name": "receipt link schema: Aggregate distribution receipt",
+      "ok": true
+    },
+    {
+      "detail": "2060",
+      "name": "QR non-empty: Aggregate distribution receipt",
+      "ok": true
+    },
+    {
+      "detail": "4",
       "name": "proof count",
       "ok": true
     },
@@ -313,6 +363,16 @@
     {
       "detail": "glyph.frontend.flow.v1",
       "name": "flow schema: campaign",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/frontend/flows/distribution.flow.json",
+      "ok": true
+    },
+    {
+      "detail": "glyph.frontend.flow.v1",
+      "name": "flow schema: distribution",
       "ok": true
     },
     {
@@ -399,11 +459,26 @@
       "detail": "0x608060405234801561000f575f80fd5b506004361061011c575f3560e01c80637ecf686d116100",
       "name": "live code: monadCampaign.vault",
       "ok": true
+    },
+    {
+      "detail": "0x608060405234801561000f575f80fd5b506004361061007a575f3560e01c80634b0405e3116100",
+      "name": "live code: monadDistribution.campaign",
+      "ok": true
+    },
+    {
+      "detail": "0x608060405234801561000f575f80fd5b5060043610610090575f3560e01c806398e5c5e1116100",
+      "name": "live code: monadDistribution.splitter",
+      "ok": true
+    },
+    {
+      "detail": "0x608060405234801561000f575f80fd5b50600436106100e5575f3560e01c806340c10f19116100",
+      "name": "live code: monadDistribution.token",
+      "ok": true
     }
   ],
   "failed": 0,
-  "generatedAt": "2026-07-19T16:46:27Z",
+  "generatedAt": "2026-07-19T17:38:10Z",
   "liveRpc": true,
-  "passed": 80,
+  "passed": 95,
   "schema": "glyph.frontend.readinessReport.v1"
 }

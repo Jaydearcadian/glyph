@@ -71,4 +71,13 @@ contract ContributionCampaign {
             keccak256(abi.encode("GLYPH_CAMPAIGN_RECEIPT", programId, c.reconciledTotal, childReceipts[programId]));
         emit CampaignClosed(programId, c.reconciledTotal, aggregateReceiptHash);
     }
+
+    function campaignDistributionFacts(bytes32 programId)
+        external
+        view
+        returns (address settlementAsset, uint256 reconciledTotal, bool closed)
+    {
+        Campaign storage c = campaigns[programId];
+        return (c.settlementAsset, c.reconciledTotal, c.closed);
+    }
 }

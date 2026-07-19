@@ -1,0 +1,7 @@
+{
+  "kind": "DISTRIBUTION_CLAIM",
+  "receiptHash": "0x5351c4a6da9b1e4ae8b19455fd7b34fb01c110e0484005ebe668f0826f6cc57f",
+  "receiptPath": "state/live/monad-distribution-proof-20260719T172223Z/referrer.distribution.receipt.json",
+  "schema": "glyph.receipt.link.v1",
+  "url": "https://jaydearcadian.github.io/Bifrost/app?glyphReceipt=0x5351c4a6da9b1e4ae8b19455fd7b34fb01c110e0484005ebe668f0826f6cc57f#kind=DISTRIBUTION_CLAIM&chain=monad-testnet&distribution=0xe91b66e0fd1df23dbd317fc1119202f2460458da2fc276a55627b342f87f888a"
+}

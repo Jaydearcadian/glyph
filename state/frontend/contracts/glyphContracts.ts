@@ -19,6 +19,12 @@ export const glyphContracts = {
     destinationApp: "0xDf62c61C73c879921911deE9e8727D797cBD5716",
     campaign: "0xc1734449aeca5e45E570afd862f47Ff0eE03bEd1",
   },
+  monadDistribution: {
+    token: "0x1d482783316FdeF2e795A1C193ACE280660A887a",
+    campaign: "0x34ebCe467EcB6cA5D9f0E9d5bF3C23b9E2B191bb",
+    splitter: "0x3f90710e945f1BFa07737B97676056DF3F92Db59",
+    distributionId: "0xe91b66e0fd1df23dbd317fc1119202f2460458da2fc276a55627b342f87f888a",
+  },
   crosschainFreshLane: {
     baseRouter: "0x6eaD1370111e2E747027C728bDb1AD5C39C33294",
     baseVault: "0xb949494E4430F666174a57d0E0dd4b98c0b7854B",

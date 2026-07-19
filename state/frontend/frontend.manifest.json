@@ -1,7 +1,7 @@
 {
   "doNots": [
     "do not fix Base\u2192Monad / LayerZero delivery in this package",
-    "do not add generalized Merkle pro-rata or payout splitter in this package",
+    "do not add generalized Merkle distribution in this package; explicit-recipient splitter is included",
     "do not build an indexer in this package",
     "do not add private-key backend signing",
     "do not expose fake success-button flows"
@@ -9,6 +9,7 @@
   "features": {
     "campaign": "hybrid transaction/proof",
     "crosschain": "proof-only blocker panel",
+    "distribution": "live explicit-recipient payout splitter/pro-rata claims",
     "pull": "hybrid transaction/proof",
     "push": "hybrid transaction/proof",
     "receipts": "live artifact + readback"
@@ -16,6 +17,7 @@
   "generatedAt": "2026-07-19T16:42:01Z",
   "paths": {
     "abis": {
+      "CampaignPayoutSplitter": "state/frontend/abi/CampaignPayoutSplitter.json",
       "ContributionCampaign": "state/frontend/abi/ContributionCampaign.json",
       "DestinationGlyphVault": "state/frontend/abi/DestinationGlyphVault.json",
       "GlyphAttestationRegistry": "state/frontend/abi/GlyphAttestationRegistry.json",
@@ -35,12 +37,14 @@
     "crosschainCopy": "state/frontend/crosschain/CROSSCHAIN_UI_COPY.md",
     "crosschainTimeline": "state/frontend/crosschain/base-monad.timeline.json",
     "deployment": "state/frontend/monad-testnet.deployment.json",
+    "distributionsIndex": "state/frontend/distributions/index.json",
     "flows": [
       "state/frontend/flows/campaign.flow.json",
       "state/frontend/flows/crosschain-proof.flow.json",
       "state/frontend/flows/pull.flow.json",
       "state/frontend/flows/push.flow.json",
-      "state/frontend/flows/receipt.flow.json"
+      "state/frontend/flows/receipt.flow.json",
+      "state/frontend/flows/distribution.flow.json"
     ],
     "layerzeroSupportPacket": "state/frontend/crosschain/layerzero-support-packet.md",
     "linkSchema": "state/schemas/link.schema.json",

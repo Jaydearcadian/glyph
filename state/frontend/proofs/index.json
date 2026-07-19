@@ -53,6 +53,12 @@
       "sourceChainId": 84532,
       "status": "source-send-proven-destination-blocked",
       "title": "Base Sepolia to Monad LayerZero source-send proof"
+    },
+    {
+      "kind": "distribution",
+      "label": "Monad payout distribution proof",
+      "path": "state/live/monad-distribution-proof-20260719T172223Z/evidence.json",
+      "status": "live"
     }
   ],
   "schema": "glyph.frontend.proofs.v1"

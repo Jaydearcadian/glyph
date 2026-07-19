@@ -42,6 +42,19 @@
       "status": "RECONCILED",
       "termsHash": "0x1c02c59218771a5bd216c7ddfa81ef46e0ca88ed35b3eaa70856c9ab3446e4a9",
       "topology": "LOCAL"
+    },
+    {
+      "cardPath": "state/live/monad-distribution-proof-20260719T172223Z/aggregate.distribution.receipt.card.svg",
+      "jsonPath": "state/live/monad-distribution-proof-20260719T172223Z/aggregate.distribution.receipt.json",
+      "kind": "DISTRIBUTION_AGGREGATE",
+      "label": "Aggregate distribution receipt",
+      "linkPath": "state/live/monad-distribution-proof-20260719T172223Z/aggregate.distribution.receipt.link.json",
+      "mode": "DISTRIBUTION_AGGREGATE",
+      "operationId": "0xe91b66e0fd1df23dbd317fc1119202f2460458da2fc276a55627b342f87f888a",
+      "qrPath": "state/live/monad-distribution-proof-20260719T172223Z/aggregate.distribution.receipt.qr.png",
+      "receiptHash": "0xcdabf202e3c1ba4e1c049119f201324df717badb3116164cc95f22103e700138",
+      "status": "CLAIMED",
+      "topology": "LOCAL"
     }
   ],
   "schema": "glyph.frontend.receipts.v1"

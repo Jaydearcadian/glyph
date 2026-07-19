@@ -1,0 +1,21 @@
+{
+  "contract": "CampaignPayoutSplitter",
+  "flow": "distribution",
+  "mode": "live-proven",
+  "operatorWrites": [
+    "createDistribution(CreateDistributionInput)"
+  ],
+  "proofPath": "state/live/monad-distribution-proof-20260719T172223Z/evidence.json",
+  "schema": "glyph.frontend.flow.v1",
+  "stages": [
+    "campaign close",
+    "createDistribution",
+    "creator claim",
+    "collaborator claim",
+    "referrer claim",
+    "aggregate distribution receipt"
+  ],
+  "userSafeWrites": [
+    "claim(bytes32)"
+  ]
+}

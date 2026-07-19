@@ -115,6 +115,41 @@ Frontend status:
 create/close may be user-facing if preconditions are visible; reconcileChild is operator/proof-backed unless a safe authority model is added.
 ```
 
+## CampaignPayoutSplitter
+
+Reads:
+
+```text
+distributions(bytes32 distributionId)
+recipientShare(bytes32 distributionId, address recipient)
+recipientShareAt(bytes32 distributionId, uint256 index)
+distributionTotals(bytes32 distributionId)
+claimReceiptHash(bytes32 distributionId, address recipient)
+```
+
+Writes:
+
+```text
+createDistribution(CreateDistributionInput input)
+claim(bytes32 distributionId)
+recoverExpired(bytes32 distributionId)
+```
+
+Frontend status:
+
+```text
+claim(bytes32) is a user-safe recipient wallet action after checking recipientShare().
+createDistribution(...) is proof/operator-facing unless the campaign creator/funder UX is explicitly wired.
+recoverExpired(...) should be hidden until deadline has passed and unclaimedAmount > 0.
+```
+
+Live proof:
+
+```text
+state/live/monad-distribution-proof-20260719T172223Z/
+state/frontend/distributions/index.json
+```
+
 ## Receipt artifacts
 
 Receipt JSON/card/link/QR artifacts are already generated under live proof bundles and indexed at:

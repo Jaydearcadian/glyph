@@ -6,14 +6,14 @@ Scope: ambitious pre-frontend backend readiness package. This repository still d
 
 ## Product position
 
-Glyph is link-native payment infrastructure on Monad: Push/Pull payment links, campaign contribution aggregation, QR/shareable receipts, and transparent cross-chain proof evidence.
+Glyph is link-native payment infrastructure on Monad: Push/Pull payment links, campaign contribution aggregation, explicit-recipient payout splitting, QR/shareable receipts, and transparent cross-chain proof evidence.
 
 ## Hard boundaries
 
 ```text
 No frontend app is created here.
 No Base→Monad destination delivery/final settlement is claimed.
-No payout splitter / pro-rata distribution primitive is included.
+No generalized Merkle distribution primitive is included; the included splitter is explicit-recipient only.
 No indexer is included.
 No private-key backend signing is included.
 No fake success-button flows are permitted.
@@ -31,6 +31,7 @@ No fake success-button flows are permitted.
 | ABI exports | `state/frontend/abi/` |
 | Contract method map | `state/frontend/CONTRACT_METHODS.md` |
 | Flow specs | `state/frontend/flows/` |
+| Distribution index | `state/frontend/distributions/index.json` |
 | Receipt index | `state/frontend/receipts/index.json` |
 | Proof index | `state/frontend/proofs/index.json` |
 | Transaction index | `state/frontend/transactions/index.json` |
@@ -67,6 +68,19 @@ No fake success-button flows are permitted.
 }
 ```
 
+## Distribution stack
+
+```json
+{
+  "token": "0x1d482783316FdeF2e795A1C193ACE280660A887a",
+  "campaign": "0x34ebCe467EcB6cA5D9f0E9d5bF3C23b9E2B191bb",
+  "splitter": "0x3f90710e945f1BFa07737B97676056DF3F92Db59",
+  "distributionId": "0xe91b66e0fd1df23dbd317fc1119202f2460458da2fc276a55627b342f87f888a"
+}
+```
+
+Proof bundle: `state/live/monad-distribution-proof-20260719T172223Z/`.
+
 ## Cross-chain fresh lane
 
 ```json
@@ -87,7 +101,7 @@ No fake success-button flows are permitted.
 
 ## Required frontend UX stance
 
-- Show Pull, Push, campaign, receipt, and cross-chain panels.
+- Show Pull, Push, campaign, distribution, receipt, and cross-chain panels.
 - Treat user-safe wallet writes separately from provider/operator lifecycle steps.
 - Render proof-backed steps as evidence, not fake click success.
 - Render cross-chain as source-send proven + LayerZero/DVN blocked, not settled.

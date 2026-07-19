@@ -14,6 +14,9 @@ Glyph is a Monad-anchored protocol for link-native Web3 operations: Push value, 
 | Live receipt JSON/cards/links/QRs | Generated and verified | `scripts/live_receipt_builder.py`, `*.live.receipt.*` in Monad proof bundles |
 | Pre-frontend integration surface | Generated and verified | `FRONTEND_MANIFEST.md`, `state/frontend/`, `scripts/validate_frontend_readiness.py` |
 | Multi-contributor campaign aggregation | Live-proven | `state/live/monad-campaign-proof-20260719T132755Z/` |
+| Explicit-recipient payout splitter | Live-proven | `state/live/monad-distribution-proof-20260719T172223Z/` |
+| Pro-rata recipient claims | Live-proven: 70/20/10 creator/collaborator/referrer | `creator|collaborator|referrer.distribution.receipt.*` |
+| Distribution receipt cards/links/QRs | Generated and verified | `state/live/monad-distribution-proof-20260719T172223Z/*.distribution.receipt.*` |
 | Base Sepolia → Monad Testnet LayerZero lane | Deployed, wired, frozen, readback-good | `state/live/base-monad-crosschain-blocker-20260719T165200Z/` |
 | Base→Monad route send | Live source send proven | `state/live/base-monad-crosschain-blocker-20260719T165200Z/fresh-route.json` |
 | Base→Monad destination delivery + ACK/finalize | Blocked before app execution by LayerZero DVN validation | `state/live/base-monad-crosschain-blocker-20260719T165200Z/layerzero-fresh-guid.json` |
