@@ -34,3 +34,7 @@ contracts/out/
 
 # generated testnet wallets (never commit)
 state/keys/
+state/deploy-base.json
+state/deploy-monad.json
+contracts/broadcast/
+contracts/cache/
