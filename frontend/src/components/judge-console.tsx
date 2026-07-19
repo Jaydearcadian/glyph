@@ -48,12 +48,14 @@ export function JudgeConsole() {
       const campaign = params.get("campaign");
       const linkedRecipient = params.get("payTo") ?? params.get("recipient");
       const linkedAmount = params.get("amount");
+      const request = params.get("request");
       const claim = params.get("claim");
       const payment = params.get("payment");
       const opened = claim ?? payment;
       if (opened?.match(/^0x[0-9a-fA-F]{64}$/)) { setOpenedOperation(opened as Hash); setOpenedKind(claim ? "claim" : "payment"); }
       if (campaign?.match(/^0x[0-9a-fA-F]{64}$/)) { setProgramId(campaign as Hash); setMode("pull"); setIsPaymentRequest(true); }
       if (params.get("payTo")) setIsPaymentRequest(true);
+      if (request === "pull" && linkedRecipient && linkedAmount) setGeneratedLink({ label: "SHAREABLE PULL PAYMENT LINK", url: `${window.location.origin}/links#payTo=${linkedRecipient}&amount=${linkedAmount}` });
       if (linkedRecipient && isAddress(linkedRecipient)) setRecipient(linkedRecipient);
       if (linkedAmount && safeAmount(linkedAmount)) setAmount(linkedAmount);
     };
@@ -101,7 +103,9 @@ export function JudgeConsole() {
     if (!payTo || !value) { setError("Enter a valid recipient wallet and amount first."); return; }
     setError(undefined);
     setResult(undefined);
-    setGeneratedLink({ label: "SHAREABLE PULL PAYMENT LINK", url: `${location.origin}/links#payTo=${payTo}&amount=${amount}` });
+    const url = `${location.origin}/links#request=pull&payTo=${payTo}&amount=${amount}`;
+    window.location.hash = `request=pull&payTo=${payTo}&amount=${amount}`;
+    setGeneratedLink({ label: "SHAREABLE PULL PAYMENT LINK", url: url.replace("#request=pull&", "#") });
   }
 
   async function createEscrow() {
