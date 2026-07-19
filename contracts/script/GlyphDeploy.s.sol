@@ -6,7 +6,9 @@ import {LayerZeroV2GlyphMessengerAdapter} from "../src/LayerZeroV2GlyphMessenger
 import {GlyphLayerZeroApplication} from "../src/GlyphLayerZeroApplication.sol";
 import {SourceDeltaRouter} from "../src/SourceDeltaRouter.sol";
 import {DestinationGlyphVault} from "../src/DestinationGlyphVault.sol";
+import {TestToken} from "../src/TestToken.sol";
 import {IGlyphMessengerAdapter} from "../src/interfaces/IGlyphMessengerAdapter.sol";
+import {IERC20Minimal} from "../src/libraries/SafeToken.sol";
 
 /// @notice Per-chain deployment parameters.
 /// Fill these from `script/glyph.deploy.config.json` (or env) before broadcasting.
@@ -15,17 +17,22 @@ struct ChainConfig {
     uint64 chainId;
     uint32 eid;
     address lzEndpoint;
-    // The SAME-CHAIN contracts this adapter talks to (already deployed, or deployed here).
+    // SAME-CHAIN contracts. If left as 0x0 the script deploys fresh router+vault+token.
     address router;
     address vault;
+    address token; // ERC-20 moved by this chain's side of the operation
     // Set after the REMOTE chain's adapter is deployed (cross-fills post-broadcast).
     address remoteAdapter;
     address remoteApp;
+    address remoteToken;
     bytes32 messengerPolicyHash; // external security config commitment (e.g. oracle/ULN hash)
     address owner; // deployer/operator; becomes contract owner
     uint256 enforcedGasLimit;
     uint256 ackGasLimit;
     bool orderedExecution;
+    // E2E seeding amounts (raw token units, 18 decimals assumed)
+    uint256 seedPayerAmount; // minted to owner (acts as payer + provider)
+    uint256 seedVaultLiquidity; // provided into DestinationGlyphVault for deliveries
 }
 
 contract GlyphDeploy is Script {
@@ -33,38 +40,42 @@ contract GlyphDeploy is Script {
     // Base Sepolia  (chainId 84532, eid 40245)  — SOURCE side
     // Monad Testnet (chainId 10143, eid 40204)  — DESTINATION side
     // ------------------------------------------------------------------
-    // These defaults are placeholders. Override via the JSON config file:
-    //   forge script script/GlyphDeploy.s.sol --sig "run(string)" script/glyph.deploy.config.json
-    // or per-chain env vars (GLYPH_BASE_* / GLYPH_MONAD_*).
+    // Defaults are placeholders. Override via JSON config or env (GLYPH_BASE_*/GLYPH_MONAD_*).
 
     ChainConfig internal base;
     ChainConfig internal monad;
 
+    // addresses stashed during the run so cross-wiring can read them
+    mapping(uint64 => address) internal appAddr;
+    mapping(uint64 => address) internal adapterAddr;
+    mapping(uint64 => address) internal routerAddr;
+    mapping(uint64 => address) internal vaultAddr;
+    mapping(uint64 => address) internal tokenAddr;
+
     function run(string calldata configPath) external {
         _loadConfig(configPath);
-        // Phase 1: deploy each chain's adapter stack (no cross-dependency yet).
-        _deployChain(base, true); // isSource = true
-        _deployChain(monad, false); // isSource = false
-
-        // Phase 2: cross-wire. The remote adapter/app addresses are filled by
-        // the operator after both broadcasts (see _crossWire), or passed in config.
+        _deployChain(base, true);
+        _deployChain(monad, false);
         _crossWire(base, monad);
         _crossWire(monad, base);
-
-        // Phase 3: freeze both adapters + both apps (config-locked, messenger-neutral).
+        _seedLiquidity(base);
+        _seedLiquidity(monad);
         _freeze(base);
         _freeze(monad);
-
         _report();
     }
 
     // Convenience entrypoint: both chains from in-script defaults (no config file).
     function run() external {
         _defaults();
+        _applyEnv(base, "GLYPH_BASE_");
+        _applyEnv(monad, "GLYPH_MONAD_");
         _deployChain(base, true);
         _deployChain(monad, false);
         _crossWire(base, monad);
         _crossWire(monad, base);
+        _seedLiquidity(base);
+        _seedLiquidity(monad);
         _freeze(base);
         _freeze(monad);
         _report();
@@ -72,121 +83,132 @@ contract GlyphDeploy is Script {
 
     function _defaults() internal {
         // PLACEHOLDER values — DO NOT broadcast with these.
-        // Base Sepolia LayerZero V2 endpoint (verified on-chain readback).
         base = ChainConfig({
             chainId: 84532,
             eid: 40245,
             lzEndpoint: 0x6EDCE65403992e310A62460808c4b910D972f10f,
             router: address(0),
             vault: address(0),
+            token: address(0),
             remoteAdapter: address(0),
             remoteApp: address(0),
+            remoteToken: address(0),
             messengerPolicyHash: bytes32(0),
             owner: address(0),
             enforcedGasLimit: 200_000,
             ackGasLimit: 200_000,
-            orderedExecution: true
+            orderedExecution: true,
+            seedPayerAmount: 1_000_000 ether,
+            seedVaultLiquidity: 1_000_000 ether
         });
-        // Monad Testnet LayerZero V2 endpoint (verified on-chain readback).
         monad = ChainConfig({
             chainId: 10143,
             eid: 40204,
             lzEndpoint: 0x6C7Ab2202C98C4227C5c46f1417D81144DA716Ff,
             router: address(0),
             vault: address(0),
+            token: address(0),
             remoteAdapter: address(0),
             remoteApp: address(0),
+            remoteToken: address(0),
             messengerPolicyHash: bytes32(0),
             owner: address(0),
             enforcedGasLimit: 200_000,
             ackGasLimit: 200_000,
-            orderedExecution: true
+            orderedExecution: true,
+            seedPayerAmount: 1_000_000 ether,
+            seedVaultLiquidity: 1_000_000 ether
         });
     }
 
-    function _loadConfig(string calldata path) internal {
+    function _loadConfig(string calldata /*path*/) internal {
         _defaults();
-        // Expects a JSON with keys: base.* and monad.*
-        // forge-std has no JSON parse in Script precompile easily; operator passes
-        // fully-resolved addresses via env instead. We honor env overrides here.
+        // Config resolution is done via env overrides (see _applyEnv). The JSON file is human reference.
         _applyEnv(base, "GLYPH_BASE_");
         _applyEnv(monad, "GLYPH_MONAD_");
     }
 
     function _applyEnv(ChainConfig storage c, string memory prefix) internal {
-        address owner = _envAddr(string(abi.encodePacked(prefix, "OWNER")), c.owner);
-        if (owner != address(0)) c.owner = owner;
-        address router = _envAddr(string(abi.encodePacked(prefix, "ROUTER")), c.router);
-        if (router != address(0)) c.router = router;
-        address vault = _envAddr(string(abi.encodePacked(prefix, "VAULT")), c.vault);
-        if (vault != address(0)) c.vault = vault;
-        address remoteAdapter =
-            _envAddr(string(abi.encodePacked(prefix, "REMOTE_ADAPTER")), c.remoteAdapter);
-        if (remoteAdapter != address(0)) c.remoteAdapter = remoteAdapter;
-        address remoteApp = _envAddr(string(abi.encodePacked(prefix, "REMOTE_APP")), c.remoteApp);
-        if (remoteApp != address(0)) c.remoteApp = remoteApp;
-        bytes32 ph = _envBytes32(string(abi.encodePacked(prefix, "POLICY_HASH")), c.messengerPolicyHash);
+        address v;
+        v = _envAddr(string(abi.encodePacked(prefix, "OWNER")));
+        if (v != address(0)) c.owner = v;
+        v = _envAddr(string(abi.encodePacked(prefix, "ROUTER")));
+        if (v != address(0)) c.router = v;
+        v = _envAddr(string(abi.encodePacked(prefix, "VAULT")));
+        if (v != address(0)) c.vault = v;
+        v = _envAddr(string(abi.encodePacked(prefix, "TOKEN")));
+        if (v != address(0)) c.token = v;
+        v = _envAddr(string(abi.encodePacked(prefix, "REMOTE_ADAPTER")));
+        if (v != address(0)) c.remoteAdapter = v;
+        v = _envAddr(string(abi.encodePacked(prefix, "REMOTE_APP")));
+        if (v != address(0)) c.remoteApp = v;
+        v = _envAddr(string(abi.encodePacked(prefix, "REMOTE_TOKEN")));
+        if (v != address(0)) c.remoteToken = v;
+        bytes32 ph = _envBytes32(string(abi.encodePacked(prefix, "POLICY_HASH")));
         if (ph != bytes32(0)) c.messengerPolicyHash = ph;
     }
 
-    function _envAddr(string memory key, address fallback_) internal view returns (address) {
+    function _envAddr(string memory key) internal view returns (address) {
         try vm.envAddress(key) returns (address v) {
             return v;
         } catch {
-            return fallback_;
+            return address(0);
         }
     }
 
-    function _envBytes32(string memory key, bytes32 fallback_) internal view returns (bytes32) {
+    function _envBytes32(string memory key) internal view returns (bytes32) {
         try vm.envBytes32(key) returns (bytes32 v) {
             return v;
         } catch {
-            return fallback_;
+            return bytes32(0);
         }
     }
 
     function _deployChain(ChainConfig memory c, bool isSource) internal {
         require(c.owner != address(0), "owner not set");
-        require(c.router != address(0), "router not set");
-        require(c.vault != address(0), "vault not set");
         require(c.messengerPolicyHash != bytes32(0), "policy hash not set");
 
         vm.startBroadcast();
+        // Deploy or reuse same-chain core contracts.
+        SourceDeltaRouter router =
+            c.router == address(0) ? new SourceDeltaRouter() : SourceDeltaRouter(c.router);
+        DestinationGlyphVault vault =
+            c.vault == address(0) ? new DestinationGlyphVault() : DestinationGlyphVault(c.vault);
+        TestToken token = c.token == address(0) ? new TestToken() : TestToken(c.token);
+
         // App is SOURCE-side or DESTINATION-side depending on isSource.
         GlyphLayerZeroApplication.Side side =
             isSource ? GlyphLayerZeroApplication.Side.SOURCE : GlyphLayerZeroApplication.Side.DESTINATION;
         GlyphLayerZeroApplication app = new GlyphLayerZeroApplication(
-            side, c.chainId, _remoteChainId(c), SourceDeltaRouter(c.router), DestinationGlyphVault(c.vault), c.owner
+            side, c.chainId, _remoteChainId(c), router, vault, c.owner
         );
         LayerZeroV2GlyphMessengerAdapter adapter = new LayerZeroV2GlyphMessengerAdapter(
             c.lzEndpoint, c.chainId, c.eid, _remoteChainId(c), _remoteEid(c), c.owner, c.messengerPolicyHash
         );
         vm.stopBroadcast();
 
-        // Record for cross-wiring.
-        if (c.chainId == base.chainId) {
-            base.remoteApp = monad.owner == address(0) ? base.remoteApp : base.remoteApp; // filled later
-        }
-
+        _record(c.chainId, address(app), address(adapter), address(router), address(vault), address(token));
         console2.log("DEPLOYED chain", uint256(c.chainId));
+        console2.log("  router", address(router));
+        console2.log("  vault", address(vault));
+        console2.log("  token", address(token));
         console2.log("  app", address(app));
         console2.log("  adapter", address(adapter));
-        _record(c.chainId, address(app), address(adapter));
     }
 
-    // addresses stashed during the run so _crossWire can read them
-    mapping(uint64 => address) internal appAddr;
-    mapping(uint64 => address) internal adapterAddr;
-
-    function _record(uint64 chainId, address app, address adapter) internal {
+    function _record(uint64 chainId, address app, address adapter, address router, address vault, address token)
+        internal
+    {
         appAddr[chainId] = app;
         adapterAddr[chainId] = adapter;
+        routerAddr[chainId] = router;
+        vaultAddr[chainId] = vault;
+        tokenAddr[chainId] = token;
     }
 
     function _crossWire(ChainConfig memory local, ChainConfig memory remote) internal {
         address localApp = appAddr[local.chainId];
         address localAdapter = adapterAddr[local.chainId];
-        // Remote adapter/app are either from config (post-broadcast) or from this run's stash.
         address remoteAdapter = remote.remoteAdapter != address(0) ? remote.remoteAdapter : adapterAddr[remote.chainId];
         address remoteApp = remote.remoteApp != address(0) ? remote.remoteApp : appAddr[remote.chainId];
         require(remoteAdapter != address(0) && remoteApp != address(0), "remote not resolved");
@@ -199,13 +221,29 @@ contract GlyphDeploy is Script {
         LayerZeroV2GlyphMessengerAdapter(payable(localAdapter)).setTrustedPeer(remoteAdapter);
         LayerZeroV2GlyphMessengerAdapter(payable(localAdapter)).setEnforcedGasLimit(local.enforcedGasLimit);
         LayerZeroV2GlyphMessengerAdapter(payable(localAdapter)).setOrderedExecution(local.orderedExecution);
-        // Router/vault authorization (router authorizes the adapter; vault authorizes the app)
-        SourceDeltaRouter(local.router).setMessengerAdapter(localAdapter, true);
-        SourceDeltaRouter(local.router).setMessengerProcessorForAdapter(localApp, localAdapter, true);
-        DestinationGlyphVault(local.vault).setAuthorizedApplication(localApp, true);
+        SourceDeltaRouter(routerAddr[local.chainId]).setMessengerAdapter(localAdapter, true);
+        SourceDeltaRouter(routerAddr[local.chainId]).setMessengerProcessorForAdapter(localApp, localAdapter, true);
+        DestinationGlyphVault(vaultAddr[local.chainId]).setAuthorizedApplication(localApp, true);
         vm.stopBroadcast();
 
-        console2.log("CROSSWIRED", local.chainId, "->", remote.chainId);
+        console2.log("CROSSWIRED", uint256(local.chainId), "->", uint256(remote.chainId));
+    }
+
+    // Seed E2E liquidity: owner acts as both payer and provider.
+    // SOURCE chain: mint source token to owner (payer will approve router in the E2E script).
+    // DESTINATION chain: mint destination token to owner, then provide liquidity into the vault.
+    function _seedLiquidity(ChainConfig memory c) internal {
+        address token = tokenAddr[c.chainId];
+        require(token != address(0), "token not deployed");
+        vm.startBroadcast();
+        TestToken(token).mint(c.owner, c.seedPayerAmount);
+        if (c.chainId != base.chainId) {
+            // destination side: provider pre-funds the vault
+            TestToken(token).approve(vaultAddr[c.chainId], c.seedVaultLiquidity);
+            DestinationGlyphVault(vaultAddr[c.chainId]).provideLiquidity(IERC20Minimal(token), c.seedVaultLiquidity);
+        }
+        vm.stopBroadcast();
+        console2.log("SEEDED liquidity chain", uint256(c.chainId), "token", token);
     }
 
     function _freeze(ChainConfig memory c) internal {
@@ -215,7 +253,7 @@ contract GlyphDeploy is Script {
         GlyphLayerZeroApplication(payable(localApp)).freezeConfig(c.messengerPolicyHash);
         LayerZeroV2GlyphMessengerAdapter(payable(localAdapter)).freezeConfig(c.messengerPolicyHash);
         vm.stopBroadcast();
-        console2.log("FROZEN", c.chainId);
+        console2.log("FROZEN", uint256(c.chainId));
     }
 
     function _remoteChainId(ChainConfig memory c) internal view returns (uint64) {
@@ -228,8 +266,9 @@ contract GlyphDeploy is Script {
 
     function _report() internal view {
         console2.log("=== Glyph cross-chain adapter stack ===");
-        console2.log("Base Sepolia    app", appAddr[base.chainId], "adapter", adapterAddr[base.chainId]);
-        console2.log("Monad Testnet   app", appAddr[monad.chainId], "adapter", adapterAddr[monad.chainId]);
-        console2.log("Next: broadcast per chain, then verify config readback + E2E lifecycle.");
+        console2.log("Base Sepolia   app", appAddr[base.chainId], "adapter", adapterAddr[base.chainId]);
+        console2.log("Monad Testnet  app", appAddr[monad.chainId], "adapter", adapterAddr[monad.chainId]);
+        console2.log("Tokens: Base", tokenAddr[base.chainId], "Monad", tokenAddr[monad.chainId]);
+        console2.log("Next: broadcast per chain, then run E2E lifecycle + read back receipts.");
     }
 }
