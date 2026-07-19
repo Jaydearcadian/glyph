@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://glyph.local/schemas/link.schema.json",
+  "title": "Glyph Link v1",
+  "type": "object",
+  "required": ["schemaVersion", "kind", "topology"],
+  "properties": {
+    "schemaVersion": {"const": "glyph.link.v1"},
+    "kind": {"enum": ["PULL", "PUSH", "RECEIPT"]},
+    "topology": {"enum": ["LOCAL", "CROSS_CHAIN"]},
+    "operationId": {"type": "string", "pattern": "^0x[0-9a-fA-F]{64}$"},
+    "termsHash": {"type": "string", "pattern": "^0x[0-9a-fA-F]{64}$"},
+    "terms": {
+      "type": "object",
+      "required": ["mode", "topology", "sourceChainId", "destinationChainId", "router", "destinationVault", "sourceAsset", "destinationAsset", "payer", "recipient", "recovery", "provider", "maximumInput", "destinationAmount", "fees", "expiry", "nonce"],
+      "properties": {
+        "mode": {"enum": ["PULL", "PUSH"]},
+        "topology": {"enum": ["LOCAL", "CROSS_CHAIN"]},
+        "sourceChainId": {"type": "integer", "minimum": 1},
+        "destinationChainId": {"type": "integer", "minimum": 1},
+        "router": {"$ref": "#/$defs/address"},
+        "destinationVault": {"$ref": "#/$defs/address"},
+        "sourceAsset": {"$ref": "#/$defs/address"},
+        "destinationAsset": {"$ref": "#/$defs/address"},
+        "payer": {"$ref": "#/$defs/address"},
+        "recipient": {"$ref": "#/$defs/address"},
+        "recovery": {"$ref": "#/$defs/address"},
+        "provider": {"$ref": "#/$defs/address"},
+        "claimGatekeeper": {"$ref": "#/$defs/address"},
+        "maximumInput": {"$ref": "#/$defs/uintString"},
+        "destinationAmount": {"$ref": "#/$defs/uintString"},
+        "fees": {
+          "type": "object",
+          "required": ["protocol", "provider", "referrer", "gasSponsor"],
+          "properties": {
+            "protocol": {"$ref": "#/$defs/uintString"},
+            "provider": {"$ref": "#/$defs/uintString"},
+            "referrer": {"$ref": "#/$defs/uintString"},
+            "gasSponsor": {"$ref": "#/$defs/uintString"}
+          },
+          "additionalProperties": false
+        },
+        "expiry": {"type": "integer", "minimum": 1},
+        "nonce": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "display": {"type": "object"},
+    "claim": {
+      "type": "object",
+      "properties": {
+        "claimSecretTransport": {"const": "fragment-only"},
+        "nullifierHash": {"type": "string", "pattern": "^0x[0-9a-fA-F]{64}$"},
+        "gatekeeper": {"$ref": "#/$defs/address"}
+      },
+      "additionalProperties": false
+    },
+    "receipt": {
+      "type": "object",
+      "required": ["path", "schemaVersion", "mode", "status", "topology", "finalReceiptHash", "termsHash"],
+      "properties": {
+        "path": {"type": "string"},
+        "schemaVersion": {"const": "glyph.receipt.v1"},
+        "mode": {"enum": ["PULL", "PUSH", "CONTRIBUTION", "GIFT_CLAIM", "GIFT_POOL"]},
+        "status": {"enum": ["RECONCILED", "REFUNDED"]},
+        "topology": {"enum": ["LOCAL", "CROSS_CHAIN"]},
+        "finalReceiptHash": {"type": "string", "pattern": "^0x[0-9a-fA-F]{64}$"},
+        "termsHash": {"type": "string", "pattern": "^0x[0-9a-fA-F]{64}$"}
+      },
+      "additionalProperties": false
+    },
+    "secrets": {
+      "type": "object",
+      "description": "Fragment-only private material. Must never be copied into public index records, query strings, receipt JSON, logs, or onchain metadata."
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"kind": {"const": "PULL"}}},
+      "then": {"required": ["operationId", "termsHash", "terms", "display"]}
+    },
+    {
+      "if": {"properties": {"kind": {"const": "PUSH"}}},
+      "then": {"required": ["operationId", "termsHash", "terms", "display", "claim"]}
+    },
+    {
+      "if": {"properties": {"kind": {"const": "RECEIPT"}}},
+      "then": {"required": ["operationId", "receipt"]}
+    }
+  ],
+  "$defs": {
+    "address": {"type": "string", "pattern": "^0x[0-9a-fA-F]{40}$"},
+    "uintString": {"type": "string", "pattern": "^(0|[1-9][0-9]*)$"}
+  },
+  "additionalProperties": false
+}
