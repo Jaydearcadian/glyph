@@ -1,0 +1,77 @@
+{
+  "contracts": {
+    "adapter": "0x8Fdffc7D35c0d3A5662264b05b35d184d7209b57",
+    "campaign": "0xc1734449aeca5e45E570afd862f47Ff0eE03bEd1",
+    "destinationApp": "0xDf62c61C73c879921911deE9e8727D797cBD5716",
+    "router": "0xC71C119B91Fa1F1861626843Fa653F41cEF9101A",
+    "sourceApp": "0x63Df5199052915653A8373a1a55329175135D42D",
+    "token": "0x1d482783316FdeF2e795A1C193ACE280660A887a",
+    "vault": "0xb4E40ecEEc4A0498A183EC14EB52B5e0C2434c77"
+  },
+  "contributors": {
+    "A": "0x014eb22ab7DFa9A843Babc1C6e2dA5B596a62f36",
+    "B": "0x428D2131102aCd3660b0346c1DFacEDC682E5324"
+  },
+  "feeBreakdown": {
+    "campaignFees": "0"
+  },
+  "finalReceiptHash": "0x5840cf2cd3ec307731c13824646d49f81e6b6aabf963be7c4580cb3231919d22",
+  "identityBindings": [],
+  "messageIds": [
+    "0x64340d39714010e82f3efa2164b5316fae426be8ba6aded06c8f95d051c098db",
+    "0x13568ae2146d48456dd086964d9625fcaf86fa409259fbb3f5608755b3d52db8"
+  ],
+  "mode": "CONTRIBUTION",
+  "operationId": "0x1c02c59218771a5bd216c7ddfa81ef46e0ca88ed35b3eaa70856c9ab3446e4a9",
+  "parties": {
+    "payer": "MULTIPLE_CONTRIBUTORS",
+    "recipient": "0x014eb22ab7DFa9A843Babc1C6e2dA5B596a62f36"
+  },
+  "privacy": {
+    "privateContextHash": "0x0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "proofs": [
+    "LOCAL_VERIFIED",
+    "CAMPAIGN_AGGREGATE"
+  ],
+  "purpose": "campaign-contribution/private-commitment",
+  "receiptHashHint": "0x0f65224219c9db8aba9f580012ea3bd2f3d910bd3b88be35fb9f07d1bd3795af",
+  "reconciliation": {
+    "closed": true,
+    "maximumInput": "20000000000000000000",
+    "realizedFees": "0",
+    "realizedPrincipal": "20000000000000000000",
+    "reconciledTotal": "20000000000000000000",
+    "residualReturned": "0"
+  },
+  "schemaVersion": "glyph.receipt.v1",
+  "status": "RECONCILED",
+  "termsHash": "0x1c02c59218771a5bd216c7ddfa81ef46e0ca88ed35b3eaa70856c9ab3446e4a9",
+  "topology": "LOCAL",
+  "txHashes": [
+    "0xc0bfa2152d5866e220ec0c5bfd03ba247809a2dfa0a50182547e793f14f3ac95",
+    "0xcd5458e379a012efb56189f5fe9f917b554ca2755ef71e90d6d01659c14b789b",
+    "0x66dace116375c957269b48fbe2cfebc25d259f6ecbe6d6f61ca7887f1e5669e6",
+    "0x59065e88b33adcf0d99c8b67ff00a28c8c02504b1147612bdade94c98aca1814"
+  ],
+  "valueLegs": [
+    {
+      "amount": "10000000000000000000",
+      "operationId": "0x6add05a903aa8f57009aea2b7b2951ae4e750b71184c5ec925236bb28ff977f8",
+      "receiptHash": "0x64340d39714010e82f3efa2164b5316fae426be8ba6aded06c8f95d051c098db",
+      "type": "CONTRIBUTION_CHILD"
+    },
+    {
+      "amount": "10000000000000000000",
+      "operationId": "0x22c539cd643f3444be362b9f736b40175d1983a458593a353b96539d697382aa",
+      "receiptHash": "0x13568ae2146d48456dd086964d9625fcaf86fa409259fbb3f5608755b3d52db8",
+      "type": "CONTRIBUTION_CHILD"
+    },
+    {
+      "amount": "20000000000000000000",
+      "receiptHash": "0x0f65224219c9db8aba9f580012ea3bd2f3d910bd3b88be35fb9f07d1bd3795af",
+      "type": "CAMPAIGN_CLOSED"
+    }
+  ],
+  "verification": {}
+}

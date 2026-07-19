@@ -17,6 +17,7 @@
   - Push op
   - Pull receipt
   - Push receipt
+  - live receipt JSON/card/link/QR artifacts
   - `34` txs, all `0x1`
 - Say: "This is the core: one link-native operation, live on Monad testnet, with terminal receipts."
 

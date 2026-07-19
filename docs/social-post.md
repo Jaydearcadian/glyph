@@ -10,6 +10,7 @@ What is live now:
 - Push claim on Monad testnet
 - Terminal receipt delivery on Monad loopback
 - Two-contributor campaign aggregation into one close receipt
+- Live receipt JSON, SVG card, receipt-link JSON, and QR PNG artifacts generated from proof bundles
 - Base Sepolia → Monad Testnet LayerZero lane deployed/wired/frozen, with live Base source-send evidence
 
 Honest boundary: Base→Monad destination delivery is not claimed complete yet. LayerZero sees the packet, but DVN validation is still waiting before Monad `lzReceive`.

@@ -11,6 +11,7 @@ Glyph is a Monad-anchored protocol for link-native Web3 operations: Push value, 
 | Pull payment on Monad | Live-proven | `state/live/monad-address-pair-proof-20260719T130942Z/` |
 | Push claim on Monad | Live-proven | `state/live/monad-address-pair-proof-20260719T130942Z/` |
 | Terminal destination receipts | Live-proven on Monad loopback | `state/live/monad-address-pair-proof-20260719T130942Z/evidence.json` |
+| Live receipt JSON/cards/links/QRs | Generated and verified | `scripts/live_receipt_builder.py`, `*.live.receipt.*` in Monad proof bundles |
 | Multi-contributor campaign aggregation | Live-proven | `state/live/monad-campaign-proof-20260719T132755Z/` |
 | Base Sepolia → Monad Testnet LayerZero lane | Deployed, wired, frozen, readback-good | `state/live/base-monad-crosschain-blocker-20260719T165200Z/` |
 | Base→Monad route send | Live source send proven | `state/live/base-monad-crosschain-blocker-20260719T165200Z/fresh-route.json` |
@@ -41,6 +42,19 @@ Live facts:
 
 This proof uses a fresh current-source Monad loopback stack, executes Pull and Push flows with separate addresses, finalizes both operations, and delivers terminal receipt messages to the destination app.
 
+Generated receipt artifacts:
+
+```text
+state/live/monad-address-pair-proof-20260719T130942Z/pull.live.receipt.json
+state/live/monad-address-pair-proof-20260719T130942Z/pull.live.receipt.card.svg
+state/live/monad-address-pair-proof-20260719T130942Z/pull.live.receipt.link.json
+state/live/monad-address-pair-proof-20260719T130942Z/pull.live.receipt.qr.png
+state/live/monad-address-pair-proof-20260719T130942Z/push.live.receipt.json
+state/live/monad-address-pair-proof-20260719T130942Z/push.live.receipt.card.svg
+state/live/monad-address-pair-proof-20260719T130942Z/push.live.receipt.link.json
+state/live/monad-address-pair-proof-20260719T130942Z/push.live.receipt.qr.png
+```
+
 ### 2. Monad campaign proof
 
 Path:
@@ -64,6 +78,17 @@ Live facts:
 | Readback | `20 gTST`, `closed=true` |
 
 This proves a campaign can aggregate multiple live child Pull receipts into a final campaign close receipt.
+
+Generated receipt artifacts:
+
+```text
+state/live/monad-campaign-proof-20260719T132755Z/campaign.live.receipt.json
+state/live/monad-campaign-proof-20260719T132755Z/campaign.live.receipt.card.svg
+state/live/monad-campaign-proof-20260719T132755Z/campaign.live.receipt.link.json
+state/live/monad-campaign-proof-20260719T132755Z/campaign.live.receipt.qr.png
+```
+
+Distribution boundary: the campaign backend proves multi-party contribution aggregation and close. A separate split-payout/multi-recipient distribution primitive is not implemented in this pass.
 
 ### 3. Base Sepolia → Monad Testnet cross-chain lane
 
