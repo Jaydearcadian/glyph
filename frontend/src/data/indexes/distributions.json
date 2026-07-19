@@ -1,0 +1,43 @@
+{
+  "aggregateReceiptPath": "state/live/monad-distribution-proof-20260719T172223Z/aggregate.distribution.receipt.json",
+  "claimReceipts": [
+    {
+      "amount": "14000000000000000000",
+      "bps": 7000,
+      "cardPath": "state/live/monad-distribution-proof-20260719T172223Z/creator.distribution.receipt.card.svg",
+      "path": "state/live/monad-distribution-proof-20260719T172223Z/creator.distribution.receipt.json",
+      "qrPath": "state/live/monad-distribution-proof-20260719T172223Z/creator.distribution.receipt.qr.png",
+      "receipt": "0xbb0cb1de3d99179b6b9bcebd7aa6f64d0f00ed8560c4b4ace126567a227d90a0",
+      "recipient": "0x014eb22ab7DFa9A843Babc1C6e2dA5B596a62f36",
+      "role": "creator",
+      "tx": "0xb7e99e31e327919720632ddc36aabc3d2e1ecde7ced85550852a346d5895685f"
+    },
+    {
+      "amount": "4000000000000000000",
+      "bps": 2000,
+      "cardPath": "state/live/monad-distribution-proof-20260719T172223Z/collaborator.distribution.receipt.card.svg",
+      "path": "state/live/monad-distribution-proof-20260719T172223Z/collaborator.distribution.receipt.json",
+      "qrPath": "state/live/monad-distribution-proof-20260719T172223Z/collaborator.distribution.receipt.qr.png",
+      "receipt": "0xbe2df4024b3ffacefdf3f30ee41f6f4c25fc71efb18ea9615c4526618f581998",
+      "recipient": "0xE5545934D275DB6b50bF911975ca36590bf96ca6",
+      "role": "collaborator",
+      "tx": "0x152cd8d01cb95a6b0015ee5a5b5af1cd2bf8c1495e7b2594a908b64a4fc47f7d"
+    },
+    {
+      "amount": "2000000000000000000",
+      "bps": 1000,
+      "cardPath": "state/live/monad-distribution-proof-20260719T172223Z/referrer.distribution.receipt.card.svg",
+      "path": "state/live/monad-distribution-proof-20260719T172223Z/referrer.distribution.receipt.json",
+      "qrPath": "state/live/monad-distribution-proof-20260719T172223Z/referrer.distribution.receipt.qr.png",
+      "receipt": "0x5351c4a6da9b1e4ae8b19455fd7b34fb01c110e0484005ebe668f0826f6cc57f",
+      "recipient": "0x072B653D70614867531c9061A913A41A081941C9",
+      "role": "referrer",
+      "tx": "0x77e457dc66cbc680fbd7dcd2f92e5ef60855a673b4efe783600e0b162c4c07ee"
+    }
+  ],
+  "contract": "0x3f90710e945f1BFa07737B97676056DF3F92Db59",
+  "distributionId": "0xe91b66e0fd1df23dbd317fc1119202f2460458da2fc276a55627b342f87f888a",
+  "evidencePath": "state/live/monad-distribution-proof-20260719T172223Z/evidence.json",
+  "proofId": "monad-distribution-proof-20260719T172223Z",
+  "schema": "glyph.frontend.distribution.index.v1"
+}

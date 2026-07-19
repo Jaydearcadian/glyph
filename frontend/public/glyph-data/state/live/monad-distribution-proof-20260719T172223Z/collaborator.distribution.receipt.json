@@ -1,0 +1,22 @@
+{
+  "amount": "4000000000000000000",
+  "bps": 2000,
+  "campaignId": "0xd4117f5899cab786974c733c07812ec19e3c0e8579fd15b33d92559c9d55b1e8",
+  "chain": "Monad Testnet",
+  "chainId": 10143,
+  "claimReceiptHash": "0xbe2df4024b3ffacefdf3f30ee41f6f4c25fc71efb18ea9615c4526618f581998",
+  "distributionId": "0xe91b66e0fd1df23dbd317fc1119202f2460458da2fc276a55627b342f87f888a",
+  "kind": "DISTRIBUTION_CLAIM",
+  "parentCampaignReceiptHash": "0x85a1c50b548e26a32765b87fe0413438a5033fa6e0c3205f8afcfd47ac5b665d",
+  "provenance": {
+    "evidencePath": "state/live/monad-distribution-proof-20260719T172223Z/evidence.json",
+    "proofId": "monad-distribution-proof-20260719T172223Z"
+  },
+  "recipient": "0xE5545934D275DB6b50bF911975ca36590bf96ca6",
+  "role": "collaborator",
+  "schema": "glyph.distribution.receipt.v1",
+  "splitter": "0x3f90710e945f1BFa07737B97676056DF3F92Db59",
+  "status": "CLAIMED",
+  "token": "0x1d482783316FdeF2e795A1C193ACE280660A887a",
+  "txHash": "0x152cd8d01cb95a6b0015ee5a5b5af1cd2bf8c1495e7b2594a908b64a4fc47f7d"
+}

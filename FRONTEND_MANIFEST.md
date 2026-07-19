@@ -1,8 +1,8 @@
 # Glyph frontend integration manifest
 
-Generated: `2026-07-19T16:42:01Z`
+Generated: `2026-07-19T19:45:00Z`
 
-Scope: ambitious pre-frontend backend readiness package. This repository still does **not** contain or modify a frontend app.
+Scope: interactive judge frontend plus its canonical backend integration package. The frontend is a static-exported Next.js app with direct user-wallet writes and build-time bundled proof artifacts.
 
 ## Product position
 
@@ -11,13 +11,35 @@ Glyph is link-native payment infrastructure on Monad: Push/Pull payment links, c
 ## Hard boundaries
 
 ```text
-No frontend app is created here.
+Frontend app: frontend/
 No Base→Monad destination delivery/final settlement is claimed.
 No generalized Merkle distribution primitive is included; the included splitter is explicit-recipient only.
 No indexer is included.
 No private-key backend signing is included.
 No fake success-button flows are permitted.
 ```
+
+## Frontend app
+
+```bash
+cd frontend
+npm install
+npm run dev       # syncs evidence, then starts Next.js
+npm run lint
+npm run typecheck
+npm run build     # static export to frontend/out/
+```
+
+| Route | Purpose | Authority |
+|---|---|---|
+| `/` | Cinematic Glyph product overview | Public |
+| `/links` | Mint gTST, approve exact spend, create fresh Pull/Push escrow | User wallet |
+| `/campaign` | Create immutable campaign terms; inspect proven aggregate close | User wallet + evidence |
+| `/distribution` | Read live conservation and claim an eligible share | User wallet + evidence |
+| `/receipts` | Open structured receipt JSON/cards/QRs/links | Evidence-only |
+| `/proofs` | Inspect proof bundles and explicit cross-chain boundary | Evidence-only |
+
+The app uses direct RPC reads and injected-wallet writes through `wagmi`/`viem`. It has no API server, indexer, hidden signer, private-key backend, or simulated settlement. Push link secret material is generated in browser state and placed only in the URL fragment after escrow confirmation; it is not logged or persisted.
 
 ## Canonical frontend package
 

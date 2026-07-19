@@ -1,0 +1,26 @@
+{
+  "link": "https://glyph.local/app#/glyph/eyJraW5kIjoiUkVDRUlQVCIsIm9wZXJhdGlvbklkIjoiMHgxYzAyYzU5MjE4NzcxYTViZDIxNmM3ZGRmYTgxZWY0NmUwY2E4OGVkMzViM2VhYTcwODU2YzlhYjM0NDZlNGE5IiwicmVjZWlwdCI6eyJmaW5hbFJlY2VpcHRIYXNoIjoiMHg1ODQwY2YyY2QzZWMzMDc3MzFjMTM4MjQ2NDZkNDlmODFlNmI2YWFiZjk2M2JlN2M0NTgwY2IzMjMxOTE5ZDIyIiwibW9kZSI6IkNPTlRSSUJVVElPTiIsInBhdGgiOiJzdGF0ZS9saXZlL21vbmFkLWNhbXBhaWduLXByb29mLTIwMjYwNzE5VDEzMjc1NVovY2FtcGFpZ24ubGl2ZS5yZWNlaXB0Lmpzb24iLCJzY2hlbWFWZXJzaW9uIjoiZ2x5cGgucmVjZWlwdC52MSIsInN0YXR1cyI6IlJFQ09OQ0lMRUQiLCJ0ZXJtc0hhc2giOiIweDFjMDJjNTkyMTg3NzFhNWJkMjE2YzdkZGZhODFlZjQ2ZTBjYTg4ZWQzNWIzZWFhNzA4NTZjOWFiMzQ0NmU0YTkiLCJ0b3BvbG9neSI6IkxPQ0FMIn0sInNjaGVtYVZlcnNpb24iOiJnbHlwaC5saW5rLnYxIiwidG9wb2xvZ3kiOiJMT0NBTCJ9",
+  "payload": {
+    "kind": "RECEIPT",
+    "operationId": "0x1c02c59218771a5bd216c7ddfa81ef46e0ca88ed35b3eaa70856c9ab3446e4a9",
+    "receipt": {
+      "finalReceiptHash": "0x5840cf2cd3ec307731c13824646d49f81e6b6aabf963be7c4580cb3231919d22",
+      "mode": "CONTRIBUTION",
+      "path": "state/live/monad-campaign-proof-20260719T132755Z/campaign.live.receipt.json",
+      "schemaVersion": "glyph.receipt.v1",
+      "status": "RECONCILED",
+      "termsHash": "0x1c02c59218771a5bd216c7ddfa81ef46e0ca88ed35b3eaa70856c9ab3446e4a9",
+      "topology": "LOCAL"
+    },
+    "schemaVersion": "glyph.link.v1",
+    "topology": "LOCAL"
+  },
+  "publicIndex": {
+    "finalReceiptHash": "0x5840cf2cd3ec307731c13824646d49f81e6b6aabf963be7c4580cb3231919d22",
+    "kind": "RECEIPT",
+    "operationId": "0x1c02c59218771a5bd216c7ddfa81ef46e0ca88ed35b3eaa70856c9ab3446e4a9",
+    "schemaVersion": "glyph.link.v1",
+    "status": "RECONCILED",
+    "topology": "LOCAL"
+  }
+}

@@ -1,0 +1,88 @@
+{
+  "assets": {
+    "destinationAsset": "0x1d482783316FdeF2e795A1C193ACE280660A887a",
+    "sourceAsset": "0x1d482783316FdeF2e795A1C193ACE280660A887a"
+  },
+  "chains": {
+    "destinationChainId": 10143,
+    "sourceChainId": 10143
+  },
+  "contracts": {
+    "adapter": "0x2BC2F59Ae8a01F5698407E58a1828FB51FBa5Db2",
+    "destinationApp": "0xA741e81349733Ac4612AF269A92f2e08F9034307",
+    "router": "0xC71C119B91Fa1F1861626843Fa653F41cEF9101A",
+    "sourceApp": "0xc3D5005A9beCfCcd28A6E66C2d8CC6E5fe3B0854",
+    "token": "0x1d482783316FdeF2e795A1C193ACE280660A887a",
+    "vault": "0xfb2a436Cf72C6FbCc4cCd1A5A4Adef015F370Ca9"
+  },
+  "feeBreakdown": {
+    "realizedFees": "1000000000000000000"
+  },
+  "finalReceiptHash": "0xc4b5eb516bb24ae18b93e500b7d4fba5b6601a581d38d9e9a209f41f8c1782ff",
+  "identityBindings": [],
+  "messageIds": [
+    "0x1f96812d34c4f78737a4f6dd20acf92747076f1e5b140276bbafea45c93ada2c"
+  ],
+  "mode": "PUSH",
+  "operationId": "0x2ce136c0bd76ab6c8bce42c3bcbbc284296a0f7cddebc763e645d5d536a48105",
+  "parties": {
+    "payer": "0x014eb22ab7DFa9A843Babc1C6e2dA5B596a62f36",
+    "recipient": "0xd9fE7c8EE7B5E11f8a4e13811E7CFf01E8c82BbD"
+  },
+  "privacy": {
+    "privateContextHash": "0x0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "proofs": [
+    "LOCAL_VERIFIED",
+    "AUTHENTICATED_LOOPBACK"
+  ],
+  "purpose": "self-asserted/private-commitment",
+  "receiptHashHint": "0x1f96812d34c4f78737a4f6dd20acf92747076f1e5b140276bbafea45c93ada2c",
+  "reconciliation": {
+    "maximumInput": "11000000000000000000",
+    "realizedFees": "1000000000000000000",
+    "realizedPrincipal": "10000000000000000000",
+    "residualReturned": "0"
+  },
+  "schemaVersion": "glyph.receipt.v1",
+  "status": "RECONCILED",
+  "termsHash": "0xc70f396bafc00f53a8ec4134e0b3c1678e04f7638dbdc38b2d3f3d2518803ff0",
+  "topology": "LOCAL",
+  "txHashes": [
+    "0xc3b01d334bc623ec2ac05e7642ca3f8c5073b77fcbc811d58d9e7e6809604b50",
+    "0x97cdbe531ced2fb8de7aa2952c375029e96d97d67a8e6e380d77adb20d415fd8",
+    "0x0b895f3509dae190ec3d978621b0fccdf15b6a17d6cab03f9e2ed8218bb9efbc",
+    "0xb4b5a58dddee324a478dc32bc701ae4ab12731e1d4aeaee1e4222937e46aaf45",
+    "0x0a6103f50bbdeacc34864a5a35ec4dbd5bdb324c41ca191e5a47db01a81fce79",
+    "0x5dd715ebf82739f44d37eee91f14c95e0cc5a0b6cf730327096a483d32651831",
+    "0x7f064642f19e90459e549af411735d596ae9c19ed99ff0041f84655d9024109c"
+  ],
+  "valueLegs": [
+    {
+      "amount": "11000000000000000000",
+      "asset": "0x1d482783316FdeF2e795A1C193ACE280660A887a",
+      "type": "SOURCE_ESCROWED"
+    },
+    {
+      "amount": "10000000000000000000",
+      "asset": "0x1d482783316FdeF2e795A1C193ACE280660A887a",
+      "type": "DESTINATION_DELIVERED"
+    },
+    {
+      "amount": "10000000000000000000",
+      "asset": "0x1d482783316FdeF2e795A1C193ACE280660A887a",
+      "type": "PROVIDER_SETTLED"
+    },
+    {
+      "amount": "1000000000000000000",
+      "asset": "0x1d482783316FdeF2e795A1C193ACE280660A887a",
+      "type": "FEE_REALIZED"
+    },
+    {
+      "amount": "0",
+      "asset": "0x1d482783316FdeF2e795A1C193ACE280660A887a",
+      "type": "DELTA_RETURNED"
+    }
+  ],
+  "verification": {}
+}

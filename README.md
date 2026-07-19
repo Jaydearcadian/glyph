@@ -10,14 +10,14 @@ Push value → Pull payment → Campaign contribution → Route across chains �
 
 ## Current phase
 
-**Submission-ready backend proof package.**
+**Submission-ready backend proof package plus an interactive judge frontend.**
 
-The repo now contains live Monad testnet proofs plus a Base Sepolia → Monad Testnet LayerZero lane/send proof. The cross-chain destination delivery is not claimed complete: LayerZero Scan shows the packet stuck before Monad `lzReceive` at DVN validation.
+The repo contains a production-buildable Next.js app in [`frontend/`](frontend/) backed by live Monad testnet contracts and the existing receipt/proof bundles. The cross-chain destination delivery is not claimed complete: LayerZero Scan shows the packet stuck before Monad `lzReceive` at DVN validation.
 
 Start here:
 
 1. [`SUBMISSION.md`](SUBMISSION.md) — judge-facing proof summary and scope.
-2. [`FRONTEND_MANIFEST.md`](FRONTEND_MANIFEST.md) — pre-frontend integration manifest: addresses, ABIs, flows, indexes, cross-chain proof panel, validator/readback scripts. No frontend app is created here.
+2. [`FRONTEND_MANIFEST.md`](FRONTEND_MANIFEST.md) — frontend app, routes, addresses, ABIs, flows, indexes, cross-chain proof boundary, and validation commands.
 3. [`BACKEND_COMPLETION.md`](BACKEND_COMPLETION.md) — backend completion note excluding frontend and cross-chain repair.
 4. [`state/live/monad-address-pair-proof-20260719T130942Z/`](state/live/monad-address-pair-proof-20260719T130942Z/) — live Monad Push/Pull proof plus live receipt JSON/cards/links/QRs.
 5. [`state/live/monad-campaign-proof-20260719T132755Z/`](state/live/monad-campaign-proof-20260719T132755Z/) — live campaign aggregation proof plus live receipt JSON/card/link/QR.
@@ -68,7 +68,8 @@ SUBMISSION.md              judge-facing proof summary
 contracts/                 Solidity contracts, scripts, and Foundry tests
 docs/architecture/         executable protocol specifications
 state/live/                live testnet evidence bundles
-state/manifests/           build manifests and oneshot inputs
+state/frontend/            generated frontend integration data and indexes
+frontend/                  Next.js judge demo (static export)
 workers/                   project-local worker contracts
 ```
 

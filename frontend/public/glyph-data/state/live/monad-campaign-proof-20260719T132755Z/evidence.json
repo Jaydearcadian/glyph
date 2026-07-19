@@ -1,0 +1,394 @@
+{
+  "schema": "glyph.live.monadCampaignProof.v1",
+  "chainId": 10143,
+  "rpc": "https://testnet-rpc.monad.xyz",
+  "ownerRecipient": "0x014eb22ab7DFa9A843Babc1C6e2dA5B596a62f36",
+  "contributors": {
+    "A": "0x014eb22ab7DFa9A843Babc1C6e2dA5B596a62f36",
+    "B": "0x428D2131102aCd3660b0346c1DFacEDC682E5324"
+  },
+  "contracts": {
+    "router": "0xC71C119B91Fa1F1861626843Fa653F41cEF9101A",
+    "token": "0x1d482783316FdeF2e795A1C193ACE280660A887a",
+    "vault": "0xb4E40ecEEc4A0498A183EC14EB52B5e0C2434c77",
+    "adapter": "0x8Fdffc7D35c0d3A5662264b05b35d184d7209b57",
+    "sourceApp": "0x63Df5199052915653A8373a1a55329175135D42D",
+    "destinationApp": "0xDf62c61C73c879921911deE9e8727D797cBD5716",
+    "campaign": "0xc1734449aeca5e45E570afd862f47Ff0eE03bEd1"
+  },
+  "programId": "0x1c02c59218771a5bd216c7ddfa81ef46e0ca88ed35b3eaa70856c9ab3446e4a9",
+  "children": {
+    "A": {
+      "operationId": "0x6add05a903aa8f57009aea2b7b2951ae4e750b71184c5ec925236bb28ff977f8",
+      "amount": "10000000000000000000",
+      "receiptHash": "0x64340d39714010e82f3efa2164b5316fae426be8ba6aded06c8f95d051c098db"
+    },
+    "B": {
+      "operationId": "0x22c539cd643f3444be362b9f736b40175d1983a458593a353b96539d697382aa",
+      "amount": "10000000000000000000",
+      "receiptHash": "0x13568ae2146d48456dd086964d9625fcaf86fa409259fbb3f5608755b3d52db8"
+    }
+  },
+  "aggregateReceiptHash": "0x0f65224219c9db8aba9f580012ea3bd2f3d910bd3b88be35fb9f07d1bd3795af",
+  "readbacks": {
+    "campaign": "(0x014eb22ab7DFa9A843Babc1C6e2dA5B596a62f36, 0x1d482783316FdeF2e795A1C193ACE280660A887a, 20000000000000000000 [2e19], 10000000000000000000 [1e19], 10000000000000000000 [1e19], 20000000000000000000 [2e19], 1784555275 [1.784e9], 1, 20000000000000000000 [2e19], true)",
+    "childAAmount": "10000000000000000000 [1e19]",
+    "childBAmount": "10000000000000000000 [1e19]",
+    "child0Receipt": "0x64340d39714010e82f3efa2164b5316fae426be8ba6aded06c8f95d051c098db",
+    "child1Receipt": "0x13568ae2146d48456dd086964d9625fcaf86fa409259fbb3f5608755b3d52db8",
+    "destinationReceiptA": "0x64340d39714010e82f3efa2164b5316fae426be8ba6aded06c8f95d051c098db",
+    "destinationReceiptB": "0x13568ae2146d48456dd086964d9625fcaf86fa409259fbb3f5608755b3d52db8",
+    "ownerGTST": "996000000000000000000 [9.96e20]",
+    "contributorBGTST": "14000000000000000000 [1.4e19]",
+    "ownerNativeWei": "9242635108212770626",
+    "contributorBNativeWei": "152005642000000000"
+  },
+  "transactions": [
+    {
+      "index": 0,
+      "type": "CREATE",
+      "contract": "DestinationGlyphVault",
+      "to_or_created": "0xb4e40eceec4a0498a183ec14eb52b5e0c2434c77",
+      "function": null,
+      "txHash": "0x2d54d6ce3bc8634de7807f20ceca9372b98afbf8fa812768caa93c251ff0d35d",
+      "status": "0x1"
+    },
+    {
+      "index": 1,
+      "type": "CALL",
+      "contract": null,
+      "to_or_created": "0x1d482783316fdef2e795a1c193ace280660a887a",
+      "function": "mint(address,uint256)",
+      "txHash": "0xc4656afec074acc7dce46408562be5d460d8613562e0292046f64581ae87b3c7",
+      "status": "0x1"
+    },
+    {
+      "index": 2,
+      "type": "CALL",
+      "contract": null,
+      "to_or_created": "0x1d482783316fdef2e795a1c193ace280660a887a",
+      "function": "approve(address,uint256)",
+      "txHash": "0xc25563238df5917dc9047b021bff55dc6c481da82b016ee7f337a34adad84230",
+      "status": "0x1"
+    },
+    {
+      "index": 3,
+      "type": "CALL",
+      "contract": "DestinationGlyphVault",
+      "to_or_created": "0xb4e40eceec4a0498a183ec14eb52b5e0c2434c77",
+      "function": "provideLiquidity(address,uint256)",
+      "txHash": "0x6fa2066f115d05c66c4cbedbb47b433bf53b8239909452f8d2b6adda3e67252f",
+      "status": "0x1"
+    },
+    {
+      "index": 4,
+      "type": "CREATE",
+      "contract": "LocalLoopbackGlyphAdapter",
+      "to_or_created": "0x8fdffc7d35c0d3a5662264b05b35d184d7209b57",
+      "function": null,
+      "txHash": "0x5f20d11207331d9f5134d1dfe2a1d7569aeff60234130d87716822073721fdb3",
+      "status": "0x1"
+    },
+    {
+      "index": 5,
+      "type": "CREATE",
+      "contract": "GlyphLayerZeroApplication",
+      "to_or_created": "0x63df5199052915653a8373a1a55329175135d42d",
+      "function": null,
+      "txHash": "0xe55eda689c97ea905e7b5314dbb38b6d3885e30d37238fc523181e08bed2d2bf",
+      "status": "0x1"
+    },
+    {
+      "index": 6,
+      "type": "CREATE",
+      "contract": "GlyphLayerZeroApplication",
+      "to_or_created": "0xdf62c61c73c879921911dee9e8727d797cbd5716",
+      "function": null,
+      "txHash": "0x26aa387baf5eeb48593f2994789d0719c0dc66fb4755f58955e4b5ba0c8c54dd",
+      "status": "0x1"
+    },
+    {
+      "index": 7,
+      "type": "CREATE",
+      "contract": "ContributionCampaign",
+      "to_or_created": "0xc1734449aeca5e45e570afd862f47ff0ee03bed1",
+      "function": null,
+      "txHash": "0x816e58091a28901bf2b96e04d4db226a021639e9eefa16ab862eed83f1b0d9ac",
+      "status": "0x1"
+    },
+    {
+      "index": 8,
+      "type": "CALL",
+      "contract": null,
+      "to_or_created": "0xc71c119b91fa1f1861626843fa653f41cef9101a",
+      "function": "setMessengerAdapter(address,bool)",
+      "txHash": "0x4c0ef8dadda65108cdca7f6ee9bc7a82ddff2e3fae7d66dd7bee5922897f8e08",
+      "status": "0x1"
+    },
+    {
+      "index": 9,
+      "type": "CALL",
+      "contract": null,
+      "to_or_created": "0xc71c119b91fa1f1861626843fa653f41cef9101a",
+      "function": "setMessengerProcessorForAdapter(address,address,bool)",
+      "txHash": "0x94e4c07a76d6d23897ec443ace96da2cdd9220a91ba4d45dc7bf7b553de7330e",
+      "status": "0x1"
+    },
+    {
+      "index": 10,
+      "type": "CALL",
+      "contract": null,
+      "to_or_created": "0xc71c119b91fa1f1861626843fa653f41cef9101a",
+      "function": "setMessengerProcessorForAdapter(address,address,bool)",
+      "txHash": "0xba245e055af03c22b311f3bf51c9818b0fa5838632ec4c1a023347caf8a3855a",
+      "status": "0x1"
+    },
+    {
+      "index": 11,
+      "type": "CALL",
+      "contract": "GlyphLayerZeroApplication",
+      "to_or_created": "0x63df5199052915653a8373a1a55329175135d42d",
+      "function": "setAdapter(address)",
+      "txHash": "0xafaaad591029e81064e739b235561c6254994b0e8f8b839acfe0b376b6dfc812",
+      "status": "0x1"
+    },
+    {
+      "index": 12,
+      "type": "CALL",
+      "contract": "GlyphLayerZeroApplication",
+      "to_or_created": "0x63df5199052915653a8373a1a55329175135d42d",
+      "function": "setRemoteApplication(address)",
+      "txHash": "0x864c3c61a67f86ade0cce578a59ccede2a6beaf7735818542506612a7648f7c0",
+      "status": "0x1"
+    },
+    {
+      "index": 13,
+      "type": "CALL",
+      "contract": "GlyphLayerZeroApplication",
+      "to_or_created": "0x63df5199052915653a8373a1a55329175135d42d",
+      "function": "freezeConfig(bytes32)",
+      "txHash": "0x5217b7ee2b0948e3711da35c832a4f169eef54e3331eafe24c8c6af24248cca5",
+      "status": "0x1"
+    },
+    {
+      "index": 14,
+      "type": "CALL",
+      "contract": "GlyphLayerZeroApplication",
+      "to_or_created": "0xdf62c61c73c879921911dee9e8727d797cbd5716",
+      "function": "setAdapter(address)",
+      "txHash": "0xc0d13af64e9141f3537fc00e0dc7b18d1a022a10f7e831888159b907a4aa183d",
+      "status": "0x1"
+    },
+    {
+      "index": 15,
+      "type": "CALL",
+      "contract": "GlyphLayerZeroApplication",
+      "to_or_created": "0xdf62c61c73c879921911dee9e8727d797cbd5716",
+      "function": "setRemoteApplication(address)",
+      "txHash": "0x7501219d17d7edb7a04af42db81be02a3d7cf69a808132a790053f9102fd53a9",
+      "status": "0x1"
+    },
+    {
+      "index": 16,
+      "type": "CALL",
+      "contract": "GlyphLayerZeroApplication",
+      "to_or_created": "0xdf62c61c73c879921911dee9e8727d797cbd5716",
+      "function": "freezeConfig(bytes32)",
+      "txHash": "0x5759f0e447217ec0e4ef0ce2956f574ce7dea952afc5fb8a6fd5994064d43c81",
+      "status": "0x1"
+    },
+    {
+      "index": 17,
+      "type": "CALL",
+      "contract": "DestinationGlyphVault",
+      "to_or_created": "0xb4e40eceec4a0498a183ec14eb52b5e0c2434c77",
+      "function": "setAuthorizedApplication(address,bool)",
+      "txHash": "0x5c133d2ffc42ae29242e56d3f354e0ea368ca0aea36e9a102affb0deb07cdb60",
+      "status": "0x1"
+    },
+    {
+      "index": 18,
+      "type": "CALL",
+      "contract": null,
+      "to_or_created": "0x1d482783316fdef2e795a1c193ace280660a887a",
+      "function": "mint(address,uint256)",
+      "txHash": "0xcbfcad2216c8ec02cdcc8ac3a5e741727d967f4e5b12e8a57912934f5fca74d1",
+      "status": "0x1"
+    },
+    {
+      "index": 19,
+      "type": "CALL",
+      "contract": null,
+      "to_or_created": "0x1d482783316fdef2e795a1c193ace280660a887a",
+      "function": "mint(address,uint256)",
+      "txHash": "0x60ad3fba02662bc9639b6d20bf103bbaae4cf568e31de5230b67e1a98e95bfdf",
+      "status": "0x1"
+    },
+    {
+      "index": 20,
+      "type": "CALL",
+      "contract": "ContributionCampaign",
+      "to_or_created": "0xc1734449aeca5e45e570afd862f47ff0ee03bed1",
+      "function": "create(bytes32,(address,address,uint256,uint256,uint256,uint256,uint64,uint8,uint256,bool))",
+      "txHash": "0xc0bfa2152d5866e220ec0c5bfd03ba247809a2dfa0a50182547e793f14f3ac95",
+      "status": "0x1"
+    },
+    {
+      "index": 21,
+      "type": "CALL",
+      "contract": null,
+      "to_or_created": "0x1d482783316fdef2e795a1c193ace280660a887a",
+      "function": "approve(address,uint256)",
+      "txHash": "0x290a915fd57fc56f1918ce641648284cec3d7ba5dfc03270c62a770227abd0e4",
+      "status": "0x1"
+    },
+    {
+      "index": 22,
+      "type": "CALL",
+      "contract": null,
+      "to_or_created": "0xc71c119b91fa1f1861626843fa653f41cef9101a",
+      "function": "escrow((bytes32,bytes32,address,address,address,address,uint64,address,address,uint64,uint256,uint256,uint256,uint256,uint256,uint256,address,address,address,address,address,uint64,uint256))",
+      "txHash": "0x0b51c5c73a79e313d3d4aa0d2b4ee0e15336db3f29ad78c632914ac2e04e671f",
+      "status": "0x1"
+    },
+    {
+      "index": 23,
+      "type": "CALL",
+      "contract": "GlyphLayerZeroApplication",
+      "to_or_created": "0x63df5199052915653a8373a1a55329175135d42d",
+      "function": "sendRouteFromEscrow(bytes32,address,uint256)",
+      "txHash": "0x62fed4d8e398e6a8ff7a11b352bc042e0e56ebbe113c3ae4fb1478122af27305",
+      "status": "0x1"
+    },
+    {
+      "index": 24,
+      "type": "CALL",
+      "contract": "LocalLoopbackGlyphAdapter",
+      "to_or_created": "0x8fdffc7d35c0d3a5662264b05b35d184d7209b57",
+      "function": "deliver(bytes32)",
+      "txHash": "0x974551a9a91d8dc5ccd5b7a0b898232085e6d65b8b87910c9c4349f4cd8db6eb",
+      "status": "0x1"
+    },
+    {
+      "index": 25,
+      "type": "CALL",
+      "contract": "LocalLoopbackGlyphAdapter",
+      "to_or_created": "0x8fdffc7d35c0d3a5662264b05b35d184d7209b57",
+      "function": "deliver(bytes32)",
+      "txHash": "0xcebe7910c20c4621390342c6c30b700878e78385afd5a8e3466afdfe808bd13f",
+      "status": "0x1"
+    },
+    {
+      "index": 26,
+      "type": "CALL",
+      "contract": "GlyphLayerZeroApplication",
+      "to_or_created": "0x63df5199052915653a8373a1a55329175135d42d",
+      "function": "finalizeAndSendReceipt(bytes32,address,uint256)",
+      "txHash": "0xbf810eb940a2398b0107005d641f4add1732b67c44e8115f2add64a3443a7687",
+      "status": "0x1"
+    },
+    {
+      "index": 27,
+      "type": "CALL",
+      "contract": "LocalLoopbackGlyphAdapter",
+      "to_or_created": "0x8fdffc7d35c0d3a5662264b05b35d184d7209b57",
+      "function": "deliver(bytes32)",
+      "txHash": "0x1d441acb21dfae58c92f2ccb8586543b6241f81c6fc11d61b61b937174e236ff",
+      "status": "0x1"
+    },
+    {
+      "index": 28,
+      "type": "CALL",
+      "contract": null,
+      "to_or_created": "0x1d482783316fdef2e795a1c193ace280660a887a",
+      "function": "approve(address,uint256)",
+      "txHash": "0x4b80ed98815be9e3080ab0bcaea31668d2075e1b05b80c548c37ad6537a9a5c8",
+      "status": "0x1"
+    },
+    {
+      "index": 29,
+      "type": "CALL",
+      "contract": null,
+      "to_or_created": "0xc71c119b91fa1f1861626843fa653f41cef9101a",
+      "function": "escrow((bytes32,bytes32,address,address,address,address,uint64,address,address,uint64,uint256,uint256,uint256,uint256,uint256,uint256,address,address,address,address,address,uint64,uint256))",
+      "txHash": "0x9d79fa6045f4b5c4493cfdf29cedb4899822aa2f34c2f1eddd8bcc3ce777c2dd",
+      "status": "0x1"
+    },
+    {
+      "index": 30,
+      "type": "CALL",
+      "contract": "GlyphLayerZeroApplication",
+      "to_or_created": "0x63df5199052915653a8373a1a55329175135d42d",
+      "function": "sendRouteFromEscrow(bytes32,address,uint256)",
+      "txHash": "0x37be9f03017a7a6740337d5d517808bfdf9458ca733c7bc4bf6ad50ceb96667c",
+      "status": "0x1"
+    },
+    {
+      "index": 31,
+      "type": "CALL",
+      "contract": "LocalLoopbackGlyphAdapter",
+      "to_or_created": "0x8fdffc7d35c0d3a5662264b05b35d184d7209b57",
+      "function": "deliver(bytes32)",
+      "txHash": "0x2ad3f5f3c529f34cc6881ad2bc13eaacba0d6975c2c185d20396691fec1baf23",
+      "status": "0x1"
+    },
+    {
+      "index": 32,
+      "type": "CALL",
+      "contract": "LocalLoopbackGlyphAdapter",
+      "to_or_created": "0x8fdffc7d35c0d3a5662264b05b35d184d7209b57",
+      "function": "deliver(bytes32)",
+      "txHash": "0xe94a64f6e0032b058a7bce46035ce740e0c1ce560a1c36b236ffc69ab1b70a9e",
+      "status": "0x1"
+    },
+    {
+      "index": 33,
+      "type": "CALL",
+      "contract": "GlyphLayerZeroApplication",
+      "to_or_created": "0x63df5199052915653a8373a1a55329175135d42d",
+      "function": "finalizeAndSendReceipt(bytes32,address,uint256)",
+      "txHash": "0x325710d4d49d02639ab147c539b28b0e605b8f9b7e70eb07a63d5ab357dd4d39",
+      "status": "0x1"
+    },
+    {
+      "index": 34,
+      "type": "CALL",
+      "contract": "LocalLoopbackGlyphAdapter",
+      "to_or_created": "0x8fdffc7d35c0d3a5662264b05b35d184d7209b57",
+      "function": "deliver(bytes32)",
+      "txHash": "0xe703282822247ba5ee88db7749c011a54eb0ebb11a2bf3c6ab0633ea516aa164",
+      "status": "0x1"
+    },
+    {
+      "index": 35,
+      "type": "CALL",
+      "contract": "ContributionCampaign",
+      "to_or_created": "0xc1734449aeca5e45e570afd862f47ff0ee03bed1",
+      "function": "reconcileChild(bytes32,bytes32,uint256,bytes32)",
+      "txHash": "0xcd5458e379a012efb56189f5fe9f917b554ca2755ef71e90d6d01659c14b789b",
+      "status": "0x1"
+    },
+    {
+      "index": 36,
+      "type": "CALL",
+      "contract": "ContributionCampaign",
+      "to_or_created": "0xc1734449aeca5e45e570afd862f47ff0ee03bed1",
+      "function": "reconcileChild(bytes32,bytes32,uint256,bytes32)",
+      "txHash": "0x66dace116375c957269b48fbe2cfebc25d259f6ecbe6d6f61ca7887f1e5669e6",
+      "status": "0x1"
+    },
+    {
+      "index": 37,
+      "type": "CALL",
+      "contract": "ContributionCampaign",
+      "to_or_created": "0xc1734449aeca5e45e570afd862f47ff0ee03bed1",
+      "function": "close(bytes32)",
+      "txHash": "0x59065e88b33adcf0d99c8b67ff00a28c8c02504b1147612bdade94c98aca1814",
+      "status": "0x1"
+    }
+  ],
+  "allReceiptsStatusOne": true,
+  "notes": [
+    "Campaign-specific public link helper still needs programId support; this bundle records live campaign + child operation facts directly."
+  ]
+}

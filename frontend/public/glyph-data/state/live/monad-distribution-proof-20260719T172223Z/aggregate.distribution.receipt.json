@@ -1,0 +1,50 @@
+{
+  "aggregateDistributionReceiptHash": "0xcdabf202e3c1ba4e1c049119f201324df717badb3116164cc95f22103e700138",
+  "campaignId": "0xd4117f5899cab786974c733c07812ec19e3c0e8579fd15b33d92559c9d55b1e8",
+  "claimedTotal": "20000000000000000000",
+  "claims": {
+    "collaborator": {
+      "amount": "4000000000000000000",
+      "bps": 2000,
+      "receipt": "0xbe2df4024b3ffacefdf3f30ee41f6f4c25fc71efb18ea9615c4526618f581998",
+      "recipient": "0xE5545934D275DB6b50bF911975ca36590bf96ca6",
+      "tx": "0x152cd8d01cb95a6b0015ee5a5b5af1cd2bf8c1495e7b2594a908b64a4fc47f7d"
+    },
+    "creator": {
+      "amount": "14000000000000000000",
+      "bps": 7000,
+      "receipt": "0xbb0cb1de3d99179b6b9bcebd7aa6f64d0f00ed8560c4b4ace126567a227d90a0",
+      "recipient": "0x014eb22ab7DFa9A843Babc1C6e2dA5B596a62f36",
+      "tx": "0xb7e99e31e327919720632ddc36aabc3d2e1ecde7ced85550852a346d5895685f"
+    },
+    "referrer": {
+      "amount": "2000000000000000000",
+      "bps": 1000,
+      "receipt": "0x5351c4a6da9b1e4ae8b19455fd7b34fb01c110e0484005ebe668f0826f6cc57f",
+      "recipient": "0x072B653D70614867531c9061A913A41A081941C9",
+      "tx": "0x77e457dc66cbc680fbd7dcd2f92e5ef60855a673b4efe783600e0b162c4c07ee"
+    }
+  },
+  "distributionId": "0xe91b66e0fd1df23dbd317fc1119202f2460458da2fc276a55627b342f87f888a",
+  "kind": "DISTRIBUTION_AGGREGATE",
+  "parentCampaignReceiptHash": "0x85a1c50b548e26a32765b87fe0413438a5033fa6e0c3205f8afcfd47ac5b665d",
+  "schema": "glyph.distribution.aggregateReceipt.v1",
+  "totalAmount": "20000000000000000000",
+  "txs": {
+    "approveSplitter": "0x3c6efa08c972810fb444dad67adf26cb924572aa903319538ca7a49c045d79b7",
+    "campaignClose": "0x81504312ee89b5a1c48ebdefa8202e29f23d8b813548f6abe78cc34e40cedae1",
+    "campaignCreate": "0x8ba5e969eaf276e944cc82cd0eda182b3897f4f89ec457371d11a6295ed24252",
+    "campaignDeploy": "0xc501026c99d03666d34192286165b3199b0500ccec90d14e8a4377d8f30541bd",
+    "campaignReconcileA": "0xe3a2862a19b71a3365ce0350957bc59637257bff72b5fb43e0aed40fcc5e199e",
+    "campaignReconcileB": "0x9516f45ec71d061b4dea2b20a26cbb10ffe2e50d2fb2e6bd1c8ec459f1dc963a",
+    "collaboratorClaim": "0x152cd8d01cb95a6b0015ee5a5b5af1cd2bf8c1495e7b2594a908b64a4fc47f7d",
+    "collaboratorGasTopup": "0xb9a5a7175ff1e58b06d75b1b136c37d5a5eaf3066e06dc1d0f20ce4bc3eedab1",
+    "creatorClaim": "0xb7e99e31e327919720632ddc36aabc3d2e1ecde7ced85550852a346d5895685f",
+    "distributionCreate": "0x7843f4311f3f6d58f770b2766e0f8311e191f4856ba883afddad7484e5ac5de0",
+    "referrerClaim": "0x77e457dc66cbc680fbd7dcd2f92e5ef60855a673b4efe783600e0b162c4c07ee",
+    "referrerGasTopup": "0x28619cb9874f8f83152534363f8dad233e12486559d36a8e6d502895c37205ed",
+    "splitterDeploy": "0x2f384a28ff7e89befdae104c70c75f4e9a16fd3baaa7a7498cb7ac2a61ae5ba2",
+    "tokenMint": "0x21c3169b4144c1016b45480ef0e21da93b5e7566ffe37937bbaef4dc0cea1646"
+  },
+  "unclaimedAmount": "0"
+}

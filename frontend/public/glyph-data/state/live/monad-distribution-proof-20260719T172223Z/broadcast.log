@@ -1,0 +1,4 @@
+Live proof note:
+- Initial forge broadcast deployed campaign/splitter, created campaign/distribution, and executed creator claim.
+- Forge under-gassed collaborator/referrer claim transactions; both were completed afterward with direct cast send claim(bytes32) at 300000 gas.
+- Canonical successful tx hashes are in evidence.json and txs.json.

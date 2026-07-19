@@ -1,0 +1,61 @@
+{
+  "generatedAt": "2026-07-19T16:42:01Z",
+  "receipts": [
+    {
+      "cardPath": "state/live/monad-address-pair-proof-20260719T130942Z/pull.live.receipt.card.svg",
+      "finalReceiptHash": "0x91380b49d81d03f0ac938aeba9f1164ccdb6d5224d42325cce1e2c5bd04ae256",
+      "jsonPath": "state/live/monad-address-pair-proof-20260719T130942Z/pull.live.receipt.json",
+      "label": "Monad Pull receipt",
+      "linkPath": "state/live/monad-address-pair-proof-20260719T130942Z/pull.live.receipt.link.json",
+      "mode": "PULL",
+      "operationId": "0x8b83664ad0edf186eb6b2b056af9e8778194ad6447813c5a46b60c70b02c6dbc",
+      "qrPath": "state/live/monad-address-pair-proof-20260719T130942Z/pull.live.receipt.qr.png",
+      "receiptHashHint": "0x0fe31e1796c4efac6027c9ac8298fbe55a0b3354014805a0500e4b014e689ded",
+      "status": "RECONCILED",
+      "termsHash": "0x730e3d05dc7ce60b4e5c157b10af253c0ce76c60b84855684a433fb99279a61d",
+      "topology": "LOCAL"
+    },
+    {
+      "cardPath": "state/live/monad-address-pair-proof-20260719T130942Z/push.live.receipt.card.svg",
+      "finalReceiptHash": "0xc4b5eb516bb24ae18b93e500b7d4fba5b6601a581d38d9e9a209f41f8c1782ff",
+      "jsonPath": "state/live/monad-address-pair-proof-20260719T130942Z/push.live.receipt.json",
+      "label": "Monad Push receipt",
+      "linkPath": "state/live/monad-address-pair-proof-20260719T130942Z/push.live.receipt.link.json",
+      "mode": "PUSH",
+      "operationId": "0x2ce136c0bd76ab6c8bce42c3bcbbc284296a0f7cddebc763e645d5d536a48105",
+      "qrPath": "state/live/monad-address-pair-proof-20260719T130942Z/push.live.receipt.qr.png",
+      "receiptHashHint": "0x1f96812d34c4f78737a4f6dd20acf92747076f1e5b140276bbafea45c93ada2c",
+      "status": "RECONCILED",
+      "termsHash": "0xc70f396bafc00f53a8ec4134e0b3c1678e04f7638dbdc38b2d3f3d2518803ff0",
+      "topology": "LOCAL"
+    },
+    {
+      "cardPath": "state/live/monad-campaign-proof-20260719T132755Z/campaign.live.receipt.card.svg",
+      "finalReceiptHash": "0x5840cf2cd3ec307731c13824646d49f81e6b6aabf963be7c4580cb3231919d22",
+      "jsonPath": "state/live/monad-campaign-proof-20260719T132755Z/campaign.live.receipt.json",
+      "label": "Monad campaign aggregate receipt",
+      "linkPath": "state/live/monad-campaign-proof-20260719T132755Z/campaign.live.receipt.link.json",
+      "mode": "CONTRIBUTION",
+      "operationId": "0x1c02c59218771a5bd216c7ddfa81ef46e0ca88ed35b3eaa70856c9ab3446e4a9",
+      "qrPath": "state/live/monad-campaign-proof-20260719T132755Z/campaign.live.receipt.qr.png",
+      "receiptHashHint": "0x0f65224219c9db8aba9f580012ea3bd2f3d910bd3b88be35fb9f07d1bd3795af",
+      "status": "RECONCILED",
+      "termsHash": "0x1c02c59218771a5bd216c7ddfa81ef46e0ca88ed35b3eaa70856c9ab3446e4a9",
+      "topology": "LOCAL"
+    },
+    {
+      "cardPath": "state/live/monad-distribution-proof-20260719T172223Z/aggregate.distribution.receipt.card.svg",
+      "jsonPath": "state/live/monad-distribution-proof-20260719T172223Z/aggregate.distribution.receipt.json",
+      "kind": "DISTRIBUTION_AGGREGATE",
+      "label": "Aggregate distribution receipt",
+      "linkPath": "state/live/monad-distribution-proof-20260719T172223Z/aggregate.distribution.receipt.link.json",
+      "mode": "DISTRIBUTION_AGGREGATE",
+      "operationId": "0xe91b66e0fd1df23dbd317fc1119202f2460458da2fc276a55627b342f87f888a",
+      "qrPath": "state/live/monad-distribution-proof-20260719T172223Z/aggregate.distribution.receipt.qr.png",
+      "receiptHash": "0xcdabf202e3c1ba4e1c049119f201324df717badb3116164cc95f22103e700138",
+      "status": "CLAIMED",
+      "topology": "LOCAL"
+    }
+  ],
+  "schema": "glyph.frontend.receipts.v1"
+}

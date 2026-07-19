@@ -1,0 +1,7 @@
+{
+  "kind": "DISTRIBUTION_AGGREGATE",
+  "receiptHash": "0xcdabf202e3c1ba4e1c049119f201324df717badb3116164cc95f22103e700138",
+  "receiptPath": "state/live/monad-distribution-proof-20260719T172223Z/aggregate.distribution.receipt.json",
+  "schema": "glyph.receipt.link.v1",
+  "url": "https://jaydearcadian.github.io/Bifrost/app?glyphReceipt=0xcdabf202e3c1ba4e1c049119f201324df717badb3116164cc95f22103e700138#kind=DISTRIBUTION_AGGREGATE&chain=monad-testnet&distribution=0xe91b66e0fd1df23dbd317fc1119202f2460458da2fc276a55627b342f87f888a"
+}
