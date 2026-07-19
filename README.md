@@ -17,11 +17,12 @@ The repo now contains live Monad testnet proofs plus a Base Sepolia → Monad Te
 Start here:
 
 1. [`SUBMISSION.md`](SUBMISSION.md) — judge-facing proof summary and scope.
-2. [`BACKEND_COMPLETION.md`](BACKEND_COMPLETION.md) — backend completion note excluding frontend and cross-chain repair.
-3. [`state/live/monad-address-pair-proof-20260719T130942Z/`](state/live/monad-address-pair-proof-20260719T130942Z/) — live Monad Push/Pull proof plus live receipt JSON/cards/links/QRs.
-4. [`state/live/monad-campaign-proof-20260719T132755Z/`](state/live/monad-campaign-proof-20260719T132755Z/) — live campaign aggregation proof plus live receipt JSON/card/link/QR.
-5. [`state/live/base-monad-crosschain-blocker-20260719T165200Z/`](state/live/base-monad-crosschain-blocker-20260719T165200Z/) — Base→Monad lane/source-send evidence and LayerZero DVN blocker.
-6. [`state/live/SUBMISSION_SHA256SUMS.txt`](state/live/SUBMISSION_SHA256SUMS.txt) — checksums for submission summary and live proof artifacts.
+2. [`FRONTEND_MANIFEST.md`](FRONTEND_MANIFEST.md) — pre-frontend integration manifest: addresses, ABIs, flows, indexes, cross-chain proof panel, validator/readback scripts. No frontend app is created here.
+3. [`BACKEND_COMPLETION.md`](BACKEND_COMPLETION.md) — backend completion note excluding frontend and cross-chain repair.
+4. [`state/live/monad-address-pair-proof-20260719T130942Z/`](state/live/monad-address-pair-proof-20260719T130942Z/) — live Monad Push/Pull proof plus live receipt JSON/cards/links/QRs.
+5. [`state/live/monad-campaign-proof-20260719T132755Z/`](state/live/monad-campaign-proof-20260719T132755Z/) — live campaign aggregation proof plus live receipt JSON/card/link/QR.
+6. [`state/live/base-monad-crosschain-blocker-20260719T165200Z/`](state/live/base-monad-crosschain-blocker-20260719T165200Z/) — Base→Monad lane/source-send evidence and LayerZero DVN blocker.
+7. [`state/live/SUBMISSION_SHA256SUMS.txt`](state/live/SUBMISSION_SHA256SUMS.txt) — checksums for submission summary and live proof artifacts.
 
 ## What is proven live
 

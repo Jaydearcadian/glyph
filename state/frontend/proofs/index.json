@@ -1,0 +1,59 @@
+{
+  "generatedAt": "2026-07-19T16:42:01Z",
+  "proofs": [
+    {
+      "bundlePath": "state/live/monad-address-pair-proof-20260719T130942Z",
+      "chainId": 10143,
+      "evidencePath": "state/live/monad-address-pair-proof-20260719T130942Z/evidence.json",
+      "id": "monad-address-pair",
+      "operations": {
+        "pull": "0x8b83664ad0edf186eb6b2b056af9e8778194ad6447813c5a46b60c70b02c6dbc",
+        "push": "0x2ce136c0bd76ab6c8bce42c3bcbbc284296a0f7cddebc763e645d5d536a48105"
+      },
+      "readmePath": "state/live/monad-address-pair-proof-20260719T130942Z/README.md",
+      "receiptHashes": {
+        "pull": "0x0fe31e1796c4efac6027c9ac8298fbe55a0b3354014805a0500e4b014e689ded",
+        "push": "0x1f96812d34c4f78737a4f6dd20acf92747076f1e5b140276bbafea45c93ada2c"
+      },
+      "status": "live-proven",
+      "title": "Monad Pull + Push address-pair proof"
+    },
+    {
+      "aggregateReceiptHash": "0x0f65224219c9db8aba9f580012ea3bd2f3d910bd3b88be35fb9f07d1bd3795af",
+      "bundlePath": "state/live/monad-campaign-proof-20260719T132755Z",
+      "chainId": 10143,
+      "children": {
+        "A": {
+          "amount": "10000000000000000000",
+          "operationId": "0x6add05a903aa8f57009aea2b7b2951ae4e750b71184c5ec925236bb28ff977f8",
+          "receiptHash": "0x64340d39714010e82f3efa2164b5316fae426be8ba6aded06c8f95d051c098db"
+        },
+        "B": {
+          "amount": "10000000000000000000",
+          "operationId": "0x22c539cd643f3444be362b9f736b40175d1983a458593a353b96539d697382aa",
+          "receiptHash": "0x13568ae2146d48456dd086964d9625fcaf86fa409259fbb3f5608755b3d52db8"
+        }
+      },
+      "evidencePath": "state/live/monad-campaign-proof-20260719T132755Z/evidence.json",
+      "id": "monad-campaign",
+      "programId": "0x1c02c59218771a5bd216c7ddfa81ef46e0ca88ed35b3eaa70856c9ab3446e4a9",
+      "readmePath": "state/live/monad-campaign-proof-20260719T132755Z/README.md",
+      "status": "live-proven",
+      "title": "Monad two-contributor campaign aggregation proof"
+    },
+    {
+      "blocker": "Both old and fresh Base Sepolia -> Monad Testnet LayerZero V2 packets remain INFLIGHT at source VALIDATING_TX with DVN WAITING and destination WAITING. Base send txs succeeded and source adapter status is SENT; Monad lzReceive has not been called. E2E is externally blocked at LayerZero DVN validation for this pathway.",
+      "bundlePath": "state/live/base-monad-crosschain-blocker-20260719T165200Z",
+      "destinationChainId": 10143,
+      "evidencePath": "state/live/base-monad-crosschain-blocker-20260719T165200Z/evidence.json",
+      "freshGuid": "0xfbdabd378ac63c6426fe79e5ff55b005c99c07bddaa27bf0a13e63090f478789",
+      "freshOperationId": "0x7d7091b7ec84fd9df9c10ce73d36db65104093be0f11cb64a51ed72605d2580c",
+      "id": "base-monad-crosschain",
+      "readmePath": "state/live/base-monad-crosschain-blocker-20260719T165200Z/README.md",
+      "sourceChainId": 84532,
+      "status": "source-send-proven-destination-blocked",
+      "title": "Base Sepolia to Monad LayerZero source-send proof"
+    }
+  ],
+  "schema": "glyph.frontend.proofs.v1"
+}

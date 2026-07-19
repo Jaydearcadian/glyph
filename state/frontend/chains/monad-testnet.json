@@ -1,0 +1,16 @@
+{
+  "chainId": 10143,
+  "explorer": {
+    "addressUrlPrefix": "https://testnet.monadexplorer.com/address/",
+    "name": "Monad Testnet Explorer",
+    "txUrlPrefix": "https://testnet.monadexplorer.com/tx/"
+  },
+  "name": "Monad Testnet",
+  "nativeCurrency": {
+    "decimals": 18,
+    "name": "MON",
+    "symbol": "MON"
+  },
+  "rpcUrl": "https://testnet-rpc.monad.xyz",
+  "schema": "glyph.frontend.chain.v1"
+}

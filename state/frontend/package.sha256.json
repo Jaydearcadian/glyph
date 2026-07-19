@@ -1,0 +1,125 @@
+{
+  "files": [
+    {
+      "path": "state/frontend/CONTRACT_METHODS.md",
+      "sha256": "3469b9557a908fd2065d32aa4ccbd9e0db64827336c787e58199bc98bb4133e5"
+    },
+    {
+      "path": "state/frontend/FRONTEND_READINESS_REPORT.json",
+      "sha256": "6ecc68e2e268df6cedc773e192f777eaf187f0cd56df23e083f1ac13aa131e5a"
+    },
+    {
+      "path": "state/frontend/FRONTEND_READINESS_REPORT.md",
+      "sha256": "53c515bf994401941c292c9ad2226dda72559ce77052a9df825635388e57c76a"
+    },
+    {
+      "path": "state/frontend/abi/ContributionCampaign.json",
+      "sha256": "c9b4448ae8756caed7f19327ba0e1eb7c091cbd71027c84f3423d6066c7a885b"
+    },
+    {
+      "path": "state/frontend/abi/DestinationGlyphVault.json",
+      "sha256": "fe2e14e477bd355dcc4ec94e7abfc4c377bc1ee17ce90baeb1c3bfd4ea12d6d6"
+    },
+    {
+      "path": "state/frontend/abi/GlyphAttestationRegistry.json",
+      "sha256": "dc706cef79c8f6598878ec15281c672998fc8043a2d0d6741843206d5d87d6e3"
+    },
+    {
+      "path": "state/frontend/abi/GlyphLayerZeroApplication.json",
+      "sha256": "1d36aee46ff6b60ab1c4db77963bb6c61a7b36b7ccc63be26c90aca13bdd2f9a"
+    },
+    {
+      "path": "state/frontend/abi/GlyphReceiptLedger.json",
+      "sha256": "f61c6fa541bbc3d4cd107576c8046beee3b9d498ecb4db86a9332464ac687481"
+    },
+    {
+      "path": "state/frontend/abi/SourceDeltaRouter.json",
+      "sha256": "a4a0d943a2f0404aec9ba1b4dd4787f5d4687c04f42ab815d638bf2ba79a555b"
+    },
+    {
+      "path": "state/frontend/abi/TestToken.json",
+      "sha256": "a6c7088ca2992c4f9d3223ac43195248389b3831d4f22b12b000e1df4959e211"
+    },
+    {
+      "path": "state/frontend/addresses/monad-testnet.json",
+      "sha256": "8d71554acf7a8c43ee58c8e638a961bf17271b450c1c575dbe6fdc724173d77e"
+    },
+    {
+      "path": "state/frontend/chains/base-sepolia.json",
+      "sha256": "19dbed9dfa6166e495544d81348daac89c7e199e6bfb0174c2e32ef31d1555b9"
+    },
+    {
+      "path": "state/frontend/chains/monad-testnet.json",
+      "sha256": "515bae2a128f7a7519514ad38b2c40398e775c66a465579cef029a018675e042"
+    },
+    {
+      "path": "state/frontend/contracts/glyphChains.ts",
+      "sha256": "27ffa9258d34804d3e5e69c111638c4e856eab888a8b5ccdd90a54e22633b2a4"
+    },
+    {
+      "path": "state/frontend/contracts/glyphContracts.ts",
+      "sha256": "fe7f08eb09d2b970603ca8ca0903b73961d976b673ad76b35e4e3169aeef00ee"
+    },
+    {
+      "path": "state/frontend/crosschain/CROSSCHAIN_UI_COPY.md",
+      "sha256": "af84c0446167eeb2a921b6acc9dc3666d8ad17409993b057b0ec6251be13e0bd"
+    },
+    {
+      "path": "state/frontend/crosschain/base-monad.timeline.json",
+      "sha256": "a42aebf94d542f30c19ac5f9c4dcd1bd0fc04fac642cc44aa84c7d9774f17cca"
+    },
+    {
+      "path": "state/frontend/crosschain/layerzero-support-packet.md",
+      "sha256": "fe1724bcdacab1518604acaceeb16f90c6d2cd0e6e69a8dbab7ba6d33432fedd"
+    },
+    {
+      "path": "state/frontend/flows/campaign.flow.json",
+      "sha256": "9b9f503b1d1d3eae57285eb0364121d386cfb8860123b1c7586e9ee02df87131"
+    },
+    {
+      "path": "state/frontend/flows/crosschain-proof.flow.json",
+      "sha256": "f44ee7daceda324009a100d0916957854195996eb8e10d67303b5bd651ef8fa2"
+    },
+    {
+      "path": "state/frontend/flows/pull.flow.json",
+      "sha256": "f977541105efcc38803401e52b43246f1ab6ef82b315ed0696be650b10475c9e"
+    },
+    {
+      "path": "state/frontend/flows/push.flow.json",
+      "sha256": "1b9da22530cdd54d262aa6b733cc7be60d16222ed1e1040dd0f55521f876aeab"
+    },
+    {
+      "path": "state/frontend/flows/receipt.flow.json",
+      "sha256": "c8f646bad27301c3940b229806f4e4c39ea8d3a3f73430a1fb8a5768280ca232"
+    },
+    {
+      "path": "state/frontend/frontend.manifest.json",
+      "sha256": "566d5cd689baf252e6271ef692c5d69cfb8fbd3e4e3e77054a0664d681e9ec46"
+    },
+    {
+      "path": "state/frontend/monad-testnet.deployment.json",
+      "sha256": "c42c81e5f3cbdae5e6d0712498766f18de873ca297fac127fafe378f5425fbc3"
+    },
+    {
+      "path": "state/frontend/proofs/index.json",
+      "sha256": "dffebed3e77af79ed6ebbdb1b1b1c0dbdab5b82d4320728ff0b7f6e74249567d"
+    },
+    {
+      "path": "state/frontend/readbacks/latest.json",
+      "sha256": "df720b5faf8a8d7902cd1035eb5cd85ef041c4ce024dcb8c6c81daf2c92441eb"
+    },
+    {
+      "path": "state/frontend/receipts/index.json",
+      "sha256": "687e083d07c181a1073a0a95e61416ac58c6a5a328e3bc575e301a019f616097"
+    },
+    {
+      "path": "state/frontend/transactions/index.json",
+      "sha256": "bbadb421f4dd3a625fb38c2951dce465ee1a681cba038493804ad9d323e48a1f"
+    },
+    {
+      "path": "FRONTEND_MANIFEST.md",
+      "sha256": "3c040090bb03310cfdfd6c9a08a870cdc2f749dea6dedf4157b58b4bb521131e"
+    }
+  ],
+  "schema": "glyph.frontend.packageHashes.v1"
+}

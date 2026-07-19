@@ -12,6 +12,7 @@ Glyph is a Monad-anchored protocol for link-native Web3 operations: Push value, 
 | Push claim on Monad | Live-proven | `state/live/monad-address-pair-proof-20260719T130942Z/` |
 | Terminal destination receipts | Live-proven on Monad loopback | `state/live/monad-address-pair-proof-20260719T130942Z/evidence.json` |
 | Live receipt JSON/cards/links/QRs | Generated and verified | `scripts/live_receipt_builder.py`, `*.live.receipt.*` in Monad proof bundles |
+| Pre-frontend integration surface | Generated and verified | `FRONTEND_MANIFEST.md`, `state/frontend/`, `scripts/validate_frontend_readiness.py` |
 | Multi-contributor campaign aggregation | Live-proven | `state/live/monad-campaign-proof-20260719T132755Z/` |
 | Base Sepolia → Monad Testnet LayerZero lane | Deployed, wired, frozen, readback-good | `state/live/base-monad-crosschain-blocker-20260719T165200Z/` |
 | Base→Monad route send | Live source send proven | `state/live/base-monad-crosschain-blocker-20260719T165200Z/fresh-route.json` |

@@ -1,0 +1,16 @@
+{
+  "chainId": 84532,
+  "explorer": {
+    "addressUrlPrefix": "https://sepolia.basescan.org/address/",
+    "name": "BaseScan",
+    "txUrlPrefix": "https://sepolia.basescan.org/tx/"
+  },
+  "name": "Base Sepolia",
+  "nativeCurrency": {
+    "decimals": 18,
+    "name": "ETH",
+    "symbol": "ETH"
+  },
+  "rpcUrl": "https://sepolia.base.org",
+  "schema": "glyph.frontend.chain.v1"
+}

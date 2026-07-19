@@ -1,0 +1,1914 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "admin_",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [],
+      "name": "DELTA_RETURNED",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "DESTINATION_DELIVERED",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "DESTINATION_RESERVED",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "FEE_REALIZED",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "FULL_REFUND",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "LOCAL_LEG_WRITER",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "OPERATION_DOMAIN",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "PROVIDER_SETTLED",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "RECIPIENT_RETAINS",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "REMOTE_LEG_WRITER",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "SOURCE_AUTHORIZED",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "SOURCE_ESCROWED",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "SOURCE_FINALIZATION_WRITER",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "SOURCE_FINALIZED",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "STATUS_WRITER",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "TERMS_DOMAIN",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "admin",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "operationId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "enum IGlyphReceiptLedger.OperationStatus",
+          "name": "nextStatus",
+          "type": "uint8"
+        }
+      ],
+      "name": "advanceStatus",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "bytes32",
+              "name": "operationId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint64",
+              "name": "chainId",
+              "type": "uint64"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "transactionHash",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint32",
+              "name": "logIndex",
+              "type": "uint32"
+            },
+            {
+              "internalType": "address",
+              "name": "asset",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "from",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "to",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "legType",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "enum IGlyphReceiptLedger.ProofKind",
+              "name": "proofKind",
+              "type": "uint8"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "proofReference",
+              "type": "bytes32"
+            }
+          ],
+          "internalType": "struct IGlyphReceiptLedger.ValueLegInput",
+          "name": "leg",
+          "type": "tuple"
+        }
+      ],
+      "name": "appendLocalLeg",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "legId",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "bytes32",
+              "name": "operationId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint64",
+              "name": "chainId",
+              "type": "uint64"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "transactionHash",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint32",
+              "name": "logIndex",
+              "type": "uint32"
+            },
+            {
+              "internalType": "address",
+              "name": "asset",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "from",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "to",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "legType",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "enum IGlyphReceiptLedger.ProofKind",
+              "name": "proofKind",
+              "type": "uint8"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "proofReference",
+              "type": "bytes32"
+            }
+          ],
+          "internalType": "struct IGlyphReceiptLedger.ValueLegInput",
+          "name": "leg",
+          "type": "tuple"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "messageId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "appendRemoteLeg",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "legId",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "bytes32",
+              "name": "operationType",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "proposedPurposeCode",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "initiator",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "payer",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "recipient",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "recoveryAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "sourceRouter",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "destinationVault",
+              "type": "address"
+            },
+            {
+              "internalType": "uint64",
+              "name": "sourceChainId",
+              "type": "uint64"
+            },
+            {
+              "internalType": "uint64",
+              "name": "destinationChainId",
+              "type": "uint64"
+            },
+            {
+              "internalType": "address",
+              "name": "sourceAsset",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "destinationAsset",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "maximumInput",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "destinationAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "maximumFee",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "claimantRule",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "privateContextHash",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint64",
+              "name": "expiry",
+              "type": "uint64"
+            },
+            {
+              "internalType": "uint256",
+              "name": "nonce",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IGlyphReceiptLedger.OperationTerms",
+          "name": "terms",
+          "type": "tuple"
+        }
+      ],
+      "name": "computeOperationId",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "bytes32",
+              "name": "operationType",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "proposedPurposeCode",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "initiator",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "payer",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "recipient",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "recoveryAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "sourceRouter",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "destinationVault",
+              "type": "address"
+            },
+            {
+              "internalType": "uint64",
+              "name": "sourceChainId",
+              "type": "uint64"
+            },
+            {
+              "internalType": "uint64",
+              "name": "destinationChainId",
+              "type": "uint64"
+            },
+            {
+              "internalType": "address",
+              "name": "sourceAsset",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "destinationAsset",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "maximumInput",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "destinationAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "maximumFee",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "claimantRule",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "privateContextHash",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint64",
+              "name": "expiry",
+              "type": "uint64"
+            },
+            {
+              "internalType": "uint256",
+              "name": "nonce",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IGlyphReceiptLedger.OperationTerms",
+          "name": "terms",
+          "type": "tuple"
+        }
+      ],
+      "name": "computeTermsHash",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "writer",
+          "type": "address"
+        },
+        {
+          "internalType": "bool",
+          "name": "allowed",
+          "type": "bool"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "writerRole",
+          "type": "bytes32"
+        }
+      ],
+      "name": "configureWriterAuthorization",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "operationId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getOperation",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "bytes32",
+              "name": "operationId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "operationType",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "proposedPurposeCode",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "initiator",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "payer",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "recipient",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "termsHash",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "privateContextHash",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint64",
+              "name": "createdAt",
+              "type": "uint64"
+            },
+            {
+              "internalType": "uint64",
+              "name": "expiry",
+              "type": "uint64"
+            },
+            {
+              "internalType": "enum IGlyphReceiptLedger.OperationStatus",
+              "name": "status",
+              "type": "uint8"
+            }
+          ],
+          "internalType": "struct IGlyphReceiptLedger.OperationRecord",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "operationId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getReconciliation",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "sourceAsset",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "maximumInput",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "realizedPrincipal",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "realizedFees",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "residualReturned",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "recoveryAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "sourceFinalizeTx",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "expectedDestinationAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "actualDestinationDelivered",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "excessDestinationDelivered",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "destinationExcessPolicy",
+              "type": "bytes32"
+            }
+          ],
+          "internalType": "struct IGlyphReceiptLedger.DeltaReconciliation",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "legId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getValueLeg",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "bytes32",
+              "name": "legId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "operationId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint64",
+              "name": "chainId",
+              "type": "uint64"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "transactionHash",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint32",
+              "name": "logIndex",
+              "type": "uint32"
+            },
+            {
+              "internalType": "address",
+              "name": "asset",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "from",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "to",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "legType",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "enum IGlyphReceiptLedger.ProofKind",
+              "name": "proofKind",
+              "type": "uint8"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "proofReference",
+              "type": "bytes32"
+            }
+          ],
+          "internalType": "struct IGlyphReceiptLedger.ValueLeg",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "operationId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "hasOperation",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "operationId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "operationParties",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "initiator",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "payer",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "recipient",
+              "type": "address"
+            }
+          ],
+          "internalType": "struct IGlyphReceiptLedger.OperationParties",
+          "name": "p",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "operationId",
+          "type": "bytes32"
+        },
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "sourceAsset",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "maximumInput",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "realizedPrincipal",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "realizedFees",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "residualReturned",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "recoveryAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "sourceFinalizeTx",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "expectedDestinationAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "actualDestinationDelivered",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "excessDestinationDelivered",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "destinationExcessPolicy",
+              "type": "bytes32"
+            }
+          ],
+          "internalType": "struct IGlyphReceiptLedger.DeltaReconciliation",
+          "name": "delta",
+          "type": "tuple"
+        }
+      ],
+      "name": "reconcile",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "operationId",
+          "type": "bytes32"
+        },
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "sourceAsset",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "recoveryAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "refundTx",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "enum IGlyphReceiptLedger.ProofKind",
+              "name": "proofKind",
+              "type": "uint8"
+            }
+          ],
+          "internalType": "struct IGlyphReceiptLedger.RefundReceipt",
+          "name": "refund",
+          "type": "tuple"
+        }
+      ],
+      "name": "recordRefund",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "bytes32",
+              "name": "operationType",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "proposedPurposeCode",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "initiator",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "payer",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "recipient",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "recoveryAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "sourceRouter",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "destinationVault",
+              "type": "address"
+            },
+            {
+              "internalType": "uint64",
+              "name": "sourceChainId",
+              "type": "uint64"
+            },
+            {
+              "internalType": "uint64",
+              "name": "destinationChainId",
+              "type": "uint64"
+            },
+            {
+              "internalType": "address",
+              "name": "sourceAsset",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "destinationAsset",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "maximumInput",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "destinationAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "maximumFee",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "claimantRule",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "privateContextHash",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint64",
+              "name": "expiry",
+              "type": "uint64"
+            },
+            {
+              "internalType": "uint256",
+              "name": "nonce",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IGlyphReceiptLedger.OperationTerms",
+          "name": "terms",
+          "type": "tuple"
+        }
+      ],
+      "name": "registerOperation",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "operationId",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "name": "writerAuthorization",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "operationId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "sourceAsset",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "maximumInput",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "realizedPrincipal",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "realizedFees",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "residualReturned",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "recoveryAddress",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "sourceFinalizeTx",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "expectedDestinationAmount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "actualDestinationDelivered",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "excessDestinationDelivered",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "destinationExcessPolicy",
+          "type": "bytes32"
+        }
+      ],
+      "name": "OperationReconciled",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "operationId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "sourceAsset",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "recoveryAddress",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "refundTx",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum IGlyphReceiptLedger.ProofKind",
+          "name": "proofKind",
+          "type": "uint8"
+        }
+      ],
+      "name": "OperationRefunded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "operationId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "operationType",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "proposedPurposeCode",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "initiator",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "payer",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "recipient",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "termsHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "privateContextHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint64",
+          "name": "createdAt",
+          "type": "uint64"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint64",
+          "name": "expiry",
+          "type": "uint64"
+        }
+      ],
+      "name": "OperationRegistered",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "operationId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum IGlyphReceiptLedger.OperationStatus",
+          "name": "previousStatus",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum IGlyphReceiptLedger.OperationStatus",
+          "name": "nextStatus",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "actor",
+          "type": "address"
+        }
+      ],
+      "name": "OperationStatusAdvanced",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "legId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "operationId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint64",
+          "name": "chainId",
+          "type": "uint64"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "legType",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "asset",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "from",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum IGlyphReceiptLedger.ProofKind",
+          "name": "proofKind",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "proofReference",
+          "type": "bytes32"
+        }
+      ],
+      "name": "ValueLegAppended",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "writer",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "allowed",
+          "type": "bool"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "writerRole",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "admin",
+          "type": "address"
+        }
+      ],
+      "name": "WriterAuthorizationChanged",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "field",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "expected",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "actual",
+          "type": "uint256"
+        }
+      ],
+      "name": "AmountMismatch",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "expected",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "actual",
+          "type": "address"
+        }
+      ],
+      "name": "AssetMismatch",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint64",
+          "name": "expected",
+          "type": "uint64"
+        },
+        {
+          "internalType": "uint64",
+          "name": "actual",
+          "type": "uint64"
+        }
+      ],
+      "name": "ChainMismatch",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "legId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "DuplicateLegId",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "operationId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "legType",
+          "type": "bytes32"
+        }
+      ],
+      "name": "DuplicateLegType",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "messageId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "DuplicateMessageId",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "operationId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "DuplicateOperationId",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "field",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "expected",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "actual",
+          "type": "address"
+        }
+      ],
+      "name": "EndpointMismatch",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "maximumInput",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "realizedPrincipal",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "realizedFees",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "residualReturned",
+          "type": "uint256"
+        }
+      ],
+      "name": "InvalidConservationEquation",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "reason",
+          "type": "bytes32"
+        }
+      ],
+      "name": "InvalidLeg",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "field",
+          "type": "bytes32"
+        }
+      ],
+      "name": "InvalidOperationTerms",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "operationId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "enum IGlyphReceiptLedger.OperationStatus",
+          "name": "currentStatus",
+          "type": "uint8"
+        },
+        {
+          "internalType": "enum IGlyphReceiptLedger.OperationStatus",
+          "name": "nextStatus",
+          "type": "uint8"
+        }
+      ],
+      "name": "InvalidOperationTransition",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "operationId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "requirement",
+          "type": "bytes32"
+        }
+      ],
+      "name": "MissingRequiredReceipt",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "operationId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint64",
+          "name": "expiry",
+          "type": "uint64"
+        },
+        {
+          "internalType": "uint256",
+          "name": "nowTimestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "OperationNotExpired",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "operationId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "OperationNotFound",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "enum IGlyphReceiptLedger.ProofKind",
+          "name": "provided",
+          "type": "uint8"
+        },
+        {
+          "internalType": "enum IGlyphReceiptLedger.ProofKind",
+          "name": "expected",
+          "type": "uint8"
+        }
+      ],
+      "name": "ProofKindMismatch",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "expected",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "actual",
+          "type": "address"
+        }
+      ],
+      "name": "RecipientMismatch",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "expectedRecoveryAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "actualRecoveryAddress",
+          "type": "address"
+        }
+      ],
+      "name": "RecoveryAddressMismatch",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "operationId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "enum IGlyphReceiptLedger.OperationStatus",
+          "name": "status",
+          "type": "uint8"
+        }
+      ],
+      "name": "TerminalOperation",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "caller",
+          "type": "address"
+        }
+      ],
+      "name": "UnauthorizedAdmin",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "caller",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "writerRole",
+          "type": "bytes32"
+        }
+      ],
+      "name": "UnauthorizedFinancialWriter",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "caller",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "initiator",
+          "type": "address"
+        }
+      ],
+      "name": "UnauthorizedInitiator",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "operationId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "evidence",
+          "type": "bytes32"
+        }
+      ],
+      "name": "UnsafeRefundEvidence",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "enum IGlyphReceiptLedger.ProofKind",
+          "name": "proofKind",
+          "type": "uint8"
+        }
+      ],
+      "name": "UnsupportedProofKind",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ZeroMessageId",
+      "type": "error"
+    }
+  ],
+  "bytecodeHash": "b7ef99ce6585a55e9f00a590fa3b37c7731b04525732a32cecab0967da74a197",
+  "contractName": "GlyphReceiptLedger",
+  "sourceArtifact": "contracts/out/GlyphReceiptLedger.sol/GlyphReceiptLedger.json"
+}

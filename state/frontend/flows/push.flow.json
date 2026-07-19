@@ -1,0 +1,52 @@
+{
+  "disabledOrProofOnly": [
+    "Do not store claim secrets in public JSON, logs, query strings, or onchain metadata."
+  ],
+  "frontendInstruction": "Render only steps whose required actor/authority is available; never show fake success for unavailable provider/system steps.",
+  "id": "push",
+  "mode": "hybrid",
+  "schema": "glyph.frontend.flow.v1",
+  "stages": [
+    {
+      "frontendCanExecute": true,
+      "name": "Payer connects and approves",
+      "step": 1,
+      "write": "TestToken.approve(router, maximumInput)"
+    },
+    {
+      "frontendCanExecute": true,
+      "name": "Payer escrows Push terms",
+      "step": 2,
+      "write": "SourceDeltaRouter.escrow(terms)"
+    },
+    {
+      "frontendCanExecute": true,
+      "name": "Generate fragment-only claim link",
+      "schema": "state/schemas/link.schema.json",
+      "secretRule": "fragment-only; never persist private claim secret",
+      "step": 3
+    },
+    {
+      "frontendCanExecute": false,
+      "name": "Reserve/route via provider",
+      "proofAvailable": true,
+      "requiredAuthority": "provider/app operator",
+      "step": 4,
+      "write": "sendRouteFromEscrow + deliver"
+    },
+    {
+      "frontendCanExecute": "only after claim-secret/signature helper is implemented and tested",
+      "name": "Claimant claims Push",
+      "step": 5,
+      "write": "GlyphLayerZeroApplication.claimPushAndAck"
+    },
+    {
+      "artifact": "state/live/monad-address-pair-proof-20260719T130942Z/push.live.receipt.json",
+      "frontendCanExecute": true,
+      "name": "Finalize and render receipt",
+      "step": 6
+    }
+  ],
+  "title": "Push claim link lifecycle",
+  "transactionFirst": true
+}

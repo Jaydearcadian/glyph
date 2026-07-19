@@ -1,0 +1,54 @@
+{
+  "doNots": [
+    "do not fix Base\u2192Monad / LayerZero delivery in this package",
+    "do not add generalized Merkle pro-rata or payout splitter in this package",
+    "do not build an indexer in this package",
+    "do not add private-key backend signing",
+    "do not expose fake success-button flows"
+  ],
+  "features": {
+    "campaign": "hybrid transaction/proof",
+    "crosschain": "proof-only blocker panel",
+    "pull": "hybrid transaction/proof",
+    "push": "hybrid transaction/proof",
+    "receipts": "live artifact + readback"
+  },
+  "generatedAt": "2026-07-19T16:42:01Z",
+  "paths": {
+    "abis": {
+      "ContributionCampaign": "state/frontend/abi/ContributionCampaign.json",
+      "DestinationGlyphVault": "state/frontend/abi/DestinationGlyphVault.json",
+      "GlyphAttestationRegistry": "state/frontend/abi/GlyphAttestationRegistry.json",
+      "GlyphLayerZeroApplication": "state/frontend/abi/GlyphLayerZeroApplication.json",
+      "GlyphReceiptLedger": "state/frontend/abi/GlyphReceiptLedger.json",
+      "SourceDeltaRouter": "state/frontend/abi/SourceDeltaRouter.json",
+      "TestToken": "state/frontend/abi/TestToken.json"
+    },
+    "addresses": "state/frontend/addresses/monad-testnet.json",
+    "chains": [
+      "state/frontend/chains/monad-testnet.json",
+      "state/frontend/chains/base-sepolia.json"
+    ],
+    "chainsTs": "state/frontend/contracts/glyphChains.ts",
+    "contractMethods": "state/frontend/CONTRACT_METHODS.md",
+    "contractsTs": "state/frontend/contracts/glyphContracts.ts",
+    "crosschainCopy": "state/frontend/crosschain/CROSSCHAIN_UI_COPY.md",
+    "crosschainTimeline": "state/frontend/crosschain/base-monad.timeline.json",
+    "deployment": "state/frontend/monad-testnet.deployment.json",
+    "flows": [
+      "state/frontend/flows/campaign.flow.json",
+      "state/frontend/flows/crosschain-proof.flow.json",
+      "state/frontend/flows/pull.flow.json",
+      "state/frontend/flows/push.flow.json",
+      "state/frontend/flows/receipt.flow.json"
+    ],
+    "layerzeroSupportPacket": "state/frontend/crosschain/layerzero-support-packet.md",
+    "linkSchema": "state/schemas/link.schema.json",
+    "proofsIndex": "state/frontend/proofs/index.json",
+    "receiptSchema": "state/schemas/receipt.schema.json",
+    "receiptsIndex": "state/frontend/receipts/index.json",
+    "transactionsIndex": "state/frontend/transactions/index.json"
+  },
+  "schema": "glyph.frontend.manifest.v1",
+  "scope": "pre-frontend backend readiness; no frontend app files"
+}

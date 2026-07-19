@@ -1,0 +1,52 @@
+{
+  "disabledOrProofOnly": [
+    "Split-payout/multi-recipient distribution is not built in this package."
+  ],
+  "frontendInstruction": "Render only steps whose required actor/authority is available; never show fake success for unavailable provider/system steps.",
+  "id": "campaign",
+  "mode": "hybrid",
+  "schema": "glyph.frontend.flow.v1",
+  "stages": [
+    {
+      "frontendCanExecute": true,
+      "name": "Create campaign",
+      "step": 1,
+      "write": "ContributionCampaign.create(programId, Campaign)"
+    },
+    {
+      "flowRef": "pull",
+      "frontendCanExecute": true,
+      "name": "Contributor child Pull A",
+      "step": 2
+    },
+    {
+      "flowRef": "pull",
+      "frontendCanExecute": true,
+      "name": "Contributor child Pull B",
+      "step": 3
+    },
+    {
+      "frontendCanExecute": false,
+      "name": "Reconcile children",
+      "proofAvailable": true,
+      "requiredAuthority": "campaign/operator reconciliation",
+      "step": 4,
+      "write": "ContributionCampaign.reconcileChild(programId, childOp, amount, receiptHash)"
+    },
+    {
+      "frontendCanExecute": "yes if close preconditions visible",
+      "name": "Close campaign",
+      "proofAvailable": true,
+      "step": 5,
+      "write": "ContributionCampaign.close(programId)"
+    },
+    {
+      "artifact": "state/live/monad-campaign-proof-20260719T132755Z/campaign.live.receipt.json",
+      "frontendCanExecute": true,
+      "name": "Render aggregate receipt",
+      "step": 6
+    }
+  ],
+  "title": "Multi-party campaign contribution aggregation",
+  "transactionFirst": true
+}

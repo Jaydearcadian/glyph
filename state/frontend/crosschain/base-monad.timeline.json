@@ -1,0 +1,142 @@
+{
+  "destinationChainId": 10143,
+  "freshGuid": "0xfbdabd378ac63c6426fe79e5ff55b005c99c07bddaa27bf0a13e63090f478789",
+  "freshOperationId": "0x7d7091b7ec84fd9df9c10ce73d36db65104093be0f11cb64a51ed72605d2580c",
+  "generatedAt": "2026-07-19T16:42:01Z",
+  "readbacks": {
+    "baseAckDelivered": {
+      "ok": true,
+      "stderr": "",
+      "stdout": "false"
+    },
+    "baseAdapterFrozen": {
+      "ok": true,
+      "stderr": "",
+      "stdout": "true"
+    },
+    "baseAdapterOrdered": {
+      "ok": true,
+      "stderr": "",
+      "stdout": "false"
+    },
+    "baseLocalApplication": {
+      "ok": true,
+      "stderr": "",
+      "stdout": "0xC6C320fB20fF4A5d8E6f5A2FCa5F430A8e43a7AF"
+    },
+    "baseMessageStatus": {
+      "ok": true,
+      "stderr": "",
+      "stdout": "1"
+    },
+    "baseRemoteApplication": {
+      "ok": true,
+      "stderr": "",
+      "stdout": "0x740d7406889CC1B447422f28468E7e5A100EE6c1"
+    },
+    "baseTrustedPeer": {
+      "ok": true,
+      "stderr": "",
+      "stdout": "0x8a5AfbBBcA3F3Fae0014f58eF25E436DD14d5EEC"
+    },
+    "monadAdapterFrozen": {
+      "ok": true,
+      "stderr": "",
+      "stdout": "true"
+    },
+    "monadAdapterOrdered": {
+      "ok": true,
+      "stderr": "",
+      "stdout": "false"
+    },
+    "monadDestinationRouteMessage": {
+      "ok": true,
+      "stderr": "",
+      "stdout": "0x0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "monadLocalApplication": {
+      "ok": true,
+      "stderr": "",
+      "stdout": "0x740d7406889CC1B447422f28468E7e5A100EE6c1"
+    },
+    "monadMessageStatus": {
+      "ok": true,
+      "stderr": "",
+      "stdout": "0"
+    },
+    "monadRemoteApplication": {
+      "ok": true,
+      "stderr": "",
+      "stdout": "0xC6C320fB20fF4A5d8E6f5A2FCa5F430A8e43a7AF"
+    },
+    "monadTrustedPeer": {
+      "ok": true,
+      "stderr": "",
+      "stdout": "0xC8Cb1aB6aA5830cF5B928e6152015f3d4C3Ebc43"
+    },
+    "monadVaultTokenBalance": {
+      "ok": true,
+      "stderr": "",
+      "stdout": "1000000000000000000000000 [1e24]"
+    }
+  },
+  "safeCopy": "Base source-send and LayerZero packet visibility are proven. Monad-side lzReceive/final settlement is not claimed complete because LayerZero DVN validation remains WAITING.",
+  "schema": "glyph.frontend.crosschainTimeline.v1",
+  "sourceChainId": 84532,
+  "stages": [
+    {
+      "evidence": "state/live/base-monad-crosschain-blocker-20260719T165200Z/base-deploy.json",
+      "stage": "Base contracts deployed/configured",
+      "status": "success"
+    },
+    {
+      "evidence": "state/live/base-monad-crosschain-blocker-20260719T165200Z/monad-deploy.json",
+      "stage": "Monad contracts deployed/configured",
+      "status": "success"
+    },
+    {
+      "evidence": "state/live/base-monad-crosschain-blocker-20260719T165200Z/fresh-escrow.json",
+      "stage": "Base escrow",
+      "status": "success"
+    },
+    {
+      "evidence": "state/live/base-monad-crosschain-blocker-20260719T165200Z/fresh-route.json",
+      "stage": "Base route send",
+      "status": "success"
+    },
+    {
+      "evidence": "state/live/base-monad-crosschain-blocker-20260719T165200Z/layerzero-fresh-guid.json",
+      "guid": "0xfbdabd378ac63c6426fe79e5ff55b005c99c07bddaa27bf0a13e63090f478789",
+      "stage": "LayerZero packet",
+      "status": "INFLIGHT"
+    },
+    {
+      "details": {
+        "dvns": {},
+        "status": "WAITING"
+      },
+      "stage": "DVN verification",
+      "status": "WAITING"
+    },
+    {
+      "readback": {
+        "ok": true,
+        "stderr": "",
+        "stdout": "0"
+      },
+      "stage": "Monad lzReceive",
+      "status": "not_delivered"
+    },
+    {
+      "readback": {
+        "ok": true,
+        "stderr": "",
+        "stdout": "false"
+      },
+      "stage": "Source ACK/finalization",
+      "status": "not_complete"
+    }
+  ],
+  "title": "Base Sepolia \u2192 Monad Testnet LayerZero proof timeline",
+  "uiStatus": "source-send-proven-destination-blocked"
+}

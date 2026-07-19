@@ -1,0 +1,69 @@
+{
+  "disabledOrProofOnly": [
+    "Do not label provider/operator loopback steps as user-clickable unless a tested user-safe route exists."
+  ],
+  "frontendInstruction": "Render only steps whose required actor/authority is available; never show fake success for unavailable provider/system steps.",
+  "id": "pull",
+  "mode": "hybrid",
+  "schema": "glyph.frontend.flow.v1",
+  "stages": [
+    {
+      "actor": "payer",
+      "frontendCanExecute": true,
+      "name": "Connect wallet",
+      "step": 1
+    },
+    {
+      "actor": "payer",
+      "chainId": 10143,
+      "frontendCanExecute": true,
+      "name": "Switch/add Monad Testnet",
+      "step": 2
+    },
+    {
+      "frontendCanExecute": true,
+      "name": "Read token balance/allowance",
+      "read": [
+        "TestToken.balanceOf",
+        "TestToken.allowance"
+      ],
+      "step": 3
+    },
+    {
+      "frontendCanExecute": true,
+      "name": "Approve router",
+      "step": 4,
+      "write": "TestToken.approve(router, maximumInput)"
+    },
+    {
+      "frontendCanExecute": true,
+      "name": "Escrow Pull terms",
+      "step": 5,
+      "write": "SourceDeltaRouter.escrow(terms)"
+    },
+    {
+      "frontendCanExecute": false,
+      "name": "Route from escrow",
+      "proofAvailable": true,
+      "requiredAuthority": "provider/app operator",
+      "step": 6,
+      "write": "GlyphLayerZeroApplication.sendRouteFromEscrow(op, provider, gasLimit)"
+    },
+    {
+      "frontendCanExecute": false,
+      "name": "Loopback delivery/finalize",
+      "proofAvailable": true,
+      "requiredAuthority": "demo/provider operator",
+      "step": 7,
+      "write": "LocalLoopbackGlyphAdapter.deliver + GlyphLayerZeroApplication.finalizeAndSendReceipt"
+    },
+    {
+      "artifact": "state/live/monad-address-pair-proof-20260719T130942Z/pull.live.receipt.json",
+      "frontendCanExecute": true,
+      "name": "Render receipt",
+      "step": 8
+    }
+  ],
+  "title": "Pull payment link lifecycle",
+  "transactionFirst": true
+}

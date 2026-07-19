@@ -1,0 +1,409 @@
+{
+  "checks": [
+    {
+      "detail": "",
+      "name": "path exists: FRONTEND_MANIFEST.md",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/frontend/frontend.manifest.json",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/frontend/monad-testnet.deployment.json",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/frontend/chains/monad-testnet.json",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/frontend/chains/base-sepolia.json",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/frontend/addresses/monad-testnet.json",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/frontend/contracts/glyphContracts.ts",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/frontend/contracts/glyphChains.ts",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/frontend/CONTRACT_METHODS.md",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/frontend/receipts/index.json",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/frontend/proofs/index.json",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/frontend/transactions/index.json",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/frontend/crosschain/base-monad.timeline.json",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/frontend/crosschain/CROSSCHAIN_UI_COPY.md",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/frontend/crosschain/layerzero-support-packet.md",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/schemas/link.schema.json",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/schemas/receipt.schema.json",
+      "ok": true
+    },
+    {
+      "detail": "glyph.frontend.manifest.v1",
+      "name": "manifest schema",
+      "ok": true
+    },
+    {
+      "detail": "['do not fix Base\u2192Monad / LayerZero delivery in this package', 'do not add generalized Merkle pro-rata or payout splitter in this package', 'do not build an indexer in this package', 'do not add private-key backend signing', 'do not expose fake success-button flows']",
+      "name": "do-not list count",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/frontend/abi/SourceDeltaRouter.json",
+      "ok": true
+    },
+    {
+      "detail": "missing=",
+      "name": "ABI functions: SourceDeltaRouter",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/frontend/abi/DestinationGlyphVault.json",
+      "ok": true
+    },
+    {
+      "detail": "missing=",
+      "name": "ABI functions: DestinationGlyphVault",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/frontend/abi/GlyphLayerZeroApplication.json",
+      "ok": true
+    },
+    {
+      "detail": "missing=",
+      "name": "ABI functions: GlyphLayerZeroApplication",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/frontend/abi/ContributionCampaign.json",
+      "ok": true
+    },
+    {
+      "detail": "missing=",
+      "name": "ABI functions: ContributionCampaign",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/frontend/abi/GlyphReceiptLedger.json",
+      "ok": true
+    },
+    {
+      "detail": "missing=",
+      "name": "ABI functions: GlyphReceiptLedger",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/frontend/abi/GlyphAttestationRegistry.json",
+      "ok": true
+    },
+    {
+      "detail": "missing=",
+      "name": "ABI functions: GlyphAttestationRegistry",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/frontend/abi/TestToken.json",
+      "ok": true
+    },
+    {
+      "detail": "missing=",
+      "name": "ABI functions: TestToken",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/live/monad-address-pair-proof-20260719T130942Z/pull.live.receipt.json",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/live/monad-address-pair-proof-20260719T130942Z/pull.live.receipt.card.svg",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/live/monad-address-pair-proof-20260719T130942Z/pull.live.receipt.link.json",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/live/monad-address-pair-proof-20260719T130942Z/pull.live.receipt.qr.png",
+      "ok": true
+    },
+    {
+      "detail": "{\n  \"expectedFinalReceiptHash\": \"0x91380b49d81d03f0ac938aeba9f1164ccdb6d5224d42325cce1e2c5bd04ae256\",\n  \"ok\": true,\n  \"sourceReceiptHash\": \"0x91380b49d81d03f0ac",
+      "name": "receipt verifies: Monad Pull receipt",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "receipt link schema: Monad Pull receipt",
+      "ok": true
+    },
+    {
+      "detail": "5077",
+      "name": "QR non-empty: Monad Pull receipt",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/live/monad-address-pair-proof-20260719T130942Z/push.live.receipt.json",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/live/monad-address-pair-proof-20260719T130942Z/push.live.receipt.card.svg",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/live/monad-address-pair-proof-20260719T130942Z/push.live.receipt.link.json",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/live/monad-address-pair-proof-20260719T130942Z/push.live.receipt.qr.png",
+      "ok": true
+    },
+    {
+      "detail": "{\n  \"expectedFinalReceiptHash\": \"0xc4b5eb516bb24ae18b93e500b7d4fba5b6601a581d38d9e9a209f41f8c1782ff\",\n  \"ok\": true,\n  \"sourceReceiptHash\": \"0xc4b5eb516bb24ae18b",
+      "name": "receipt verifies: Monad Push receipt",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "receipt link schema: Monad Push receipt",
+      "ok": true
+    },
+    {
+      "detail": "4930",
+      "name": "QR non-empty: Monad Push receipt",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/live/monad-campaign-proof-20260719T132755Z/campaign.live.receipt.json",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/live/monad-campaign-proof-20260719T132755Z/campaign.live.receipt.card.svg",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/live/monad-campaign-proof-20260719T132755Z/campaign.live.receipt.link.json",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/live/monad-campaign-proof-20260719T132755Z/campaign.live.receipt.qr.png",
+      "ok": true
+    },
+    {
+      "detail": "{\n  \"expectedFinalReceiptHash\": \"0x5840cf2cd3ec307731c13824646d49f81e6b6aabf963be7c4580cb3231919d22\",\n  \"ok\": true,\n  \"sourceReceiptHash\": \"0x5840cf2cd3ec307731",
+      "name": "receipt verifies: Monad campaign aggregate receipt",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "receipt link schema: Monad campaign aggregate receipt",
+      "ok": true
+    },
+    {
+      "detail": "5274",
+      "name": "QR non-empty: Monad campaign aggregate receipt",
+      "ok": true
+    },
+    {
+      "detail": "3",
+      "name": "proof count",
+      "ok": true
+    },
+    {
+      "detail": "source-send-proven-destination-blocked",
+      "name": "crosschain marked blocked",
+      "ok": true
+    },
+    {
+      "detail": "not_delivered stage required",
+      "name": "crosschain no settlement claim",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/frontend/flows/pull.flow.json",
+      "ok": true
+    },
+    {
+      "detail": "glyph.frontend.flow.v1",
+      "name": "flow schema: pull",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/frontend/flows/push.flow.json",
+      "ok": true
+    },
+    {
+      "detail": "glyph.frontend.flow.v1",
+      "name": "flow schema: push",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/frontend/flows/campaign.flow.json",
+      "ok": true
+    },
+    {
+      "detail": "glyph.frontend.flow.v1",
+      "name": "flow schema: campaign",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/frontend/flows/receipt.flow.json",
+      "ok": true
+    },
+    {
+      "detail": "glyph.frontend.flow.v1",
+      "name": "flow schema: receipt",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "path exists: state/frontend/flows/crosschain-proof.flow.json",
+      "ok": true
+    },
+    {
+      "detail": "glyph.frontend.flow.v1",
+      "name": "flow schema: crosschain-proof",
+      "ok": true
+    },
+    {
+      "detail": "0x608060405260043610610054575f3560e01c806304f7dd62146100585780630fa566fa1461007e",
+      "name": "live code: monadCore.adapter",
+      "ok": true
+    },
+    {
+      "detail": "0x6080604052600436106101f4575f3560e01c80639db1cb6611610108578063e05598411161009d",
+      "name": "live code: monadCore.destinationApp",
+      "ok": true
+    },
+    {
+      "detail": "0x608060405234801561000f575f80fd5b5060043610610208575f3560e01c806392584d80116101",
+      "name": "live code: monadCore.router",
+      "ok": true
+    },
+    {
+      "detail": "0x6080604052600436106101f4575f3560e01c80639db1cb6611610108578063e05598411161009d",
+      "name": "live code: monadCore.sourceApp",
+      "ok": true
+    },
+    {
+      "detail": "0x608060405234801561000f575f80fd5b50600436106100e5575f3560e01c806340c10f19116100",
+      "name": "live code: monadCore.token",
+      "ok": true
+    },
+    {
+      "detail": "0x608060405234801561000f575f80fd5b506004361061011c575f3560e01c80637ecf686d116100",
+      "name": "live code: monadCore.vault",
+      "ok": true
+    },
+    {
+      "detail": "0x608060405260043610610054575f3560e01c806304f7dd62146100585780630fa566fa1461007e",
+      "name": "live code: monadCampaign.adapter",
+      "ok": true
+    },
+    {
+      "detail": "0x608060405234801561000f575f80fd5b5060043610610060575f3560e01c80630bbc2ded146100",
+      "name": "live code: monadCampaign.campaign",
+      "ok": true
+    },
+    {
+      "detail": "0x6080604052600436106101f4575f3560e01c80639db1cb6611610108578063e05598411161009d",
+      "name": "live code: monadCampaign.destinationApp",
+      "ok": true
+    },
+    {
+      "detail": "0x608060405234801561000f575f80fd5b5060043610610208575f3560e01c806392584d80116101",
+      "name": "live code: monadCampaign.router",
+      "ok": true
+    },
+    {
+      "detail": "0x6080604052600436106101f4575f3560e01c80639db1cb6611610108578063e05598411161009d",
+      "name": "live code: monadCampaign.sourceApp",
+      "ok": true
+    },
+    {
+      "detail": "0x608060405234801561000f575f80fd5b50600436106100e5575f3560e01c806340c10f19116100",
+      "name": "live code: monadCampaign.token",
+      "ok": true
+    },
+    {
+      "detail": "0x608060405234801561000f575f80fd5b506004361061011c575f3560e01c80637ecf686d116100",
+      "name": "live code: monadCampaign.vault",
+      "ok": true
+    }
+  ],
+  "failed": 0,
+  "generatedAt": "2026-07-19T16:46:27Z",
+  "liveRpc": true,
+  "passed": 80,
+  "schema": "glyph.frontend.readinessReport.v1"
+}

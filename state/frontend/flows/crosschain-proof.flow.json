@@ -1,0 +1,46 @@
+{
+  "disabledOrProofOnly": [
+    "Do not claim Base\u2192Monad destination settlement, ACK, or finalization is complete."
+  ],
+  "frontendInstruction": "Render only steps whose required actor/authority is available; never show fake success for unavailable provider/system steps.",
+  "id": "crosschain-proof",
+  "mode": "proof-only",
+  "schema": "glyph.frontend.flow.v1",
+  "stages": [
+    {
+      "name": "Show Base deployment/config",
+      "status": "success",
+      "step": 1
+    },
+    {
+      "evidence": "state/live/base-monad-crosschain-blocker-20260719T165200Z/fresh-escrow.json",
+      "name": "Show Base escrow",
+      "status": "success",
+      "step": 2
+    },
+    {
+      "evidence": "state/live/base-monad-crosschain-blocker-20260719T165200Z/fresh-route.json",
+      "name": "Show Base route send",
+      "status": "success",
+      "step": 3
+    },
+    {
+      "guid": "0xfbdabd378ac63c6426fe79e5ff55b005c99c07bddaa27bf0a13e63090f478789",
+      "name": "Show LayerZero GUID",
+      "status": "INFLIGHT",
+      "step": 4
+    },
+    {
+      "name": "Show DVN blocker",
+      "status": "WAITING",
+      "step": 5
+    },
+    {
+      "name": "Show Monad delivery not complete",
+      "status": "not_delivered",
+      "step": 6
+    }
+  ],
+  "title": "Base Sepolia \u2192 Monad proof panel",
+  "transactionFirst": false
+}

@@ -1,0 +1,40 @@
+{
+  "disabledOrProofOnly": [],
+  "frontendInstruction": "Render only steps whose required actor/authority is available; never show fake success for unavailable provider/system steps.",
+  "id": "receipt",
+  "mode": "live-read",
+  "schema": "glyph.frontend.flow.v1",
+  "stages": [
+    {
+      "frontendCanExecute": true,
+      "name": "Load receipt JSON",
+      "source": "state/frontend/receipts/index.json",
+      "step": 1
+    },
+    {
+      "algorithm": "sha256 canonical JSON with finalReceiptHash omitted; see scripts/receipt_tool.py",
+      "frontendCanExecute": true,
+      "name": "Verify finalReceiptHash locally",
+      "step": 2
+    },
+    {
+      "frontendCanExecute": true,
+      "name": "Render SVG card/QR/link",
+      "step": 3
+    },
+    {
+      "frontendCanExecute": true,
+      "name": "Read onchain sourceReceiptFacts for Pull/Push",
+      "read": "SourceDeltaRouter.sourceReceiptFacts(operationId)",
+      "step": 4
+    },
+    {
+      "frontendCanExecute": true,
+      "name": "Show tx timeline",
+      "source": "state/frontend/transactions/index.json",
+      "step": 5
+    }
+  ],
+  "title": "Receipt viewer and verifier",
+  "transactionFirst": false
+}
