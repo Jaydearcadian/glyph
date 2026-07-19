@@ -31,3 +31,6 @@ keystore-*
 # Foundry cache
 contracts/cache/
 contracts/out/
+
+# generated testnet wallets (never commit)
+state/keys/
