@@ -69,6 +69,14 @@ contract GlyphDeploy is Script {
         }
     }
 
+    function _orderedExecution() internal view returns (bool) {
+        try vm.envBool("GLYPH_ORDERED") returns (bool ordered) {
+            return ordered;
+        } catch {
+            return true;
+        }
+    }
+
     // ---- Phase 1: deploy this chain's stack (no freeze) ----
     function runDeploy() external {
         _init();
@@ -121,7 +129,7 @@ contract GlyphDeploy is Script {
         LayerZeroV2GlyphMessengerAdapter(payable(adapter)).setRemoteApplication(rApp);
         LayerZeroV2GlyphMessengerAdapter(payable(adapter)).setTrustedPeer(rAdapter);
         LayerZeroV2GlyphMessengerAdapter(payable(adapter)).setEnforcedGasLimit(200_000);
-        LayerZeroV2GlyphMessengerAdapter(payable(adapter)).setOrderedExecution(true);
+        LayerZeroV2GlyphMessengerAdapter(payable(adapter)).setOrderedExecution(_orderedExecution());
         SourceDeltaRouter(router).setMessengerAdapter(adapter, true);
         SourceDeltaRouter(router).setMessengerProcessorForAdapter(app, adapter, true);
         DestinationGlyphVault(vault).setAuthorizedApplication(app, true);
