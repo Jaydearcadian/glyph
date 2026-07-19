@@ -203,6 +203,35 @@ contract LayerZeroV2GlyphMessengerAdapterTest is Test {
         assertTrue(monadApp.sourceTerminalReceipt(op) != bytes32(0));
     }
 
+    function test_sourceTerminalReceiptResendStagesRetryAfterAnchor() public {
+        // Use a second provider that has NOT provided liquidity, so Monad reservation fails and a
+        // DESTINATION_FAILED_ACK is sent back to source -> refund path -> SOURCE_REFUNDED_RECEIPT.
+        address brokeProvider = address(0xBADC0DE);
+        SourceDeltaRouter.Terms memory t = _terms(0, router.PULL());
+        t.provider = brokeProvider;
+        vm.prank(payer);
+        bytes32 op = router.escrow(t);
+        // route to destination; Monad tries to reserve from brokeProvider, fails, sends failure ack
+        monadEndpoint.deliver(address(monadAdapter), _send(op, 200_000));
+        // source records the failure as refund-pending
+        baseEndpoint.deliver(address(baseAdapter), monadEndpoint.lastGuid());
+        // source now refunds and sends the SOURCE_REFUNDED_RECEIPT
+        baseApp.refundAndSendReceipt{value: 1 ether}(op, payable(payer), 200_000);
+        monadEndpoint.deliver(address(monadAdapter), baseEndpoint.lastGuid());
+        assertTrue(monadApp.sourceTerminalReceipt(op) != bytes32(0));
+        // staged retry is idempotent: resending re-anchors the same terminal receipt
+        baseApp.resendSourceTerminalReceipt{value: 1 ether}(op, payable(payer), 200_000);
+        bytes32 first = monadApp.sourceTerminalReceipt(op);
+        monadEndpoint.deliver(address(monadAdapter), baseEndpoint.lastGuid());
+        assertEq(monadApp.sourceTerminalReceipt(op), first);
+        // resend on a non-terminal op reverts
+        SourceDeltaRouter.Terms memory t2 = _terms(1, router.PULL());
+        vm.prank(payer);
+        bytes32 op2 = router.escrow(t2);
+        vm.expectRevert(GlyphLayerZeroApplication.InvalidPayload.selector);
+        baseApp.resendSourceTerminalReceipt{value: 1 ether}(op2, payable(payer), 200_000);
+    }
+
     function test_pushReservedAckDoesNotFinalizeUntilClaimDeliveryAckArrives() public {
         SourceDeltaRouter.Terms memory t = _terms(0, router.PUSH());
         vm.prank(payer);
@@ -315,5 +344,55 @@ contract LayerZeroV2GlyphMessengerAdapterTest is Test {
         vm.expectRevert(LayerZeroV2GlyphMessengerAdapter.RefundFailed.selector);
         baseApp.sendRouteFromEscrow{value: q + 1}(op, payable(address(bad)), 200_000);
         assertEq(address(baseAdapter).balance, 0);
+    }
+
+    function test_processorBoundToAdapterA_cannotDriveAdapterB_routerEntrypoints() public {
+        // Rogue adapter + its own app, peered to a second (unauthorized for source router) adapter.
+        LayerZeroV2GlyphMessengerAdapter rogueAdapter = new LayerZeroV2GlyphMessengerAdapter(
+            address(baseEndpoint), BASE_CHAIN, BASE_EID, MONAD_CHAIN, MONAD_EID, address(this), policy
+        );
+        GlyphLayerZeroApplication rogueApp = new GlyphLayerZeroApplication(
+            GlyphLayerZeroApplication.Side.SOURCE, BASE_CHAIN, MONAD_CHAIN, router, vault, address(this)
+        );
+        router.setMessengerAdapter(address(rogueAdapter), true);
+        router.setMessengerProcessorForAdapter(address(rogueApp), address(rogueAdapter), true);
+
+        SourceDeltaRouter.Terms memory t = _terms(0, router.PULL());
+        vm.prank(payer);
+        bytes32 op = router.escrow(t);
+        bytes32 termsHash = router.hashTerms(t);
+        // rogueApp is a processor for rogueAdapter, not for baseAdapter. Calling the router's
+        // FromAdapter entrypoint while naming baseAdapter must be rejected.
+        vm.expectRevert(SourceDeltaRouter.UnauthorizedActor.selector);
+        vm.prank(address(rogueApp));
+        router.recordDestinationDeliveryFromAdapter(
+            op,
+            keccak256("ack"),
+            keccak256("route"),
+            1,
+            termsHash,
+            recipient,
+            provider,
+            address(token),
+            100 ether,
+            address(baseAdapter)
+        );
+        // rogueApp is a valid processor for rogueAdapter, so _authorized(rogueAdapter) passes, but
+        // the op was never routed through rogueAdapter (no routeMessageId/termsHash established),
+        // so it fails _checkRoute with InvalidAck — it cannot deliver an op it did not route.
+        vm.expectRevert(SourceDeltaRouter.InvalidAck.selector);
+        vm.prank(address(rogueApp));
+        router.recordDestinationDeliveryFromAdapter(
+            op,
+            keccak256("ack"),
+            keccak256("route"),
+            1,
+            termsHash,
+            recipient,
+            provider,
+            address(token),
+            100 ether,
+            address(rogueAdapter)
+        );
     }
 }

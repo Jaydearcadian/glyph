@@ -205,7 +205,7 @@ contract DestinationGlyphVault {
     function release(bytes32 op) external {
         Reservation storage r = reservations[op];
         if (r.status != ReservationStatus.RESERVED) revert AlreadyTerminal(op);
-        if (block.timestamp <= r.expiry) revert Expired();
+        if (r.expiry >= block.timestamp) revert Expired();
         r.status = ReservationStatus.RELEASED;
         reservedLiquidity[r.asset] -= r.amount;
         providerReservedLiquidity[r.provider][r.asset] -= r.amount;

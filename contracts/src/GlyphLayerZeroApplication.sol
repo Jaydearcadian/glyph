@@ -295,6 +295,42 @@ contract GlyphLayerZeroApplication {
         );
     }
 
+    /// @notice Staged retry for a source terminal receipt.
+    /// If the destination-side lzReceive of the original receipt failed, the source is already
+    /// RECONCILED/REFUNDED but Monad never recorded it. Anyone may pay to resend; the destination
+    /// dedupes via AlreadyFinalized. This satisfies the execution contract's "retry if source
+    /// finalization already happened" rule and never loses the terminal receipt.
+    function resendSourceTerminalReceipt(bytes32 operationId, address payable refundAddress, uint256 gasLimit)
+        external
+        payable
+        returns (bytes32 messageId)
+    {
+        if (side != Side.SOURCE) revert UnsupportedMessage();
+        PayloadKind kind = _terminalKind(operationId);
+        SourceTerminalReceiptV1 memory receipt = _sourceReceipt(operationId, kind);
+        bytes memory payload = abi.encode(receipt);
+        uint256 nonce = nextRouteNonce++;
+        IGlyphMessengerAdapter.Envelope memory e = _envelope(
+            kind == PayloadKind.SOURCE_FINALIZED_RECEIPT
+                ? IGlyphMessengerAdapter.MessageType.SOURCE_FINALIZED_RECEIPT
+                : IGlyphMessengerAdapter.MessageType.SOURCE_REFUNDED_RECEIPT,
+            operationId,
+            receipt.termsHash,
+            nonce,
+            payload
+        );
+        messageId = adapter.sendMessage{value: msg.value}(
+            remoteChainId, remoteApplication, e, payload, refundAddress, gasLimit
+        );
+    }
+
+    function _terminalKind(bytes32 operationId) internal view returns (PayloadKind) {
+        (,,,,,, SourceDeltaRouter.Status status) = router.sourceReceiptFacts(operationId);
+        if (status == SourceDeltaRouter.Status.RECONCILED) return PayloadKind.SOURCE_FINALIZED_RECEIPT;
+        if (status == SourceDeltaRouter.Status.REFUNDED) return PayloadKind.SOURCE_REFUNDED_RECEIPT;
+        revert InvalidPayload();
+    }
+
     function _handleDestination(IGlyphMessengerAdapter.Envelope calldata envelope, bytes calldata payload) internal {
         if (
             envelope.messageType == IGlyphMessengerAdapter.MessageType.SOURCE_FINALIZED_RECEIPT

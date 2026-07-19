@@ -303,8 +303,8 @@
     "pushed": false,
     "signed": false
   },
-  "status": "DEPLOY_READY",
-  "statusReason": "Second independent integration/economic review A-L repaired and locally gated. DEPLOY_READY is LOCAL-ONLY: no public transaction, deployment, signing, broadcast, funding, key access, service exposure, push, amend, or history rewrite occurred.",
+  "status": "DEPLOY_READY_LOCAL",
+  "statusReason": "Round-3 orchestrator repair (R1 cross-adapter isolation test, R3 staged receipt retry + resendSourceTerminalReceipt, R4 lint) + strengthened economic invariant. 73 tests pass (was 69); fuzz/invariant 256 runs/128k calls. Local-only: no deploy/sign/broadcast/fund/push.",
   "taskId": "glyph-mvp-hy3-oneshot",
   "testsBySuite": {
     "GlyphMvpFuzzInvariant": "2 passed; 0 failed; 0 skipped",
