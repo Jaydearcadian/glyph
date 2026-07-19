@@ -47,7 +47,7 @@ export function CampaignConsole() {
       await publicClient.waitForTransactionReceipt({ hash });
       await publicClient.readContract({ address: contracts.campaign, abi: campaignAbi, functionName: "campaigns", args: [id] });
       setProgramId(id); setTx(hash);
-      setCampaignLink(`${location.origin}/links#campaign=${id}&recipient=${address}&amount=${suggestedContribution}`);
+      setCampaignLink(`${location.origin}/links#campaign=${id}&payTo=${address}&amount=${suggestedContribution}`);
     } catch (cause) { setError(cause instanceof Error ? cause.message.split("\n")[0] : "Campaign creation failed."); }
     finally { setBusy(false); }
   }

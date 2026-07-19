@@ -38,22 +38,26 @@ export function JudgeConsole() {
   const [openedOperation, setOpenedOperation] = useState<Hash>();
   const [openedKind, setOpenedKind] = useState<"claim" | "payment">();
   const [copied, setCopied] = useState(false);
+  const [isPaymentRequest, setIsPaymentRequest] = useState(false);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => {
+    const applyLink = () => {
       const params = new URLSearchParams(window.location.hash.slice(1));
       const campaign = params.get("campaign");
-      const linkedRecipient = params.get("recipient");
+      const linkedRecipient = params.get("payTo") ?? params.get("recipient");
       const linkedAmount = params.get("amount");
       const claim = params.get("claim");
       const payment = params.get("payment");
       const opened = claim ?? payment;
       if (opened?.match(/^0x[0-9a-fA-F]{64}$/)) { setOpenedOperation(opened as Hash); setOpenedKind(claim ? "claim" : "payment"); }
-      if (campaign?.match(/^0x[0-9a-fA-F]{64}$/)) { setProgramId(campaign as Hash); setMode("pull"); }
+      if (campaign?.match(/^0x[0-9a-fA-F]{64}$/)) { setProgramId(campaign as Hash); setMode("pull"); setIsPaymentRequest(true); }
+      if (params.get("payTo")) setIsPaymentRequest(true);
       if (linkedRecipient && isAddress(linkedRecipient)) setRecipient(linkedRecipient);
       if (linkedAmount && safeAmount(linkedAmount)) setAmount(linkedAmount);
-    }, 0);
-    return () => window.clearTimeout(timer);
+    };
+    const timer = window.setTimeout(applyLink, 0);
+    window.addEventListener("hashchange", applyLink);
+    return () => { window.clearTimeout(timer); window.removeEventListener("hashchange", applyLink); };
   }, []);
 
   const walletReady = isConnected && chainId === monadTestnet.id && !!address;
@@ -125,7 +129,7 @@ export function JudgeConsole() {
       await publicClient.waitForTransactionReceipt({ hash });
       const routeFacts = await publicClient.readContract({ address: contracts.router, abi: routerAbi, functionName: "routeFacts", args: [operationId] });
       const readback = JSON.stringify(routeFacts, (_, item) => typeof item === "bigint" ? item.toString() : item);
-      const shareLink = mode === "push" ? `${location.origin}/links#claim=${operationId}` : `${location.origin}/links#payment=${operationId}`;
+      const shareLink = mode === "push" ? `${location.origin}/links#claim=${operationId}` : `${location.origin}/links#payTo=${recipientAddress}&amount=${amount}${programId !== ZERO_HASH ? `&campaign=${programId}` : ""}`;
       setResult({ mode, hash, operationId, termsHash, readback, shareLink });
       await Promise.all([balance.refetch(), allowance.refetch(), nativeBalance.refetch()]);
     });
@@ -146,7 +150,7 @@ export function JudgeConsole() {
 
   if (openedOperation && openedKind) return <div className="grid-2">
     <section className="panel featured"><div className="panel-header"><div><h2>{openedKind === "claim" ? "Push claim link" : "Pull payment link"}</h2><p className="panel-copy">This link now opens the exact onchain operation instead of returning to the generic creator.</p></div><StatusBadge tone={openedStatus >= 4 ? "verified" : "pending"}>{statusLabel}</StatusBadge></div><DetailRow label="Operation" value={openedOperation} mono/><DetailRow label="Onchain state" value={statusLabel}/><div className="form-actions"><button className="button button-outline" onClick={()=>copyShareLink(location.href)}><Copy size={14}/> {copied ? "Copied" : "Copy link"}</button><button className="button button-light" onClick={()=>shareResult(location.href)}><Share2 size={14}/> Share</button></div></section>
-    <section className="panel"><div className="panel-header"><div><h2>{openedKind === "claim" ? "Claim status" : "Payment status"}</h2></div></div>{openedFacts.isLoading ? <p className="notice">Reading operation…</p> : openedFacts.isError ? <p className="notice error-notice">This operation could not be read.</p> : openedKind === "claim" && openedStatus < 2 ? <p className="notice">Funds are escrowed. Claiming becomes available only after the provider routes and reserves the Push operation; this page will not fake that step.</p> : <p className="notice success-notice">Live operation state: {statusLabel}.</p>}<div className="form-actions"><a className="button button-outline" href="/links"><ArrowLeft size={14}/> Create another link</a></div></section>
+    <section className="panel"><div className="panel-header"><div><h2>{openedKind === "claim" ? "Claim" : "Payment"}</h2></div></div>{openedFacts.isLoading ? <p className="notice">Reading operation…</p> : openedFacts.isError ? <p className="notice error-notice">This operation could not be read.</p> : openedKind === "claim" && openedStatus < 2 ? <p className="notice">Funds are escrowed. Claim unlocks after provider routing.</p> : <p className="notice success-notice">Live operation state: {statusLabel}.</p>}<div className="form-actions">{openedKind === "claim" ? <button className="button button-light" disabled>{openedStatus >= 4 ? "Claimed" : openedStatus < 2 ? "Claim · waiting for route" : "Claim"}</button> : <button className="button button-light" disabled>Payment deposited</button>}<a className="button button-outline" href="/links"><ArrowLeft size={14}/> Create another link</a></div></section>
   </div>;
 
   return <div className="grid-2">
@@ -161,7 +165,7 @@ export function JudgeConsole() {
       {programId !== ZERO_HASH && <p className="notice success-notice" style={{marginTop:18}}>Campaign contribution link loaded · program <span className="mono">{shortHash(programId,12,10)}</span></p>}
       <div style={{marginTop:28}} className="mode-tabs" role="tablist" aria-label="Link mode"><button role="tab" aria-selected={mode === "pull"} className={`mode-tab ${mode === "pull" ? "active" : ""}`} onClick={()=>setMode("pull")}>Pull · pay request</button><button role="tab" aria-selected={mode === "push"} className={`mode-tab ${mode === "push" ? "active" : ""}`} onClick={()=>setMode("push")}>Push · claim link</button></div>
       <div className="form-grid"><div className="field"><label htmlFor="amount">Amount in gTST</label><input id="amount" inputMode="decimal" value={amount} onChange={event=>setAmount(event.target.value)}/></div><div className="field"><label htmlFor="recipient">{mode === "pull" ? "Recipient wallet" : "Funded by / recovery wallet"}</label><input id="recipient" placeholder={address ?? "0x…"} value={recipient} onChange={event=>setRecipient(event.target.value)}/></div></div>
-      <div className="form-actions"><button className="button button-outline" onClick={approve} disabled={!walletReady || !hasGas || !!busy || !value || !enoughBalance}>{busy === "approve" ? "Simulating + approving…" : `Approve ${amount || "0"} gTST`}</button><button className="button button-light" onClick={createEscrow} disabled={!walletReady || !hasGas || !!busy || !value || !enoughBalance || !enoughAllowance}>{busy === "escrow" ? "Preflighting + creating…" : mode === "pull" ? "Create Pull link" : "Fund Push link"}</button></div>
+      <div className="form-actions"><button className="button button-outline" onClick={approve} disabled={!walletReady || !hasGas || !!busy || !value || !enoughBalance}>{busy === "approve" ? "Simulating + approving…" : `Approve ${amount || "0"} gTST`}</button><button className="button button-light" onClick={createEscrow} disabled={!walletReady || !hasGas || !!busy || !value || !enoughBalance || !enoughAllowance}>{busy === "escrow" ? "Preflighting + creating…" : mode === "push" ? "Fund Push link" : programId !== ZERO_HASH ? "Deposit / Pay campaign" : isPaymentRequest ? "Deposit / Pay" : "Create Pull link"}</button></div>
       {!enoughBalance && walletReady && <p className="notice" style={{marginTop:18}}>Mint enough demo gTST first.</p>}
       {enoughBalance && !enoughAllowance && walletReady && <p className="notice" style={{marginTop:18}}>Approve the exact gTST amount before creating the link.</p>}
       {error && <p className="notice error-notice" style={{marginTop:18}}>{error}</p>}
