@@ -3,10 +3,21 @@ pragma solidity ^0.8.24;
 
 import {IGlyphMessengerAdapter} from "./interfaces/IGlyphMessengerAdapter.sol";
 
-/// @notice Synchronous local loopback messenger. Used for same-chain (Monad->Monad)
-/// Pull/Push so the full value loop completes in a single transaction with no external relay.
-/// Delivers the message to `destinationApplication` inline via a low-level call.
+/// @notice Local loopback messenger for same-chain proofs.
+/// @dev Messages are staged by `sendMessage` and delivered by `deliver(messageId)`.
+/// This preserves production ordering: the source app records route facts after
+/// `sendMessage` returns, then a relayer/test script delivers the staged message.
 contract LocalLoopbackGlyphAdapter is IGlyphMessengerAdapter {
+    struct PendingMessage {
+        address destinationApplication;
+        Envelope envelope;
+        bytes payload;
+        bool exists;
+    }
+
+    mapping(bytes32 => PendingMessage) public pending;
+    bytes32 public lastMessageId;
+
     function quote(uint64, address, Envelope calldata, bytes calldata, uint256) external pure returns (uint256) {
         return 0;
     }
@@ -20,24 +31,35 @@ contract LocalLoopbackGlyphAdapter is IGlyphMessengerAdapter {
         uint256
     ) external payable returns (bytes32 messageId) {
         messageId = keccak256(abi.encode(e.operationId, e.messageType, e.routeNonce, e.payloadHash, address(this)));
-        Envelope memory delivered = e;
-        delivered.messageId = messageId;
-        // Synchronous delivery: invoke the destination app's handler inline with the final messageId.
-        (bool ok, bytes memory ret) = destinationApplication.call(
-            abi.encodeWithSelector(IGlyphMessageHandler.handleGlyphMessage.selector, delivered, payload)
-        );
+        Envelope memory staged = e;
+        staged.messageId = messageId;
+        if (pending[messageId].exists) revert("loopback: duplicate message");
+        pending[messageId] = PendingMessage({
+            destinationApplication: destinationApplication, envelope: staged, payload: payload, exists: true
+        });
+        lastMessageId = messageId;
+        emit MessageQueued(messageId, e.operationId, e.messageType);
+    }
+
+    function deliver(bytes32 messageId) external {
+        PendingMessage memory p = pending[messageId];
+        if (!p.exists) revert("loopback: missing message");
+        delete pending[messageId];
+        (bool ok, bytes memory ret) = p.destinationApplication
+            .call(abi.encodeWithSelector(IGlyphMessageHandler.handleGlyphMessage.selector, p.envelope, p.payload));
         if (!ok) {
-            // Bubble up revert reason if present
             assembly {
                 revert(add(ret, 32), mload(ret))
             }
         }
-        emit MessageQueued(messageId, e.operationId, e.messageType);
-        emit MessageDelivered(messageId, e.operationId, e.messageType);
+        emit MessageDelivered(messageId, p.envelope.operationId, p.envelope.messageType);
     }
 
-    function consume(bytes32) external pure returns (Envelope memory) {
-        revert("loopback: no async consume");
+    function consume(bytes32 messageId) external returns (Envelope memory envelope) {
+        PendingMessage memory p = pending[messageId];
+        if (!p.exists) revert("loopback: missing message");
+        delete pending[messageId];
+        return p.envelope;
     }
 }
 
