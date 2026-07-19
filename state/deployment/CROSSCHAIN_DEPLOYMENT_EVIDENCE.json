@@ -1,0 +1,34 @@
+{
+  "_comment": "Glyph cross-chain deployment evidence. Recorded after on-chain readback. Testnet only.",
+  "policyHash": "0x9f2b1c4e7a3d5f6082b4c9e1d7a0f3b6c5e8d2a4b7c9e1f3a5b7c9d1e3f5a7b9",
+  "owner": "0x014eb22ab7DFa9A843Babc1C6e2dA5B596a62f36",
+  "base_sepolia": {
+    "chainId": 84532,
+    "eid": 40245,
+    "lzEndpoint": "0x6EDCE65403992e310A62460808c4b910D972f10f",
+    "router": "0xB28C11AE970D4bDDA4a221B9A5Ceb5d287d336f3",
+    "vault": "0xeBC102C8597f24FfD115348c969DCBf95A68FE07",
+    "token": "0xc0d50bB3Aee4C7BF969d143fC8D8A78841Bc752f",
+    "app": "0x689979129F4aD12dF09C0A48d7dD08af3b73fF5D",
+    "adapter": "0xa0E47dd070855C5F1228f7F81394Dc63e5113B74"
+  },
+  "monad_testnet": {
+    "chainId": 10143,
+    "eid": 40204,
+    "lzEndpoint": "0x6C7Ab2202C98C4227C5c46f1417D81144DA716Ff",
+    "router": "0xC71C119B91Fa1F1861626843Fa653F41cEF9101A",
+    "vault": "0x5c9B29130A91c8419CCAa33D7fEBE6dE0B26824A",
+    "token": "0x1d482783316FdeF2e795A1C193ACE280660A887a",
+    "app": "0xb30a58245300127110583925956207f859947936",
+    "adapter": "0x8AD972eABcC36F01136B13f98aFB8225E13bF57C"
+  },
+  "readback": {
+    "base_adapter_configFrozen": true,
+    "monad_adapter_configFrozen": true,
+    "base_trustedPeer": "0x8AD972eABcC36F01136B13f98aFB8225E13bF57C",
+    "monad_trustedPeer": "0xa0E47dd070855C5F1228f7F81394Dc63e5113B74",
+    "base_remoteApplication": "0xb30a58245300127110583925956207f859947936",
+    "monad_remoteApplication": "0x689979129F4aD12dF09C0A48d7dD08af3b73fF5D"
+  },
+  "status": "DEPLOYED_AND_CONFIGURED — lane wired + frozen on both chains. E2E lifecycle pending."
+}
