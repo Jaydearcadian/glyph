@@ -1,0 +1,31 @@
+{
+  "_comment": "Glyph cross-chain adapter deployment config. NO secrets here. Fill real addresses before broadcasting. Placeholder zeros must be replaced.",
+  "base_sepolia": {
+    "chainId": 84532,
+    "eid": 40245,
+    "lzEndpoint": "0x6EDCE65403992e310A62460808c4b910D972f10f",
+    "router": "0x0000000000000000000000000000000000000000",
+    "vault": "0x0000000000000000000000000000000000000000",
+    "remoteAdapter": "0x0000000000000000000000000000000000000000",
+    "remoteApp": "0x0000000000000000000000000000000000000000",
+    "messengerPolicyHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "owner": "0x0000000000000000000000000000000000000000",
+    "enforcedGasLimit": 200000,
+    "ackGasLimit": 200000,
+    "orderedExecution": true
+  },
+  "monad_testnet": {
+    "chainId": 10143,
+    "eid": 40204,
+    "lzEndpoint": "0x6C7Ab2202C98C4227C5c46f1417D81144DA716Ff",
+    "router": "0x0000000000000000000000000000000000000000",
+    "vault": "0x0000000000000000000000000000000000000000",
+    "remoteAdapter": "0x0000000000000000000000000000000000000000",
+    "remoteApp": "0x0000000000000000000000000000000000000000",
+    "messengerPolicyHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "owner": "0x0000000000000000000000000000000000000000",
+    "enforcedGasLimit": 200000,
+    "ackGasLimit": 200000,
+    "orderedExecution": true
+  }
+}
