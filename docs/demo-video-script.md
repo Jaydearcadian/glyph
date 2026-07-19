@@ -1,37 +1,56 @@
-# Glyph — Spark Demo Video Script (< 3 min)
+# Glyph — submission demo script (< 3 min)
 
-**Goal:** show a real, working on-chain feature (not a stub). Font: calm, confident. No filler.
+**Goal:** show the real backend proofs and avoid claiming a frontend or completed cross-chain delivery that is not live yet.
 
-## 0:00–0:20 — The problem (personal)
-- "I kept hitting the same Web3 wall: to share value I either use a burner wallet that
-  fragments my capital, or I paste a secret link that MEV bots snipe from the mempool."
-- Cut to terminal: `cast` showing a forged vessel + a claimed vessel, balance moving.
-- "Glyph solves both — with one self-custodial URL."
+## 0:00–0:20 — Problem
 
-## 0:20–0:50 — Value Vessel (front-run-proof)
-- Screen: glyph demo (Cloudflare tunnel URL).
-- Click "Value Vessel" → enter amount + passcode → Forge.
-- Wallet popup → confirm. Show explorer tx.
-- Open the share link in a second browser (no wallet) → Claim → front-run-proof signature.
-- Point out: passcode lives only in the URL `#fragment`, never sent to the server.
+- "Most crypto links are either secret bearer links or wallet-fragmenting workarounds. Glyph makes a link an operation: typed terms, escrow, destination delivery, and receipts."
+- Show `SUBMISSION.md` headline and the proof table.
 
-## 0:50–1:40 — Authority Vessel (EIP-7702 session)
-- Click "Authority Vessel" → whitelist a target, set drawdown cap + TTL → Forge.
-- Show the session id; click Revoke → on-chain revoke confirmed.
-- "I can hand a friend or an AI agent a scoped session — capped, whitelisted, revocable —
-  without ever sharing my master key."
+## 0:20–1:05 — Live Monad Push/Pull proof
 
-## 1:40–2:20 — Under the hood (credibility)
-- Quick cut to Foundry: `forge test` → "9 passing".
-- Show the contract on Monad testnet explorer (code verified, 9376 bytes).
-- "The claim signature binds to msg.sender, so a copied mempool tx fails recovery. MEV-proof by construction."
+- Open `state/live/monad-address-pair-proof-20260719T130942Z/README.md`.
+- Point to:
+  - payer address
+  - separate claimant/recipient address
+  - Pull op
+  - Push op
+  - Pull receipt
+  - Push receipt
+  - `34` txs, all `0x1`
+- Say: "This is the core: one link-native operation, live on Monad testnet, with terminal receipts."
 
-## 2:20–2:50 — Why it's real
-- "No fake toasts. Every button hits the live Monad testnet contract."
-- Contract: `0xbD3Eef309bDF82479E089bF718b6E8C02DFd818C`
+## 1:05–1:45 — Campaign aggregation proof
 
-## 2:50–3:00 — Close
-- "Glyph — your sovereign address, temporarily delegated. BuildAnything Spark 2026."
+- Open `state/live/monad-campaign-proof-20260719T132755Z/README.md`.
+- Point to:
+  - two child operations
+  - two child receipts
+  - aggregate campaign receipt
+  - readback `20 gTST`, `closed=true`
+- Say: "Campaigns are just higher-order operations: child Pull receipts reconcile into a campaign close receipt."
 
-**Recording notes:** capture actual wallet confirms + explorer receipts; keep viewport fitted;
-one take per flow, cut the waits. Total ~2:55.
+## 1:45–2:25 — Cross-chain engine evidence
+
+- Open `state/live/base-monad-crosschain-blocker-20260719T165200Z/README.md`.
+- Show fresh Base and Monad app/adapter addresses.
+- Show the fresh operation and LayerZero GUID.
+- Say: "The Base→Monad lane is deployed, wired, frozen, and source-send proven. The packet is visible in LayerZero Scan, but DVN validation is still waiting before Monad `lzReceive`, so we do not claim destination settlement yet."
+
+## 2:25–2:45 — Quality gate
+
+- Show terminal or commit log:
+  - `forge fmt`
+  - `forge build --force`
+  - `forge test`
+  - `75 tests passed, 0 failed`
+- Show recent commits:
+  - address-pair proof
+  - campaign proof
+  - cross-chain blocker evidence
+
+## 2:45–3:00 — Close
+
+- "Glyph: links that settle as operations, not promises. Live Monad proofs are complete; cross-chain source send is live, with the remaining delivery blocker isolated at LayerZero DVN validation."
+
+**Recording notes:** keep it evidence-first. Avoid old Value Vessel / Authority Vessel frontend claims unless a current frontend is separately restored and verified.

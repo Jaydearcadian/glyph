@@ -5,23 +5,36 @@
 Glyph is a Monad-anchored protocol for link-native Web3 operations:
 
 ```text
-Push value → Pull payment → Route across chains → Delegate authority
+Push value → Pull payment → Campaign contribution → Route across chains → Delegate authority
 ```
 
-## Current Phase
+## Current phase
 
-**P0 — control plane and executable specifications.**
+**Submission-ready backend proof package.**
 
-No new receipt, attestation, STN-Delta, or cross-chain contracts are implemented or deployed yet. Existing contracts under `contracts/` are historical prototypes and are not the active architecture. The deployed Session proxy is deprecated.
+The repo now contains live Monad testnet proofs plus a Base Sepolia → Monad Testnet LayerZero lane/send proof. The cross-chain destination delivery is not claimed complete: LayerZero Scan shows the packet stuck before Monad `lzReceive` at DVN validation.
 
-Read in order:
+Start here:
 
-1. [`AGENTS.md`](AGENTS.md)
-2. [`docs/PRODUCT_DOCTRINE.md`](docs/PRODUCT_DOCTRINE.md)
-3. [`docs/architecture/INVARIANTS.md`](docs/architecture/INVARIANTS.md)
-4. the relevant architecture document under `docs/architecture/`
+1. [`SUBMISSION.md`](SUBMISSION.md) — judge-facing proof summary and scope.
+2. [`state/live/monad-address-pair-proof-20260719T130942Z/`](state/live/monad-address-pair-proof-20260719T130942Z/) — live Monad Push/Pull proof.
+3. [`state/live/monad-campaign-proof-20260719T132755Z/`](state/live/monad-campaign-proof-20260719T132755Z/) — live campaign aggregation proof.
+4. [`state/live/base-monad-crosschain-blocker-20260719T165200Z/`](state/live/base-monad-crosschain-blocker-20260719T165200Z/) — Base→Monad lane/source-send evidence and LayerZero DVN blocker.
+5. [`state/live/SUBMISSION_SHA256SUMS.txt`](state/live/SUBMISSION_SHA256SUMS.txt) — checksums for submission summary and live proof artifacts.
 
-## Active Architecture
+## What is proven live
+
+| Capability | Status |
+|---|---|
+| Pull payment on Monad | Live-proven |
+| Push claim on Monad | Live-proven |
+| Terminal destination receipts | Live-proven on Monad loopback |
+| Multi-contributor campaign aggregation | Live-proven |
+| Base Sepolia → Monad Testnet LayerZero lane | Deployed, wired, frozen, readback-good |
+| Base→Monad route send | Live source-send proven |
+| Base→Monad delivery + ACK/finalize | Pending; blocked at LayerZero DVN validation before Monad execution |
+
+## Active architecture
 
 ```text
 GlyphReceiptLedger
@@ -29,9 +42,10 @@ GlyphAttestationRegistry
 SourceDeltaRouter
 DestinationGlyphVault
 Messenger adapters
+ContributionCampaign
 ```
 
-The customer sees one Glyph Registry. Internally, immutable financial receipts are separated from evolving identity and purpose attestations.
+The user sees links. The protocol sees immutable operation terms, source escrow, destination delivery, receipts, and explicit settlement state.
 
 ## STN-Delta
 
@@ -39,27 +53,38 @@ The customer sees one Glyph Registry. Internally, immutable financial receipts a
 maximumInput = realizedPrincipal + realizedFees + residualReturned
 ```
 
-Cross-chain settlement is asynchronous. Source finalization atomically settles the realized obligation, closes the source session, and returns the residual to the payer’s bound recovery wallet.
+Cross-chain settlement is asynchronous. Source finalization atomically settles the realized obligation, closes the source session, and returns residual value to the payer’s bound recovery wallet.
 
 ## Layout
 
 ```text
-AGENTS.md                  project operating contract
-docs/PRODUCT_DOCTRINE.md   product truth
+SUBMISSION.md              judge-facing proof summary
+contracts/                 Solidity contracts, scripts, and Foundry tests
 docs/architecture/         executable protocol specifications
+state/live/                live testnet evidence bundles
+state/manifests/           build manifests and oneshot inputs
 workers/                   project-local worker contracts
-state/                     schemas and evidence/state rules
-contracts/                 legacy prototype; future P1 implementation surface
-MGlyph.session.json        stale legacy projection pending verified Brain recall
 ```
 
-## Evidence Standard
+## Evidence standard
 
-A build is not “live” until every advertised lifecycle route has public source, destination, finalization, and Monad receipt evidence. See [`docs/architecture/EVIDENCE_POLICY.md`](docs/architecture/EVIDENCE_POLICY.md).
+A route is called live only when the advertised lifecycle has public evidence. Current submission claims are intentionally scoped:
 
-## Deprecated Artifacts
+- Monad Push/Pull/campaign flows are live-proven.
+- Base→Monad cross-chain engine is deployed and source-send proven.
+- Base→Monad destination delivery is not claimed complete until LayerZero DVN validation advances and Monad `lzReceive` executes.
 
-- `GlyphSessionProxy` deployment `0x83A572FD4E334ed34Aca42B85743Ff122AB3006d` — experimental/deprecated; wrong ERC-7201 slot and insufficient authority controls.
-- `contracts/vessel_sync.json` — legacy compatibility state, not canonical.
-- `docs/glyph-core-arch.md` — historical EIP-7702 design, not active architecture.
-- prior frontend — intentionally removed; no automatic restoration.
+## Latest backend gate
+
+```text
+forge fmt
+forge build --force
+forge test
+```
+
+Result:
+
+```text
+75 tests passed
+0 failed
+```
