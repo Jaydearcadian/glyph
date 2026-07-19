@@ -56,7 +56,8 @@ contract GlyphDeploy is Script {
     }
 
     function _lzEndpoint() internal view returns (address) {
-        return _isSource() ? address(0x6EDCE65403992e310A62460808c4b910D972f10f)
+        return _isSource()
+            ? address(0x6EDCE65403992e310A62460808c4b910D972f10f)
             : address(0x6C7Ab2202C98C4227C5c46f1417D81144DA716Ff);
     }
 
@@ -77,9 +78,8 @@ contract GlyphDeploy is Script {
         TestToken token = new TestToken();
         GlyphLayerZeroApplication.Side side =
             _isSource() ? GlyphLayerZeroApplication.Side.SOURCE : GlyphLayerZeroApplication.Side.DESTINATION;
-        GlyphLayerZeroApplication app = new GlyphLayerZeroApplication(
-            side, uint64(block.chainid), _remoteChainId(), router, vault, OWNER
-        );
+        GlyphLayerZeroApplication app =
+            new GlyphLayerZeroApplication(side, uint64(block.chainid), _remoteChainId(), router, vault, OWNER);
         LayerZeroV2GlyphMessengerAdapter adapter = new LayerZeroV2GlyphMessengerAdapter(
             _lzEndpoint(), uint64(block.chainid), _localEid(), _remoteChainId(), _remoteEid(), OWNER, POLICY
         );
@@ -108,8 +108,11 @@ contract GlyphDeploy is Script {
         address router = _envAddr("GLYPH_LOCAL_ROUTER");
         address vault = _envAddr("GLYPH_LOCAL_VAULT");
         address token = _envAddr("GLYPH_LOCAL_TOKEN");
-        require(app != address(0) && adapter != address(0) && router != address(0) && vault != address(0)
-            && token != address(0), "local addrs not set");
+        require(
+            app != address(0) && adapter != address(0) && router != address(0) && vault != address(0)
+                && token != address(0),
+            "local addrs not set"
+        );
 
         vm.startBroadcast();
         GlyphLayerZeroApplication(payable(app)).setAdapter(IGlyphMessengerAdapter(adapter));

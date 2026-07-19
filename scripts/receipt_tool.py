@@ -38,10 +38,12 @@ def card(receipt):
         y += 24
     return f'<svg xmlns="http://www.w3.org/2000/svg" width="960" height="260" viewBox="0 0 960 260"><rect width="960" height="260" rx="24" fill="#0b1020"/><rect x="14" y="14" width="932" height="232" rx="18" fill="none" stroke="#6ee7ff" stroke-width="2"/>{"".join(text)}</svg>'
 
-def make_fixture(mode, status="RECONCILED"):
-    op = "0x" + hashlib.sha256((mode+status).encode()).hexdigest()
+def make_fixture(mode, status="RECONCILED", topology="CROSS_CHAIN"):
+    if topology not in ("LOCAL", "CROSS_CHAIN"):
+        raise SystemExit("topology must be LOCAL or CROSS_CHAIN")
+    op = "0x" + hashlib.sha256((mode+status+topology).encode()).hexdigest()
     receipt = {
-        "schemaVersion":"glyph.receipt.v1", "operationId":op, "mode":mode, "topology":"CROSS_CHAIN", "status":status,
+        "schemaVersion":"glyph.receipt.v1", "operationId":op, "mode":mode, "topology":topology, "status":status,
         "termsHash":"0x"+hashlib.sha256((op+"terms").encode()).hexdigest(),
         "parties":{"payer":"0x0000000000000000000000000000000000001002","recipient":"0x0000000000000000000000000000000000001003"},
         "valueLegs":[{"type":"DESTINATION_DELIVERED","amount":"100000000000000000000"}],
@@ -56,12 +58,12 @@ def make_fixture(mode, status="RECONCILED"):
 def main():
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
-    g = sub.add_parser("fixture"); g.add_argument("mode"); g.add_argument("--status", default="RECONCILED"); g.add_argument("--out", required=True)
+    g = sub.add_parser("fixture"); g.add_argument("mode"); g.add_argument("--status", default="RECONCILED"); g.add_argument("--topology", default="CROSS_CHAIN", choices=("LOCAL", "CROSS_CHAIN")); g.add_argument("--out", required=True)
     v = sub.add_parser("verify"); v.add_argument("path")
     c = sub.add_parser("card"); c.add_argument("path"); c.add_argument("--out", required=True)
     a = ap.parse_args()
     if a.cmd == "fixture":
-        r = make_fixture(a.mode, a.status); pathlib.Path(a.out).parent.mkdir(parents=True, exist_ok=True); pathlib.Path(a.out).write_text(json.dumps(r, indent=2, sort_keys=True)+"\n")
+        r = make_fixture(a.mode, a.status, a.topology); pathlib.Path(a.out).parent.mkdir(parents=True, exist_ok=True); pathlib.Path(a.out).write_text(json.dumps(r, indent=2, sort_keys=True)+"\n")
     elif a.cmd == "verify":
         r, ok = verify(a.path); print(json.dumps(r["verification"], indent=2, sort_keys=True)); sys.exit(0 if ok else 1)
     elif a.cmd == "card":

@@ -1,0 +1,43 @@
+{
+  "feeBreakdown": {
+    "gasSponsor": "4",
+    "protocol": "1",
+    "provider": "2",
+    "referrer": "3"
+  },
+  "finalReceiptHash": "0x4fca8de0226b1636dcb67293b11f7d15dbf751a400903f004f262a3a96a57e3d",
+  "identityBindings": [],
+  "messageIds": [
+    "0x3f285371e5344fdcf0dc8de9b7a7934524555591f90b4cf7ea194021d2df419e"
+  ],
+  "mode": "PUSH",
+  "operationId": "0xbcc9fa26e6443aa9af3797b013ce834d996271efad8a81470b7cd7ec98cf7d65",
+  "parties": {
+    "payer": "0x0000000000000000000000000000000000001002",
+    "recipient": "0x0000000000000000000000000000000000001003"
+  },
+  "privacy": {
+    "privateContextHash": "0x1111111111111111111111111111111111111111111111111111111111111111"
+  },
+  "proofs": [
+    "AUTHENTICATED_ADAPTER"
+  ],
+  "purpose": "self-asserted/private-commitment",
+  "reconciliation": {
+    "maximumInput": "110000000000000000000",
+    "realizedFees": "10000000000000000000",
+    "realizedPrincipal": "100000000000000000000",
+    "residualReturned": "0"
+  },
+  "schemaVersion": "glyph.receipt.v1",
+  "status": "RECONCILED",
+  "termsHash": "0x8ce079317f9f6b28f44bc71dec8f4e855ed5d1a33462c861009eb2171e5a87c4",
+  "topology": "LOCAL",
+  "valueLegs": [
+    {
+      "amount": "100000000000000000000",
+      "type": "DESTINATION_DELIVERED"
+    }
+  ],
+  "verification": {}
+}

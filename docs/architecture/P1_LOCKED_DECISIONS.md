@@ -74,7 +74,7 @@ struct OperationTerms {
 
 The ledger stores enough immutable terms for the attestation registry to query initiator/payer/recipient and for reconciliation to compare source asset, destination asset/amount, maximum input/fee, and recovery address.
 
-`sourceChainId` and `destinationChainId` must be nonzero and distinct. The canonical ledger may anchor an operation whose source chain is remote; neither operation chain is required to equal the ledger deployment chain. `LOCAL_VERIFIED` legs must name `block.chainid`; remote-proof legs must name a different chain.
+`sourceChainId` and `destinationChainId` must be nonzero. They MAY be equal for an explicit same-chain/local operation. The canonical ledger may anchor an operation whose source chain is remote; neither operation chain is required to equal the ledger deployment chain. `LOCAL_VERIFIED` legs must name `block.chainid`; remote-proof legs must name a different chain.
 
 ## Financial Roles
 

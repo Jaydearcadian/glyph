@@ -411,9 +411,7 @@ contract GlyphReceiptLedger is IGlyphReceiptLedger {
         if (t.sourceRouter == address(0)) revert InvalidOperationTerms("router");
         if (t.destinationVault == address(0)) revert InvalidOperationTerms("vault");
         if (t.sourceChainId == 0) revert InvalidOperationTerms("sourceChainId");
-        if (t.destinationChainId == 0 || t.destinationChainId == t.sourceChainId) {
-            revert InvalidOperationTerms("destinationChainId");
-        }
+        if (t.destinationChainId == 0) revert InvalidOperationTerms("destinationChainId");
         if (t.maximumInput == 0) revert InvalidOperationTerms("maximumInput");
         if (t.destinationAmount == 0) revert InvalidOperationTerms("destinationAmount");
         if (t.maximumFee > t.maximumInput) revert InvalidOperationTerms("maximumFee");
