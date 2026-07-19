@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Check, Copy, ExternalLink, FlaskConical, Fuel, LoaderCircle } from "lucide-react";
+import { ArrowLeft, Check, Copy, ExternalLink, FlaskConical, Fuel, LoaderCircle, Share2 } from "lucide-react";
 import { formatEther, isAddress, parseUnits, type Address, type Hash } from "viem";
 import { useAccount, useBalance, usePublicClient, useReadContract, useWriteContract } from "wagmi";
 import { AuthorityBadge, StatusBadge } from "@/components/status";
@@ -9,7 +9,7 @@ import { DetailRow } from "@/components/ui";
 import { contracts, formatToken, monadTestnet, PULL_MODE, PUSH_MODE, routerAbi, shortHash, testTokenAbi, txUrl, type Terms, ZERO_ADDRESS, ZERO_HASH } from "@/lib/glyph";
 
 type FlowMode = "pull" | "push";
-type Result = { mode: FlowMode; hash: Hash; operationId: Hash; termsHash: Hash; readback: string; claimLink?: string };
+type Result = { mode: FlowMode; hash: Hash; operationId: Hash; termsHash: Hash; readback: string; shareLink: string };
 
 function errorText(error: unknown) {
   const raw = error instanceof Error ? error.message.split("\n")[0] : "The wallet or contract rejected the action.";
@@ -35,6 +35,9 @@ export function JudgeConsole() {
   const [busy, setBusy] = useState<string>();
   const [error, setError] = useState<string>();
   const [result, setResult] = useState<Result>();
+  const [openedOperation, setOpenedOperation] = useState<Hash>();
+  const [openedKind, setOpenedKind] = useState<"claim" | "payment">();
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -42,6 +45,10 @@ export function JudgeConsole() {
       const campaign = params.get("campaign");
       const linkedRecipient = params.get("recipient");
       const linkedAmount = params.get("amount");
+      const claim = params.get("claim");
+      const payment = params.get("payment");
+      const opened = claim ?? payment;
+      if (opened?.match(/^0x[0-9a-fA-F]{64}$/)) { setOpenedOperation(opened as Hash); setOpenedKind(claim ? "claim" : "payment"); }
       if (campaign?.match(/^0x[0-9a-fA-F]{64}$/)) { setProgramId(campaign as Hash); setMode("pull"); }
       if (linkedRecipient && isAddress(linkedRecipient)) setRecipient(linkedRecipient);
       if (linkedAmount && safeAmount(linkedAmount)) setAmount(linkedAmount);
@@ -54,6 +61,7 @@ export function JudgeConsole() {
   const recipientAddress = useMemo(() => isAddress(recipient) ? recipient as Address : address, [recipient, address]);
 
   const nativeBalance = useBalance({ address, chainId: monadTestnet.id, query: { enabled: !!address && chainId === monadTestnet.id, refetchInterval: 8_000 } });
+  const openedFacts = useReadContract({ address: contracts.router, abi: routerAbi, functionName: "routeFacts", args: openedOperation ? [openedOperation] : undefined, chainId: monadTestnet.id, query: { enabled: !!openedOperation, retry: false } });
   const balance = useReadContract({ address: contracts.token, abi: testTokenAbi, functionName: "balanceOf", args: address ? [address] : undefined, query: { enabled: !!address && chainId === monadTestnet.id, refetchInterval: 8_000 } });
   const allowance = useReadContract({ address: contracts.token, abi: testTokenAbi, functionName: "allowance", args: address ? [address, contracts.router] : undefined, query: { enabled: !!address && chainId === monadTestnet.id, refetchInterval: 8_000 } });
 
@@ -117,13 +125,8 @@ export function JudgeConsole() {
       await publicClient.waitForTransactionReceipt({ hash });
       const routeFacts = await publicClient.readContract({ address: contracts.router, abi: routerAbi, functionName: "routeFacts", args: [operationId] });
       const readback = JSON.stringify(routeFacts, (_, item) => typeof item === "bigint" ? item.toString() : item);
-      let claimLink: string | undefined;
-      if (mode === "push") {
-        const secret = new Uint8Array(24); crypto.getRandomValues(secret);
-        const encoded = Array.from(secret, byte => byte.toString(16).padStart(2, "0")).join("");
-        claimLink = `${location.origin}/links#claim=${operationId}&key=${encoded}`;
-      }
-      setResult({ mode, hash, operationId, termsHash, readback, claimLink });
+      const shareLink = mode === "push" ? `${location.origin}/links#claim=${operationId}` : `${location.origin}/links#payment=${operationId}`;
+      setResult({ mode, hash, operationId, termsHash, readback, shareLink });
       await Promise.all([balance.refetch(), allowance.refetch(), nativeBalance.refetch()]);
     });
   }
@@ -134,6 +137,17 @@ export function JudgeConsole() {
   const hasGas = nativeValue !== undefined && nativeValue > BigInt(0);
   const enoughBalance = value !== undefined && balanceValue !== undefined && balanceValue >= value;
   const enoughAllowance = value !== undefined && allowanceValue !== undefined && allowanceValue >= value;
+  const openedData = Array.isArray(openedFacts.data) ? openedFacts.data : [];
+  const openedStatus = typeof openedData[4] === "number" ? openedData[4] : Number(openedData[4] ?? 0);
+  const statusLabel = ["Unknown", "Escrowed", "Reserved", "Acknowledged", "Reconciled", "Refund pending", "Refunded"][openedStatus] ?? "Unknown";
+
+  async function copyShareLink(link: string) { await navigator.clipboard.writeText(link); setCopied(true); window.setTimeout(()=>setCopied(false),1200); }
+  async function shareResult(link: string) { if (navigator.share) await navigator.share({ title: "Glyph payment link", url: link }); else await copyShareLink(link); }
+
+  if (openedOperation && openedKind) return <div className="grid-2">
+    <section className="panel featured"><div className="panel-header"><div><h2>{openedKind === "claim" ? "Push claim link" : "Pull payment link"}</h2><p className="panel-copy">This link now opens the exact onchain operation instead of returning to the generic creator.</p></div><StatusBadge tone={openedStatus >= 4 ? "verified" : "pending"}>{statusLabel}</StatusBadge></div><DetailRow label="Operation" value={openedOperation} mono/><DetailRow label="Onchain state" value={statusLabel}/><div className="form-actions"><button className="button button-outline" onClick={()=>copyShareLink(location.href)}><Copy size={14}/> {copied ? "Copied" : "Copy link"}</button><button className="button button-light" onClick={()=>shareResult(location.href)}><Share2 size={14}/> Share</button></div></section>
+    <section className="panel"><div className="panel-header"><div><h2>{openedKind === "claim" ? "Claim status" : "Payment status"}</h2></div></div>{openedFacts.isLoading ? <p className="notice">Reading operation…</p> : openedFacts.isError ? <p className="notice error-notice">This operation could not be read.</p> : openedKind === "claim" && openedStatus < 2 ? <p className="notice">Funds are escrowed. Claiming becomes available only after the provider routes and reserves the Push operation; this page will not fake that step.</p> : <p className="notice success-notice">Live operation state: {statusLabel}.</p>}<div className="form-actions"><a className="button button-outline" href="/links"><ArrowLeft size={14}/> Create another link</a></div></section>
+  </div>;
 
   return <div className="grid-2">
     <section className="panel featured">
@@ -153,7 +167,7 @@ export function JudgeConsole() {
       {error && <p className="notice error-notice" style={{marginTop:18}}>{error}</p>}
     </section>
     <section className="panel"><div className="panel-header"><div><h2>Transaction proof</h2><p className="panel-copy">Success appears only after wallet receipt and direct contract readback.</p></div>{result ? <StatusBadge tone="pending">Escrowed live</StatusBadge> : <StatusBadge>Waiting</StatusBadge>}</div>
-      {result ? <><DetailRow label="Mode" value={result.mode.toUpperCase()}/><DetailRow label="Operation" value={shortHash(result.operationId,12,10)} mono/><DetailRow label="Terms hash" value={shortHash(result.termsHash,12,10)} mono/><DetailRow label="Transaction" value={<a href={txUrl(result.hash)} target="_blank" rel="noreferrer">{shortHash(result.hash)} <ExternalLink size={12} style={{display:"inline"}}/></a>} mono/><div className="notice success-notice" style={{marginTop:18}}><Check size={14} style={{display:"inline",marginRight:8}}/>Contract readback returned route facts.</div>{result.claimLink && <div style={{marginTop:18}}><label style={{fontSize:11,color:"var(--text-muted)"}}>FRAGMENT-ONLY CLAIM LINK · NOT PERSISTED</label><div className="detail-row"><strong className="mono" style={{textAlign:"left"}}>{shortHash(result.claimLink,42,12)}</strong><button aria-label="Copy claim link" onClick={()=>navigator.clipboard.writeText(result.claimLink!)} style={{background:"transparent",border:0,cursor:"pointer"}}><Copy size={15}/></button></div></div>}<details style={{marginTop:16}}><summary style={{cursor:"pointer",color:"var(--text-muted)",fontSize:12}}>Raw route readback</summary><pre className="mono" style={{whiteSpace:"pre-wrap",wordBreak:"break-all",fontSize:10,color:"var(--text-subtle)"}}>{result.readback}</pre></details></> : <div className="stepper">{["Connect on Monad", "Fund testnet MON gas", "Mint demo gTST", "Approve exact terms", "Preflight + create escrow"].map((step,index)=><div className="step" key={step}><span className="step-number">{index+1}</span>{step}</div>)}</div>}
+      {result ? <><DetailRow label="Mode" value={result.mode.toUpperCase()}/><DetailRow label="Operation" value={shortHash(result.operationId,12,10)} mono/><DetailRow label="Terms hash" value={shortHash(result.termsHash,12,10)} mono/><DetailRow label="Transaction" value={<a href={txUrl(result.hash)} target="_blank" rel="noreferrer">{shortHash(result.hash)} <ExternalLink size={12} style={{display:"inline"}}/></a>} mono/><div className="notice success-notice" style={{marginTop:18}}><Check size={14} style={{display:"inline",marginRight:8}}/>Contract readback returned route facts.</div><div className="share-box"><div><span className="mono-label">{result.mode === "push" ? "SHAREABLE CLAIM LINK" : "SHAREABLE PAYMENT LINK"}</span><p className="mono recipient-address">{result.shareLink}</p></div><div className="form-actions"><button className="button button-outline button-small" onClick={()=>copyShareLink(result.shareLink)}><Copy size={13}/> {copied ? "Copied" : "Copy"}</button><button className="button button-light button-small" onClick={()=>shareResult(result.shareLink)}><Share2 size={13}/> Share</button></div></div><details style={{marginTop:16}}><summary style={{cursor:"pointer",color:"var(--text-muted)",fontSize:12}}>Raw route readback</summary><pre className="mono" style={{whiteSpace:"pre-wrap",wordBreak:"break-all",fontSize:10,color:"var(--text-subtle)"}}>{result.readback}</pre></details></> : <div className="stepper">{["Connect on Monad", "Fund testnet MON gas", "Mint demo gTST", "Approve exact terms", "Preflight + create escrow"].map((step,index)=><div className="step" key={step}><span className="step-number">{index+1}</span>{step}</div>)}</div>}
     </section>
   </div>;
 }
