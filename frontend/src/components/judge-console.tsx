@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type MouseEvent } from "react";
 import { ArrowLeft, Check, Copy, ExternalLink, FlaskConical, Fuel, LoaderCircle, Share2 } from "lucide-react";
 import { formatEther, isAddress, parseUnits, type Address, type Hash } from "viem";
 import { useAccount, useBalance, usePublicClient, useReadContract, useWriteContract } from "wagmi";
@@ -95,11 +95,13 @@ export function JudgeConsole() {
     });
   }
 
-  async function createPullRequestLink() {
-    if (!recipientAddress || !value) return;
+  async function createPullRequestLink(event?: MouseEvent<HTMLButtonElement>) {
+    event?.preventDefault();
+    const payTo = isAddress(recipient) ? recipient as Address : undefined;
+    if (!payTo || !value) { setError("Enter a valid recipient wallet and amount first."); return; }
     setError(undefined);
     setResult(undefined);
-    setGeneratedLink({ label: "SHAREABLE PULL PAYMENT LINK", url: `${location.origin}/links#payTo=${recipientAddress}&amount=${amount}` });
+    setGeneratedLink({ label: "SHAREABLE PULL PAYMENT LINK", url: `${location.origin}/links#payTo=${payTo}&amount=${amount}` });
   }
 
   async function createEscrow() {
@@ -180,7 +182,7 @@ export function JudgeConsole() {
       {programId !== ZERO_HASH && <p className="notice success-notice" style={{marginTop:18}}>Campaign contribution link loaded · program <span className="mono">{shortHash(programId,12,10)}</span></p>}
       <div style={{marginTop:28}} className="mode-tabs" role="tablist" aria-label="Link mode"><button role="tab" aria-selected={mode === "pull"} className={`mode-tab ${mode === "pull" ? "active" : ""}`} onClick={()=>{setMode("pull");setGeneratedLink(undefined);}}>Pull · pay request</button><button role="tab" aria-selected={mode === "push"} className={`mode-tab ${mode === "push" ? "active" : ""}`} onClick={()=>{setMode("push");setGeneratedLink(undefined);}}>Push · escrow proof</button></div>
       <div className="form-grid"><div className="field"><label htmlFor="amount">Amount in gTST</label><input id="amount" inputMode="decimal" value={amount} onChange={event=>setAmount(event.target.value)}/></div><div className="field"><label htmlFor="recipient">{mode === "pull" ? "Recipient wallet" : "Funded by / recovery wallet"}</label><input id="recipient" placeholder={address ?? "0x…"} value={recipient} onChange={event=>setRecipient(event.target.value)}/></div></div>
-      <div className="form-actions">{mode === "push" && <button className="button button-outline" onClick={approve} disabled={!walletReady || !hasGas || !!busy || !value || !enoughBalance}>{busy === "approve" ? "Simulating + approving…" : `Approve ${amount || "0"} gTST`}</button>}<button className="button button-light" onClick={mode === "pull" && !recipientPayment ? createPullRequestLink : createEscrow} disabled={!!busy || !value || (mode === "pull" && !recipientPayment ? !recipientAddress : (!walletReady || !hasGas || !enoughBalance))}>{busy === "escrow" ? recipientPayment ? "Approving + paying…" : "Preflighting + creating…" : mode === "push" ? "Fund Push escrow" : programId !== ZERO_HASH ? "Deposit / Pay campaign" : isPaymentRequest ? "Deposit / Pay" : "Create Pull link"}</button></div>
+      <div className="form-actions">{mode === "push" && <button className="button button-outline" onClick={approve} disabled={!walletReady || !hasGas || !!busy || !value || !enoughBalance}>{busy === "approve" ? "Simulating + approving…" : `Approve ${amount || "0"} gTST`}</button>}<button className="button button-light" onClick={mode === "pull" && !recipientPayment ? createPullRequestLink : createEscrow} disabled={!!busy || !value || (mode === "pull" && !recipientPayment ? !isAddress(recipient) : (!walletReady || !hasGas || !enoughBalance))}>{busy === "escrow" ? recipientPayment ? "Approving + paying…" : "Preflighting + creating…" : mode === "push" ? "Fund Push escrow" : programId !== ZERO_HASH ? "Deposit / Pay campaign" : isPaymentRequest ? "Deposit / Pay" : "Create Pull link"}</button></div>
       {!enoughBalance && walletReady && <p className="notice" style={{marginTop:18}}>Mint enough demo gTST first.</p>}
       {enoughBalance && !enoughAllowance && walletReady && !recipientPayment && <p className="notice" style={{marginTop:18}}>Approve the exact gTST amount before creating the link.</p>}
       {error && <p className="notice error-notice" style={{marginTop:18}}>{error}</p>}
