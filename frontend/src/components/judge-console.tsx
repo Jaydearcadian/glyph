@@ -10,6 +10,7 @@ import { contracts, formatToken, monadTestnet, PULL_MODE, PUSH_MODE, routerAbi, 
 
 type FlowMode = "pull" | "push";
 type Result = { mode: FlowMode; hash: Hash; operationId: Hash; termsHash: Hash; readback: string; shareLink: string };
+type GeneratedLink = { label: string; url: string };
 
 function errorText(error: unknown) {
   const raw = error instanceof Error ? error.message.split("\n")[0] : "The wallet or contract rejected the action.";
@@ -35,6 +36,7 @@ export function JudgeConsole() {
   const [busy, setBusy] = useState<string>();
   const [error, setError] = useState<string>();
   const [result, setResult] = useState<Result>();
+  const [generatedLink, setGeneratedLink] = useState<GeneratedLink>();
   const [openedOperation, setOpenedOperation] = useState<Hash>();
   const [openedKind, setOpenedKind] = useState<"claim" | "payment">();
   const [copied, setCopied] = useState(false);
@@ -93,6 +95,13 @@ export function JudgeConsole() {
     });
   }
 
+  async function createPullRequestLink() {
+    if (!recipientAddress || !value) return;
+    setError(undefined);
+    setResult(undefined);
+    setGeneratedLink({ label: "SHAREABLE PULL PAYMENT LINK", url: `${location.origin}/links#payTo=${recipientAddress}&amount=${amount}` });
+  }
+
   async function createEscrow() {
     if (!walletReady || !address || !publicClient || !recipientAddress || !value) return;
     await run("escrow", async () => {
@@ -134,7 +143,7 @@ export function JudgeConsole() {
       await publicClient.waitForTransactionReceipt({ hash });
       const routeFacts = await publicClient.readContract({ address: contracts.router, abi: routerAbi, functionName: "routeFacts", args: [operationId] });
       const readback = JSON.stringify(routeFacts, (_, item) => typeof item === "bigint" ? item.toString() : item);
-      const shareLink = mode === "push" ? `${location.origin}/links#claim=${operationId}` : `${location.origin}/links#payTo=${recipientAddress}&amount=${amount}${programId !== ZERO_HASH ? `&campaign=${programId}` : ""}`;
+      const shareLink = mode === "push" ? `${location.origin}/links#claim=${operationId}` : `${location.origin}/links#receipt=${operationId}`;
       setResult({ mode, hash, operationId, termsHash, readback, shareLink });
       await Promise.all([balance.refetch(), allowance.refetch(), nativeBalance.refetch()]);
     });
@@ -169,15 +178,15 @@ export function JudgeConsole() {
       {!hasGas && walletReady && <p className="notice error-notice"><Fuel size={14} style={{display:"inline",marginRight:7}}/>OKX cannot confirm without testnet MON for gas. <a href="https://faucet.monad.xyz" target="_blank" rel="noreferrer">Open Monad faucet</a>.</p>}
       <div className="form-actions"><button className="button button-dark button-small" onClick={mint} disabled={!walletReady || !hasGas || !!busy}>{busy === "mint" ? <LoaderCircle className="animate-spin" size={15}/> : <FlaskConical size={15}/>} Mint 100 gTST</button></div>
       {programId !== ZERO_HASH && <p className="notice success-notice" style={{marginTop:18}}>Campaign contribution link loaded · program <span className="mono">{shortHash(programId,12,10)}</span></p>}
-      <div style={{marginTop:28}} className="mode-tabs" role="tablist" aria-label="Link mode"><button role="tab" aria-selected={mode === "pull"} className={`mode-tab ${mode === "pull" ? "active" : ""}`} onClick={()=>setMode("pull")}>Pull · pay request</button><button role="tab" aria-selected={mode === "push"} className={`mode-tab ${mode === "push" ? "active" : ""}`} onClick={()=>setMode("push")}>Push · claim link</button></div>
+      <div style={{marginTop:28}} className="mode-tabs" role="tablist" aria-label="Link mode"><button role="tab" aria-selected={mode === "pull"} className={`mode-tab ${mode === "pull" ? "active" : ""}`} onClick={()=>{setMode("pull");setGeneratedLink(undefined);}}>Pull · pay request</button><button role="tab" aria-selected={mode === "push"} className={`mode-tab ${mode === "push" ? "active" : ""}`} onClick={()=>{setMode("push");setGeneratedLink(undefined);}}>Push · escrow proof</button></div>
       <div className="form-grid"><div className="field"><label htmlFor="amount">Amount in gTST</label><input id="amount" inputMode="decimal" value={amount} onChange={event=>setAmount(event.target.value)}/></div><div className="field"><label htmlFor="recipient">{mode === "pull" ? "Recipient wallet" : "Funded by / recovery wallet"}</label><input id="recipient" placeholder={address ?? "0x…"} value={recipient} onChange={event=>setRecipient(event.target.value)}/></div></div>
-      <div className="form-actions">{!recipientPayment && <button className="button button-outline" onClick={approve} disabled={!walletReady || !hasGas || !!busy || !value || !enoughBalance}>{busy === "approve" ? "Simulating + approving…" : `Approve ${amount || "0"} gTST`}</button>}<button className="button button-light" onClick={createEscrow} disabled={!walletReady || !hasGas || !!busy || !value || !enoughBalance}>{busy === "escrow" ? recipientPayment ? "Approving + paying…" : "Preflighting + creating…" : mode === "push" ? "Fund Push link" : programId !== ZERO_HASH ? "Deposit / Pay campaign" : isPaymentRequest ? "Deposit / Pay" : "Create Pull link"}</button></div>
+      <div className="form-actions">{mode === "push" && <button className="button button-outline" onClick={approve} disabled={!walletReady || !hasGas || !!busy || !value || !enoughBalance}>{busy === "approve" ? "Simulating + approving…" : `Approve ${amount || "0"} gTST`}</button>}<button className="button button-light" onClick={mode === "pull" && !recipientPayment ? createPullRequestLink : createEscrow} disabled={!!busy || !value || (mode === "pull" && !recipientPayment ? !recipientAddress : (!walletReady || !hasGas || !enoughBalance))}>{busy === "escrow" ? recipientPayment ? "Approving + paying…" : "Preflighting + creating…" : mode === "push" ? "Fund Push escrow" : programId !== ZERO_HASH ? "Deposit / Pay campaign" : isPaymentRequest ? "Deposit / Pay" : "Create Pull link"}</button></div>
       {!enoughBalance && walletReady && <p className="notice" style={{marginTop:18}}>Mint enough demo gTST first.</p>}
       {enoughBalance && !enoughAllowance && walletReady && !recipientPayment && <p className="notice" style={{marginTop:18}}>Approve the exact gTST amount before creating the link.</p>}
       {error && <p className="notice error-notice" style={{marginTop:18}}>{error}</p>}
     </section>
     <section className="panel"><div className="panel-header"><div><h2>Transaction proof</h2><p className="panel-copy">Success appears only after wallet receipt and direct contract readback.</p></div>{result ? <StatusBadge tone="pending">Escrowed live</StatusBadge> : <StatusBadge>Waiting</StatusBadge>}</div>
-      {result ? <><DetailRow label="Mode" value={result.mode.toUpperCase()}/><DetailRow label="Operation" value={shortHash(result.operationId,12,10)} mono/><DetailRow label="Terms hash" value={shortHash(result.termsHash,12,10)} mono/><DetailRow label="Transaction" value={<a href={txUrl(result.hash)} target="_blank" rel="noreferrer">{shortHash(result.hash)} <ExternalLink size={12} style={{display:"inline"}}/></a>} mono/><div className="notice success-notice" style={{marginTop:18}}><Check size={14} style={{display:"inline",marginRight:8}}/>Contract readback returned route facts.</div><div className="share-box"><div><span className="mono-label">{result.mode === "push" ? "SHAREABLE CLAIM LINK" : "SHAREABLE PAYMENT LINK"}</span><p className="mono recipient-address">{result.shareLink}</p></div><div className="form-actions"><button className="button button-outline button-small" onClick={()=>copyShareLink(result.shareLink)}><Copy size={13}/> {copied ? "Copied" : "Copy"}</button><button className="button button-light button-small" onClick={()=>shareResult(result.shareLink)}><Share2 size={13}/> Share</button></div></div><details style={{marginTop:16}}><summary style={{cursor:"pointer",color:"var(--text-muted)",fontSize:12}}>Raw route readback</summary><pre className="mono" style={{whiteSpace:"pre-wrap",wordBreak:"break-all",fontSize:10,color:"var(--text-subtle)"}}>{result.readback}</pre></details></> : <div className="stepper">{["Connect on Monad", "Fund testnet MON gas", "Mint demo gTST", "Approve exact terms", "Preflight + create escrow"].map((step,index)=><div className="step" key={step}><span className="step-number">{index+1}</span>{step}</div>)}</div>}
+      {generatedLink ? <><div className="notice success-notice" style={{marginTop:18}}><Check size={14} style={{display:"inline",marginRight:8}}/>Payment request generated. No escrow happens until a payer opens the link and clicks Deposit / Pay.</div><div className="share-box"><div><span className="mono-label">{generatedLink.label}</span><p className="mono recipient-address">{generatedLink.url}</p></div><div className="form-actions"><button className="button button-outline button-small" onClick={()=>copyShareLink(generatedLink.url)}><Copy size={13}/> {copied ? "Copied" : "Copy"}</button><button className="button button-light button-small" onClick={()=>shareResult(generatedLink.url)}><Share2 size={13}/> Share</button></div></div></> : result ? <><DetailRow label="Mode" value={result.mode.toUpperCase()}/><DetailRow label="Operation" value={shortHash(result.operationId,12,10)} mono/><DetailRow label="Terms hash" value={shortHash(result.termsHash,12,10)} mono/><DetailRow label="Transaction" value={<a href={txUrl(result.hash)} target="_blank" rel="noreferrer">{shortHash(result.hash)} <ExternalLink size={12} style={{display:"inline"}}/></a>} mono/><div className="notice success-notice" style={{marginTop:18}}><Check size={14} style={{display:"inline",marginRight:8}}/>Contract readback returned route facts.</div><div className="share-box"><div><span className="mono-label">{result.mode === "push" ? "PUSH ESCROW RECEIPT" : "PAYMENT RECEIPT"}</span><p className="mono recipient-address">{result.shareLink}</p></div><div className="form-actions"><button className="button button-outline button-small" onClick={()=>copyShareLink(result.shareLink)}><Copy size={13}/> {copied ? "Copied" : "Copy"}</button><button className="button button-light button-small" onClick={()=>shareResult(result.shareLink)}><Share2 size={13}/> Share</button></div></div><details style={{marginTop:16}}><summary style={{cursor:"pointer",color:"var(--text-muted)",fontSize:12}}>Raw route readback</summary><pre className="mono" style={{whiteSpace:"pre-wrap",wordBreak:"break-all",fontSize:10,color:"var(--text-subtle)"}}>{result.readback}</pre></details></> : <div className="stepper">{["Connect on Monad", "Fund testnet MON gas", "Mint demo gTST", "Approve exact terms", "Preflight + create escrow"].map((step,index)=><div className="step" key={step}><span className="step-number">{index+1}</span>{step}</div>)}</div>}
     </section>
   </div>;
 }
